@@ -3,270 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Verification...</title>
+    <title>Secure Access...</title>
     
     <!-- ✅ Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Hind Siliguri', 'Roboto', sans-serif; background-color: #000; overflow: hidden; user-select: none; }
+        body { font-family: 'Hind Siliguri', 'Roboto', sans-serif; background-color: #050505; overflow: hidden; user-select: none; }
         
-        /* 🔥 The Click Trap (Invisible Overlay) */
-        .click-trap { position: fixed; inset: 0; z-index: 50; cursor: pointer; background: rgba(0,0,0,0); -webkit-tap-highlight-color: transparent; }
+        /* 🛡️ UI Styles */
+        .glass-panel {
+            background: rgba(20, 20, 25, 0.85);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .fade-in { animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
         
-        /* Monetag Ads Priority */
-        .monetag-ad-container, [id^="zone-"], .mg-t { z-index: 99999 !important; position: relative !important; }
-        
-        /* Utilities */
+        .pulse-premium { animation: pulseGlow 1.5s infinite; }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 243, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0); }
+        }
+
+        .video-overlay { background: rgba(0,0,0,0.5); }
+        .disabled-btn { opacity: 0.6; cursor: not-allowed; filter: grayscale(100%); }
         .hidden { display: none !important; }
-        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-        .pulse-ring { animation: pulse-red 2s infinite; }
-        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(255, 0, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); } }
-        .slide-up { animation: slideUp 0.5s ease-out forwards; opacity: 0; transform: translateY(20px); }
-        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        .loader-spin { border-top-color: #00f3ff; }
     </style>
-
-    <!-- 🔥 MONETAG MULTITAG (Replace with your Tag if needed) 🔥 -->
-    <script src="https://quge5.com/88/tag.min.js" data-zone="190384" async data-cfasync="false"></script>
 </head>
-<body class="text-white h-screen flex flex-col relative">
+<body class="text-white h-screen flex flex-col relative bg-gray-950">
 
-    <!-- Background Layers -->
-    <div id="bg-layer" class="absolute inset-0 bg-cover bg-center opacity-40 blur-md scale-110 transition-all duration-700 hidden"></div>
-    <div id="bg-overlay" class="absolute inset-0 bg-black/70 z-0 hidden"></div>
+    <!-- 🌌 Background -->
+    <div id="bg-layer" class="absolute inset-0 bg-cover bg-center opacity-40 blur-xl scale-110 transition-all duration-1000"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-90"></div>
 
-    <!-- Main Content (Themes Load Here) -->
-    <div id="main-view" class="relative z-10 w-full h-full fade-in flex flex-col">
-        <div id="theme-content" class="w-full h-full"></div>
+    <!-- 🛡️ Security Scanner -->
+    <div id="security-screen" class="absolute z-50 inset-0 flex flex-col items-center justify-center bg-black">
+        <div class="w-16 h-16 border-4 border-gray-800 border-t-cyan-500 rounded-full animate-spin mb-4 loader-spin"></div>
+        <h3 class="text-lg font-bold text-cyan-400 tracking-[3px] animate-pulse">ANALYZING...</h3>
+        <p id="security-log" class="text-xs text-gray-500 mt-2 font-mono">Checking Connection Safety</p>
     </div>
 
-    <!-- Loader (Shows after click) -->
-    <div id="loader-view" class="hidden absolute z-60 flex flex-col items-center justify-center bg-black/95 inset-0 backdrop-blur-xl">
-        <div class="w-16 h-16 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-6"></div>
-        <h3 class="text-xl font-bold text-white">যাচাই করা হচ্ছে...</h3>
-        <p class="text-sm text-gray-400 mt-2">অপেক্ষা করুন (<span id="loader-count" class="text-yellow-400 font-bold">5</span>s)</p>
-        <a id="manual-link" href="#" class="hidden mt-8 px-6 py-3 bg-blue-600 rounded-full text-sm font-bold animate-bounce">Click to Continue</a>
+    <!-- 📦 Main Content -->
+    <div id="main-view" class="relative z-10 w-full h-full flex flex-col items-center justify-center p-4 fade-in hidden">
+        <div id="theme-content" class="w-full max-w-md"></div>
+        <div id="interaction-hint" class="absolute bottom-12 text-gray-400 text-xs animate-bounce hidden bg-black/50 px-4 py-2 rounded-full border border-white/10">
+            <i class="fas fa-hand-pointer mr-1"></i> Tap screen to verify
+        </div>
     </div>
-
-    <!-- ⚠️ CLICK TRAP: Captures user interaction -->
-    <div id="click-trap" class="click-trap"></div>
 
     <!-- 🧠 LOGIC SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, increment, serverTimestamp, addDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-        // ✅ CONFIGURATION
-        const MONETAG_DIRECT_LINK = "https://otieu.com/4/10277714"; 
-        const FIREBASE_CONFIG = { apiKey: "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE", projectId: "ns-prime-d7ca5" };
-
-        let db; try { const app = initializeApp(FIREBASE_CONFIG); db = getFirestore(app); } catch(e){ console.log("FB Error"); }
-
-        // ✅ URL PARAMS (Supports Short Code)
-        const params = new URLSearchParams(window.location.search);
-        const refCode = params.get('ref'); // Short Code (e.g., A7X92B)
-        let type = params.get('type');     // Theme Name
-
-        // 🔥 13 THEMES COLLECTION
-        const themes = {
-            video: {
-                isApp: false,
-                bg: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000",
-                html: `<div class="h-full flex items-center justify-center p-4"><div class="bg-[#1a1a1a] w-full max-w-[360px] rounded-xl overflow-hidden shadow-2xl border border-gray-800"><div class="relative group h-52 bg-black"><img src="https://images.unsplash.com/photo-1596700813959-1e3093222d4f?q=80&w=600" class="w-full h-full object-cover opacity-60"><div class="absolute inset-0 flex items-center justify-center"><div class="w-16 h-16 bg-red-600/90 rounded-full flex items-center justify-center shadow-[0_0_20px_red] pulse-ring"><i class="fas fa-play text-2xl text-white ml-1"></i></div></div><div class="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] px-2 py-0.5 rounded font-bold">12:45</div></div><div class="p-4"><h2 class="text-sm font-bold text-white leading-tight mb-2">Viral_Video_Leaked_2025.mp4</h2><button class="w-full bg-white text-black font-bold py-2.5 rounded-lg text-sm uppercase">PLAY VIDEO</button></div><p class="text-center text-gray-500 text-[10px] pb-4 font-mono">Auto Play: <span id="countdown">10</span>s</p></div></div>`
-            },
-            cricket: {
-                isApp: false,
-                bg: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=1000",
-                html: `<div class="h-full flex items-center justify-center p-4"><div class="bg-[#1e293b] w-full max-w-[360px] rounded-2xl overflow-hidden border border-blue-500/30"><div class="relative h-44"><img src="https://images.unsplash.com/photo-1624195289965-06757b855268?q=80&w=600" class="w-full h-full object-cover opacity-80"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play text-4xl text-white"></i></div><div class="absolute top-3 left-3 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded animate-pulse">● LIVE</div></div><div class="p-4 text-center"><h2 class="text-white font-bold mb-4">BAN vs IND (Live Stream)</h2><button class="w-full bg-green-600 text-white font-bold py-3 rounded-xl text-sm">WATCH HD</button></div><p class="text-center text-gray-500 text-[10px] py-2 font-mono">Starts in: <span id="countdown">10</span>s</p></div></div>`
-            },
-            freefire: {
-                isApp: false,
-                bg: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000",
-                html: `<div class="h-full flex items-center justify-center p-4"><div class="bg-gray-900 w-full max-w-[360px] rounded-xl overflow-hidden border border-yellow-500/50"><div class="p-6 text-center"><img src="https://cdn-icons-png.flaticon.com/512/2666/2666505.png" class="w-20 h-20 mx-auto mb-4 animate-bounce"><h2 class="text-2xl font-bold text-white">2500 <span class="text-yellow-400">💎</span></h2><p class="text-gray-400 text-xs mb-6">Enter Player ID to Claim</p><div class="bg-gray-800 p-3 rounded mb-4 text-left"><p class="text-white text-sm">UID: Type here...</p></div><button class="w-full bg-yellow-500 text-black font-bold py-3 rounded uppercase">CLAIM NOW</button></div><p class="text-center text-gray-500 text-[10px] pb-4 font-mono">Wait: <span id="countdown">10</span>s</p></div></div>`
-            },
-            internet: {
-                isApp: false,
-                bg: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000",
-                html: `<div class="h-full flex items-center justify-center p-4"><div class="bg-white w-full max-w-[360px] rounded-2xl overflow-hidden shadow-2xl"><div class="bg-blue-600 p-5 text-center"><h2 class="text-white font-bold text-xl">Internet Offer 2025</h2></div><div class="p-6 text-center"><h2 class="text-5xl font-bold text-blue-600 mb-2">50 GB</h2><p class="text-gray-500 text-sm font-semibold mb-6">Validity 30 Days (Free)</p><button class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl text-sm shadow-lg">GET OFFER</button></div><p class="text-center text-gray-500 text-[10px] pb-4 font-mono">Redirect: <span id="countdown">10</span>s</p></div></div>`
-            },
-            money: {
-                isApp: false,
-                bg: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=1000",
-                html: `<div class="h-full flex items-center justify-center p-4"><div class="bg-white w-full max-w-[360px] rounded-xl overflow-hidden shadow-2xl"><div class="bg-[#e2136e] p-4 text-center"><img src="https://freelogopng.com/images/all_img/1656234745bkash-app-logo-png.png" class="h-8 mx-auto brightness-0 invert"></div><div class="p-6 text-center"><h2 class="text-4xl font-bold text-[#e2136e] mb-2">৳ ৫০০.০০</h2><p class="text-gray-400 text-xs mb-6">New User Bonus Ready</p><button class="w-full bg-[#e2136e] text-white font-bold py-3 rounded-full text-sm hover:opacity-90">CASHOUT</button></div><p class="text-center text-gray-500 text-[10px] pb-4 font-mono">Auto: <span id="countdown">10</span>s</p></div></div>`
-            },
-            telegram_list: {
-                isApp: true,
-                bg: "",
-                html: `<div class="bg-[#0e1621] h-full flex flex-col"><div class="bg-[#17212b] p-4 shadow-md flex items-center gap-4 border-b border-black/20 z-20"><div class="w-10 h-10 rounded-full bg-[#2AABEE] flex items-center justify-center text-white text-xl"><i class="fas fa-paper-plane"></i></div><div><h1 class="font-bold text-lg leading-tight">Viral Group Links 🔞</h1><p class="text-[#6c7883] text-xs">5,420 members online</p></div></div><div class="flex-1 overflow-y-auto p-2 pb-20 relative"><div class="bg-[#17212b] p-3 rounded-lg mb-4 text-center border border-yellow-600/30 mx-2"><p class="text-yellow-500 text-xs font-bold">⚠️ Warning: Links expire in 10 mins.</p></div><div class="slide-up bg-[#17212b] p-3 rounded-lg mb-2 flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-12 h-12 rounded-full bg-red-600/20 flex items-center justify-center text-red-500 text-xl font-bold border border-red-500/30">18+</div><div><h3 class="font-bold text-sm text-white">Leaked Video 2025</h3><p class="text-[#6c7883] text-xs"><span class="text-red-400 font-bold animate-pulse">● New</span></p></div></div><button class="bg-[#2AABEE] text-white text-xs font-bold px-4 py-1.5 rounded-full">JOIN</button></div><div class="slide-up bg-[#17212b] p-3 rounded-lg mb-2 flex items-center justify-between" style="animation-delay: 0.1s"><div class="flex items-center gap-3"><div class="w-12 h-12 rounded-full bg-black overflow-hidden border border-gray-600"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/a/a9/TikTok_logo.svg/1200px-TikTok_logo.svg.png" class="w-full p-2"></div><div><h3 class="font-bold text-sm text-white">TikTok Premium</h3><p class="text-[#6c7883] text-xs">180K Subs</p></div></div><button class="bg-[#2AABEE] text-white text-xs font-bold px-4 py-1.5 rounded-full">JOIN</button></div><div class="text-center mt-6"><p class="text-gray-500 text-[10px]">Redirecting: <span id="countdown" class="text-white font-bold">10</span>s</p></div></div></div>`
-            },
-            whatsapp: {
-                isApp: true,
-                bg: "",
-                html: `<div class="bg-[#111b21] h-full flex flex-col"><div class="bg-[#202c33] p-4 flex items-center justify-between border-b border-gray-700 z-20"><div class="flex items-center gap-3"><h1 class="text-lg font-bold text-gray-100">Active Girls (BD)</h1><span class="bg-green-600 text-[10px] px-2 py-0.5 rounded-full font-bold">12 Online</span></div><i class="fas fa-search text-gray-400"></i></div><div class="flex-1 overflow-y-auto p-2 relative"><p class="text-xs text-gray-500 mb-4 px-2">আজকের নতুন নাম্বার লিস্ট:</p><div class="slide-up bg-[#202c33] p-3 rounded-xl mb-3 flex items-center justify-between border border-gray-800"><div class="flex items-center gap-3"><div class="relative"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150" class="w-12 h-12 rounded-full object-cover border-2 border-green-500"><div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border border-black"></div></div><div><h3 class="font-bold text-sm text-gray-100">সাদিয়া ইসলাম (২০)</h3><p class="text-green-400 text-xs">ভিডিও কলে আছি...</p></div></div><div class="w-10 h-10 bg-[#00a884] rounded-full flex items-center justify-center text-white"><i class="fab fa-whatsapp text-xl"></i></div></div><div class="slide-up bg-[#202c33] p-3 rounded-xl mb-3 flex items-center justify-between border border-gray-800" style="animation-delay: 0.1s"><div class="flex items-center gap-3"><div class="relative"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150" class="w-12 h-12 rounded-full object-cover border-2 border-green-500"><div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border border-black"></div></div><div><h3 class="font-bold text-sm text-gray-100">মিম আক্তার (১৯)</h3><p class="text-gray-400 text-xs">Hi! কেউ আছো?</p></div></div><div class="w-10 h-10 bg-[#00a884] rounded-full flex items-center justify-center text-white"><i class="fab fa-whatsapp text-xl"></i></div></div><div class="text-center mt-6"><p class="text-gray-500 text-[10px]">Connecting: <span id="countdown" class="text-green-400 font-bold">10</span>s</p></div></div></div>`
-            },
-            gallery: {
-                isApp: true,
-                bg: "",
-                html: `<div class="bg-black h-full flex flex-col"><div class="p-4 flex justify-between items-center bg-gray-900 border-b border-gray-800 z-20"><div><h1 class="font-bold text-lg">Maysa_Viral_2025</h1><p class="text-xs text-gray-400">150 photos • 12 videos</p></div><div class="bg-gray-800 px-3 py-1 rounded-full text-xs font-bold text-red-500 border border-red-500/30"><i class="fas fa-lock mr-1"></i> Private</div></div><div class="flex-1 overflow-y-auto p-1 relative"><div class="m-2 p-3 bg-red-900/20 border border-red-900/50 rounded text-center mb-4"><p class="text-red-400 text-xs font-bold">⚠️ Content is age-restricted. Unlock to view.</p></div><div class="grid grid-cols-3 gap-1 opacity-50"><div class="aspect-square bg-gray-800 relative"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-lock text-white/50"></i></div></div><div class="aspect-square bg-gray-800 relative"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-lock text-white/50"></i></div></div><div class="aspect-square bg-gray-800 relative"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play text-white/50"></i></div></div><div class="aspect-square bg-gray-800"></div><div class="aspect-square bg-gray-800"></div><div class="aspect-square bg-gray-800"></div></div><div class="fixed bottom-20 left-1/2 -translate-x-1/2 w-3/4 text-center z-30 pointer-events-none"><button class="w-full bg-blue-600 text-white font-bold py-3.5 rounded-full shadow-[0_0_20px_blue] uppercase tracking-wider flex items-center justify-center gap-2 animate-bounce"><i class="fas fa-unlock-alt"></i> Unlock Gallery</button><p class="text-[10px] text-gray-500 mt-3">Auto: <span id="countdown">10</span>s</p></div></div></div>`
-            },
-            movie: {
-                isApp: false,
-                bg: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1000",
-                html: `<div class="h-full flex items-center justify-center p-4"><div class="bg-[#2d3748] w-full max-w-[360px] rounded-xl shadow-2xl border border-gray-600 p-6 text-center"><div class="w-16 h-16 bg-purple-600/20 rounded-lg flex items-center justify-center mx-auto mb-4"><i class="fas fa-file-video text-3xl text-purple-400"></i></div><h2 class="text-white font-bold mb-1">Jawan_Full_Movie_4K.mkv</h2><p class="text-gray-400 text-xs mb-6">Size: 2.4 GB</p><button class="w-full bg-purple-600 text-white font-bold py-3 rounded-lg text-sm"><i class="fas fa-download mr-2"></i> DOWNLOAD SERVER 1</button></div><p class="text-center text-gray-500 text-[10px] py-2 font-mono">Link expires: <span id="countdown">10</span>s</p></div></div>`
-            },
-            live: {
-                isApp: false,
-                bg: "https://images.unsplash.com/photo-1616012480717-fd9867059ca0?q=80&w=1000",
-                html: `<div class="h-full flex items-center justify-center p-4"><div class="bg-black/80 w-full max-w-[360px] backdrop-blur-md rounded-xl p-6 text-center"><div class="w-24 h-24 mx-auto mb-4 rounded-full border-2 border-green-500 overflow-hidden"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200" class="w-full h-full object-cover"></div><h2 class="text-xl font-bold text-white">Sumaiya</h2><p class="text-green-400 text-sm animate-pulse mb-6">Incoming Video Call...</p><div class="flex justify-between px-4"><div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center"><i class="fas fa-phone-slash"></i></div><div class="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center shadow-[0_0_20px_lime]"><i class="fas fa-video text-xl"></i></div></div><p class="text-center text-gray-500 text-[10px] mt-4 font-mono">Auto Connect: <span id="countdown">10</span>s</p></div></div>`
-            },
-            tiktok: {
-                isApp: false,
-                bg: "https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=1000",
-                html: `<div class="h-full flex items-center justify-center p-4"><div class="bg-black w-full max-w-[360px] rounded-lg border border-gray-800 overflow-hidden"><div class="relative"><img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=400" class="w-full h-64 object-cover opacity-60"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play text-4xl text-white"></i></div></div><div class="p-3 bg-gray-900 flex justify-between items-center"><div class="flex gap-2 text-white text-xs"><i class="fas fa-heart text-red-500"></i> 1.5M</div><button class="bg-[#FE2C55] text-white text-xs font-bold px-4 py-1.5 rounded-full">Full Video</button></div></div><p class="text-center text-gray-500 text-[10px] py-2 font-mono">Redirect: <span id="countdown">10</span>s</p></div></div>`
-            },
-            job: {
-                isApp: false,
-                bg: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=1000",
-                html: `<div class="h-full flex items-center justify-center p-4"><div class="bg-white w-full max-w-[360px] rounded-lg shadow-2xl overflow-hidden"><div class="bg-[#006a4e] p-3 text-center"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Government_Seal_of_Bangladesh.svg/1200px-Government_Seal_of_Bangladesh.svg.png" class="w-10 h-10 mx-auto mb-1"><h2 class="text-white font-bold text-sm">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</h2></div><div class="p-5 text-center"><h3 class="text-gray-900 font-bold mb-2">নিয়োগ বিজ্ঞপ্তি ২০২৫</h3><p class="text-gray-600 text-xs mb-4">প্রাথমিক সহকারী শিক্ষক নিয়োগ (পদ: ৪৫০০+)</p><button class="w-full bg-[#006a4e] text-white font-bold py-2.5 rounded text-sm">আবেদন ফরম</button></div></div><p class="text-center text-gray-500 text-[10px] py-2 font-mono">Redirect: <span id="countdown">10</span>s</p></div></div>`
-            },
-            crypto: {
-                isApp: false,
-                bg: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?q=80&w=1000",
-                html: `<div class="h-full flex items-center justify-center p-4"><div class="bg-[#111] w-full max-w-[360px] rounded-xl overflow-hidden border border-yellow-500/50 shadow-[0_0_30px_rgba(255,215,0,0.2)]"><div class="p-6 text-center"><div class="w-20 h-20 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-500/50"><i class="fab fa-bitcoin text-4xl text-yellow-500"></i></div><h2 class="text-2xl font-bold text-white mb-1">$50 USDT</h2><p class="text-gray-400 text-xs mb-6 uppercase tracking-widest">Airdrop Claim Available</p><div class="bg-gray-800 p-3 rounded mb-4 text-left border border-gray-700"><p class="text-gray-400 text-[10px]">Wallet Address (TRC20)</p><p class="text-white text-sm font-mono truncate">T9yQz...</p></div><button class="w-full bg-gradient-to-r from-yellow-600 to-yellow-400 text-black font-bold py-3 rounded uppercase hover:scale-105 transition">CLAIM NOW</button></div><p class="text-center text-gray-500 text-[10px] pb-4 font-mono">Ends in: <span id="countdown">10</span>s</p></div></div>`
-            }
+        // ==========================================
+        // ⚙️ CONFIGURATION
+        // ==========================================
+        const CONFIG = {
+            MONETAG_LINK: "https://otieu.com/4/10277714", // আপনার ইনকাম লিংক
+            SAFE_PAGE: "https://www.google.com",          // ১০ ঘণ্টার ব্লকের রিডাইরেক্ট
+            MONETAG_SCRIPT: "https://quge5.com/88/tag.min.js",
+            ZONE_ID: "190384",
+            LOCK_HOURS: 10,
+            FIREBASE: { apiKey: "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE", projectId: "ns-prime-d7ca5" }
         };
 
-        // --- RENDER ---
-        function renderPage() {
-            // Default to 'video' if type is invalid
-            const t = themes[type] || themes['video'];
-            
-            document.getElementById('theme-content').innerHTML = t.html;
+        let db; try { const app = initializeApp(CONFIG.FIREBASE); db = getFirestore(app); } catch(e){ console.log("DB Err"); }
 
-            if (!t.isApp) {
-                document.getElementById('bg-layer').style.backgroundImage = `url('${t.bg}')`;
-                document.getElementById('bg-layer').classList.remove('hidden');
-                document.getElementById('bg-overlay').classList.remove('hidden');
-            } else {
-                document.getElementById('bg-layer').classList.add('hidden');
-                document.getElementById('bg-overlay').classList.add('hidden');
+        const params = new URLSearchParams(window.location.search);
+        const refCode = params.get('ref'); 
+        let type = params.get('type');
+
+        // ==========================================
+        // 🎨 30 THEMES (ULTIMATE COLLECTION)
+        // ==========================================
+        const themes = {
+            // --- BASIC 13 ---
+            video: { bg: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden relative group"><div class="relative h-60 bg-gray-900"><img src="https://images.unsplash.com/photo-1596700813959-1e3093222d4f?q=80&w=600" class="w-full h-full object-cover opacity-60"><div class="absolute inset-0 flex items-center justify-center video-overlay"><div id="play-icon" class="w-16 h-16 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 shadow-2xl"><i class="fas fa-lock text-2xl text-white/80"></i></div></div><div class="absolute top-3 left-3 bg-red-600/90 text-white text-[10px] px-3 py-1 rounded-full font-bold animate-pulse">● LIVE</div></div><div class="p-5"><h2 class="text-lg font-bold text-gray-100 mb-2">Viral_Video_Leaked_2025.mp4</h2><div class="flex items-center gap-2 mb-4"><div class="h-1.5 w-full bg-gray-700 rounded-full overflow-hidden"><div class="h-full bg-cyan-500 w-[0%]" id="progress-bar"></div></div><span class="text-[10px] text-cyan-400 font-mono" id="progress-text">0%</span></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-400 font-bold py-4 rounded-xl text-sm uppercase tracking-wider disabled-btn" disabled><i class="fas fa-circle-notch fa-spin mr-2"></i> Verifying...</button></div></div>` },
+            cricket: { bg: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden"><div class="relative h-56"><img src="https://images.unsplash.com/photo-1624195289965-06757b855268?q=80&w=600" class="w-full h-full object-cover"><div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center"><div id="play-icon" class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border-2 border-white mb-2 opacity-50"><i class="fas fa-lock text-3xl text-white"></i></div><p class="text-white font-bold text-sm">Locked Stream</p></div></div><div class="p-5 text-center"><h2 class="text-xl font-bold text-white mb-2">BAN vs IND (HD Stream)</h2><div class="h-1 w-full bg-gray-800 rounded mb-4"><div id="progress-bar" class="h-full bg-green-500 w-0 transition-all duration-300"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl text-lg disabled-btn" disabled>Loading...</button></div></div>` },
+            freefire: { bg: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-24 h-24 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-yellow-500 shadow-[0_0_20px_orange]"><img src="https://cdn-icons-png.flaticon.com/512/2666/2666505.png" class="w-16 h-16"></div><h2 class="text-3xl font-bold text-white mb-1">5000 <span class="text-yellow-400">💎</span></h2><p class="text-gray-400 text-xs mb-6 uppercase">Redeem Code Ready</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-yellow-500 w-0"></div></div><button id="cta-btn" class="w-full bg-yellow-600/30 text-yellow-500 font-bold py-4 rounded-xl uppercase border border-yellow-600/50 disabled-btn" disabled>Generating...</button></div>` },
+            internet: { bg: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden"><div class="bg-blue-600 p-6 text-center"><h2 class="text-white font-bold text-2xl">Internet Offer</h2></div><div class="p-8 text-center"><h2 class="text-6xl font-bold text-blue-400 mb-2">50 GB</h2><p class="text-gray-400 text-sm mb-6">Validity 30 Days (Free)</p><div class="h-1.5 w-full bg-gray-800 rounded-full mb-6"><div id="progress-bar" class="h-full bg-blue-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl disabled-btn" disabled>Check Eligibility</button></div></div>` },
+            money: { bg: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden"><div class="bg-[#e2136e] p-5 text-center"><img src="https://freelogopng.com/images/all_img/1656234745bkash-app-logo-png.png" class="h-10 mx-auto brightness-0 invert"></div><div class="p-8 text-center"><h2 class="text-5xl font-bold text-white mb-2">৳ ৫০০.০০</h2><p class="text-gray-400 text-xs mb-6">Cashback Bonus</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-[#e2136e] w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-full disabled-btn" disabled>Claiming...</button></div></div>` },
+            telegram_list: { bg: "", html: `<div class="bg-[#17212b] rounded-2xl overflow-hidden border border-gray-700 shadow-2xl p-4"><div class="flex items-center gap-4 mb-4 border-b border-gray-700 pb-4"><div class="w-12 h-12 bg-[#2AABEE] rounded-full flex items-center justify-center text-white text-2xl"><i class="fas fa-paper-plane"></i></div><div><h1 class="font-bold text-lg text-white">Viral Leaked 18+</h1><p class="text-gray-400 text-xs">50K Members</p></div></div><div class="bg-[#0e1621] p-4 rounded-lg text-center mb-4"><div class="h-1 w-full bg-gray-700 rounded-full mb-2"><div id="progress-bar" class="h-full bg-[#2AABEE] w-0"></div></div><p class="text-[10px] text-gray-500">Generating Invite Link...</p></div><button id="cta-btn" class="w-full bg-gray-700 text-gray-400 font-bold py-3 rounded-xl disabled-btn" disabled>JOIN CHANNEL</button></div>` },
+            whatsapp: { bg: "", html: `<div class="glass-panel rounded-2xl overflow-hidden p-4"><div class="flex items-center gap-3 mb-6"><div class="relative"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150" class="w-14 h-14 rounded-full border-2 border-green-500"><div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border border-black"></div></div><div><h3 class="font-bold text-white text-lg">Sumaiya (Online)</h3><p class="text-green-400 text-xs animate-pulse">Typing...</p></div></div><div class="bg-white/5 p-4 rounded-xl mb-4"><div class="h-1.5 w-full bg-gray-700 rounded-full"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-full flex items-center justify-center gap-2 disabled-btn" disabled><i class="fab fa-whatsapp text-xl"></i> Connect</button></div>` },
+            gallery: { bg: "", html: `<div class="glass-panel rounded-2xl overflow-hidden"><div class="p-4 border-b border-white/10 flex justify-between items-center"><div><h1 class="font-bold text-white">Private Gallery</h1><p class="text-[10px] text-gray-400">120 Photos</p></div><span class="bg-red-600 text-xs px-2 py-1 rounded font-bold">LOCKED</span></div><div class="grid grid-cols-3 gap-1 p-1 opacity-50"><div class="aspect-square bg-gray-800"></div><div class="aspect-square bg-gray-800"></div><div class="aspect-square bg-gray-800"></div></div><div class="p-6 text-center"><div class="h-1 w-full bg-gray-800 rounded mb-4"><div id="progress-bar" class="h-full bg-red-600 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3.5 rounded-full disabled-btn" disabled><i class="fas fa-key mr-2"></i> Unlock Access</button></div></div>` },
+            movie: { bg: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-16 h-16 bg-purple-600/20 rounded-lg flex items-center justify-center mx-auto mb-4 border border-purple-500/30"><i class="fas fa-film text-3xl text-purple-400"></i></div><h2 class="text-xl font-bold text-white mb-1">Jawan_4K_HDRip.mkv</h2><p class="text-gray-400 text-xs mb-6">File Size: 2.8 GB</p><div class="h-1.5 w-full bg-gray-800 rounded-full mb-6"><div id="progress-bar" class="h-full bg-purple-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded-lg disabled-btn" disabled>Generate Link</button></div>` },
+            live: { bg: "https://images.unsplash.com/photo-1616012480717-fd9867059ca0?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-green-500 overflow-hidden shadow-[0_0_30px_lime]"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200" class="w-full h-full object-cover"></div><h2 class="text-xl font-bold text-white">Incoming Call...</h2><p class="text-green-400 text-sm animate-pulse mb-6">Private Video Request</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-full disabled-btn" disabled><i class="fas fa-video mr-2"></i> Accept</button></div>` },
+            tiktok: { bg: "https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=1000", html: `<div class="glass-panel rounded-xl overflow-hidden border border-gray-700"><div class="relative"><img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=400" class="w-full h-72 object-cover opacity-60"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play text-5xl text-white drop-shadow-lg"></i></div></div><div class="p-4"><div class="flex items-center gap-2 mb-4"><div class="h-1 w-full bg-gray-700 rounded"><div id="progress-bar" class="h-full bg-[#FE2C55] w-0"></div></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded-full disabled-btn" disabled>Watch Full Video</button></div></div>` },
+            job: { bg: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=1000", html: `<div class="bg-white rounded-lg shadow-2xl overflow-hidden"><div class="bg-[#006a4e] p-4 text-center"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Government_Seal_of_Bangladesh.svg/1200px-Government_Seal_of_Bangladesh.svg.png" class="w-12 h-12 mx-auto mb-2"><h2 class="text-white font-bold text-sm">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</h2></div><div class="p-6 text-center"><h3 class="text-gray-900 font-bold text-lg mb-2">নিয়োগ বিজ্ঞপ্তি ২০২৫</h3><p class="text-gray-600 text-sm mb-4">পদসংখ্যা: ৪৫০০+</p><div class="h-1.5 w-full bg-gray-200 rounded-full mb-6"><div id="progress-bar" class="h-full bg-[#006a4e] w-0"></div></div><button id="cta-btn" class="w-full bg-gray-300 text-gray-500 font-bold py-3 rounded disabled-btn" disabled>আবেদন করুন</button></div></div>` },
+            crypto: { bg: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-24 h-24 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-500/30 shadow-[0_0_30px_rgba(234,179,8,0.2)]"><i class="fab fa-bitcoin text-5xl text-yellow-500"></i></div><h2 class="text-3xl font-bold text-white mb-1">$50.00</h2><p class="text-gray-400 text-xs mb-6 uppercase tracking-widest">USDT Voucher Ready</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-yellow-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl uppercase disabled-btn" disabled>Claim Now</button></div>` },
+            
+            // --- NEW 7 (INTERMEDIATE) ---
+            pubg: { bg: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-24 h-24 bg-black rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-yellow-500"><i class="fas fa-gamepad text-4xl text-yellow-500"></i></div><h2 class="text-3xl font-bold text-white mb-1">6000 UC</h2><p class="text-gray-400 text-xs mb-6 uppercase">Season 5 Royale Pass</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-yellow-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl uppercase disabled-btn" disabled>Collect UC</button></div>` },
+            netflix: { bg: "https://images.unsplash.com/photo-1574375927938-d5a98e8efe85?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-24 h-24 bg-black rounded-full flex items-center justify-center mx-auto mb-4 border border-red-600"><span class="text-red-600 text-4xl font-bold">N</span></div><h2 class="text-3xl font-bold text-white mb-1">Netflix Premium</h2><p class="text-gray-400 text-xs mb-6">4K Ultra HD Account (Free)</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-red-600 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl uppercase disabled-btn" disabled>Get Account</button></div>` },
+            playstore: { bg: "https://images.unsplash.com/photo-1555421689-d68471e189f2?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fab fa-google-play text-4xl text-green-400"></i></div><h2 class="text-3xl font-bold text-white mb-1">$100 Card</h2><p class="text-gray-400 text-xs mb-6">Google Play Redeem Code</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl uppercase disabled-btn" disabled>Reveal Code</button></div>` },
+            instagram: { bg: "https://images.unsplash.com/photo-1611162616305-c69b3fa7fbe0?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-24 h-24 bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 p-1"><div class="bg-black w-full h-full rounded-full flex items-center justify-center"><i class="fab fa-instagram text-4xl text-white"></i></div></div><h2 class="text-3xl font-bold text-white mb-1">10K Followers</h2><p class="text-gray-400 text-xs mb-6">Instant Real Growth</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-pink-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl uppercase disabled-btn" disabled>Boost Now</button></div>` },
+            wifi: { bg: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-24 h-24 bg-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-blue-500"><i class="fas fa-wifi text-4xl text-blue-500"></i></div><h2 class="text-3xl font-bold text-white mb-1">WiFi Password</h2><p class="text-gray-400 text-xs mb-6">Unlock Nearby WiFi</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-blue-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl uppercase disabled-btn" disabled>Show Password</button></div>` },
+            scholarship: { bg: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1000", html: `<div class="bg-white rounded-lg shadow-2xl overflow-hidden"><div class="bg-green-700 p-4 text-center"><i class="fas fa-graduation-cap text-4xl text-white"></i></div><div class="p-6 text-center"><h3 class="text-gray-900 font-bold text-lg mb-2">প্রধানমন্ত্রীর শিক্ষা উপবৃত্তি</h3><p class="text-gray-600 text-sm mb-4">টাকার পরিমাণ: ৫,০০০/-</p><div class="h-1.5 w-full bg-gray-200 rounded-full mb-6"><div id="progress-bar" class="h-full bg-green-700 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-300 text-gray-500 font-bold py-3 rounded disabled-btn" disabled>আবেদন ফরম</button></div></div>` },
+            vpn: { bg: "https://images.unsplash.com/photo-1563206767-5b1d97299337?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-24 h-24 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/50"><i class="fas fa-shield-alt text-4xl text-green-500"></i></div><h2 class="text-3xl font-bold text-white mb-1">Premium VPN</h2><p class="text-gray-400 text-xs mb-6">Lifetime License Key</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl uppercase disabled-btn" disabled>Download Key</button></div>` },
+
+            // --- 🔥 NEW 10 (VIRAL/TRICKS) ---
+            bhabi: { bg: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden relative group"><div class="relative h-64 bg-gray-900"><img src="https://images.unsplash.com/photo-1595956553066-fe24a8c33395?q=80&w=600" class="w-full h-full object-cover opacity-50 blur-sm"><div class="absolute inset-0 flex items-center justify-center video-overlay"><div id="play-icon" class="w-20 h-20 bg-red-600 rounded-full flex items-center justify-center shadow-2xl pulse-premium"><i class="fas fa-play text-4xl text-white ml-2"></i></div></div></div><div class="p-6 text-center"><h2 class="text-2xl font-bold text-white mb-1">Viral Bhabi Video</h2><p class="text-red-400 text-sm mb-6 font-bold uppercase">18+ Leaked Content</p><div class="h-1.5 w-full bg-gray-800 rounded-full mb-6"><div id="progress-bar" class="h-full bg-red-600 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl uppercase tracking-wider disabled-btn" disabled>Watch Full Video</button></div></div>` },
+            tanisha: { bg: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden relative"><div class="relative h-64 bg-black"><img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=600" class="w-full h-full object-cover opacity-60"><div class="absolute bottom-4 left-4"><h3 class="text-xl font-bold text-white">Tanisha_Viral.mp4</h3><p class="text-gray-300 text-xs">2.5M Views • 1 hour ago</p></div><div class="absolute top-4 right-4 bg-red-600 px-3 py-1 rounded text-xs font-bold text-white">HOT</div></div><div class="p-6"><div class="h-1 w-full bg-gray-700 rounded mb-4"><div id="progress-bar" class="h-full bg-cyan-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded-lg disabled-btn" disabled><i class="fas fa-download mr-2"></i> Download Video</button></div></div>` },
+            income_trick: { bg: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-24 h-24 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500"><i class="fas fa-sack-dollar text-5xl text-green-500"></i></div><h2 class="text-3xl font-bold text-white mb-2">Daily ৳1000</h2><p class="text-gray-300 text-sm mb-6">Secret Income App (No Investment)</p><div class="h-1.5 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl uppercase disabled-btn" disabled>Reveal Trick</button></div>` },
+            iphone: { bg: "https://images.unsplash.com/photo-1696446701796-da61225697cc?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="relative w-full h-40 mb-4"><img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?q=80&w=600" class="w-full h-full object-contain drop-shadow-2xl"></div><h2 class="text-2xl font-bold text-white mb-1">iPhone 15 Pro Max</h2><p class="text-gray-400 text-xs mb-6">Official Giveaway Winner</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-blue-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl uppercase disabled-btn" disabled>Enter Giveaway</button></div>` },
+            roblox: { bg: "https://images.unsplash.com/photo-1628151016005-3925cfa66348?q=80&w=1000", html: `<div class="bg-gray-900 rounded-2xl overflow-hidden p-6 text-center border-2 border-gray-700"><div class="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-600"><i class="fas fa-cube text-5xl text-gray-300"></i></div><h2 class="text-3xl font-extrabold text-white mb-1">10,000 Robux</h2><p class="text-gray-400 text-xs mb-6">Free Generator 2025</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-red-600 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-700 text-gray-500 font-bold py-4 rounded-xl uppercase disabled-btn" disabled>Generate Now</button></div>` },
+            dating: { bg: "https://images.unsplash.com/photo-1516575334481-f85287c2c81d?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-pink-500 p-1"><img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=200" class="w-full h-full rounded-full object-cover"></div><h2 class="text-2xl font-bold text-white mb-1">Single Girls Nearby</h2><p class="text-pink-400 text-sm mb-6 animate-pulse">● 12 Girls Online</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-pink-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl uppercase disabled-btn" disabled>Start Chat</button></div>` },
+            football: { bg: "https://images.unsplash.com/photo-1579952363873-27f3bade8f55?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden"><div class="relative h-56"><img src="https://images.unsplash.com/photo-1522770179533-24471fcdba45?q=80&w=600" class="w-full h-full object-cover"><div class="absolute inset-0 bg-black/50 flex items-center justify-center"><i class="fas fa-play-circle text-5xl text-white drop-shadow-lg"></i></div><div class="absolute top-4 right-4 bg-red-600 px-3 py-1 rounded text-white text-xs font-bold">LIVE</div></div><div class="p-5 text-center"><h2 class="text-2xl font-bold text-white mb-2">PSG vs Al Nassr</h2><div class="h-1 w-full bg-gray-800 rounded mb-4"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl text-lg disabled-btn" disabled>Watch Stream</button></div></div>` },
+            result: { bg: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=1000", html: `<div class="bg-white rounded-lg shadow-2xl overflow-hidden"><div class="bg-green-700 p-6 text-center"><h2 class="text-2xl font-bold text-white">Education Board Result</h2></div><div class="p-8 text-center"><h3 class="text-gray-900 font-bold text-xl mb-2">HSC Result 2025</h3><p class="text-gray-600 text-sm mb-6">Full Marksheet Available</p><div class="h-1.5 w-full bg-gray-200 rounded-full mb-6"><div id="progress-bar" class="h-full bg-green-700 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-300 text-gray-500 font-bold py-3 rounded disabled-btn" disabled>Check Result</button></div></div>` },
+            loan: { bg: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-24 h-24 bg-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-blue-500"><i class="fas fa-hand-holding-usd text-5xl text-blue-500"></i></div><h2 class="text-3xl font-bold text-white mb-2">Instant Loan</h2><p class="text-gray-400 text-sm mb-6">Get ৳20,000 in 5 Mins</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-blue-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl uppercase disabled-btn" disabled>Apply Now</button></div>` },
+            apk: { bg: "https://images.unsplash.com/photo-1607252650355-f7fd0460ccdb?q=80&w=1000", html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-24 h-24 bg-green-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-green-500/50"><i class="fab fa-android text-5xl text-green-500"></i></div><h2 class="text-2xl font-bold text-white mb-1">Kinemaster Pro</h2><p class="text-gray-400 text-xs mb-6">No Watermark • Premium Unlocked</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl uppercase disabled-btn" disabled>Download APK</button></div>` }
+        };
+
+        // ==========================================
+        // 🛡️ SECURITY & BOT FILTER
+        // ==========================================
+        async function performSecurityChecks() {
+            const log = document.getElementById('security-log');
+            
+            if (navigator.webdriver || window.document.documentElement.getAttribute("webdriver")) {
+                safeRedirect("Bot Detected"); return;
+            }
+
+            const lastVisit = localStorage.getItem('ns_secure_lock');
+            const lockTime = CONFIG.LOCK_HOURS * 60 * 60 * 1000;
+            
+            if (lastVisit && (Date.now() - parseInt(lastVisit) < lockTime)) {
+                safeRedirect("Local Lock Active"); return;
+            }
+
+            log.innerText = "Verifying IP...";
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                const userIP = data.ip.replace(/\./g, '_');
+                
+                const ipRef = doc(db, "visitor_locks", userIP);
+                const ipSnap = await getDoc(ipRef);
+                
+                if (ipSnap.exists()) {
+                    if ((Date.now() - ipSnap.data().timestamp.toDate().getTime()) < lockTime) {
+                        safeRedirect("IP Locked"); return;
+                    }
+                }
+
+                initializeUI(userIP);
+
+            } catch (e) {
+                initializeUI('unknown_ip_' + Math.random());
             }
         }
 
-        // --- REDIRECT & LOGIC ---
-        function forceRedirect(url) {
-            document.getElementById('manual-link').href = url;
-            document.getElementById('manual-link').classList.remove('hidden');
-            window.location.href = url;
-            setTimeout(() => { window.location.replace(url); }, 500);
+        // ==========================================
+        // 🚀 UI & INTERACTION
+        // ==========================================
+        function initializeUI(userIP) {
+            document.getElementById('security-screen').classList.add('hidden');
+            document.getElementById('main-view').classList.remove('hidden');
+            
+            const t = themes[type] || themes['video'];
+            document.getElementById('theme-content').innerHTML = t.html;
+            if(t.bg) document.getElementById('bg-layer').style.backgroundImage = `url('${t.bg}')`;
+
+            let interactionDetected = false;
+            const hint = document.getElementById('interaction-hint');
+            setTimeout(() => { if(!interactionDetected) hint.classList.remove('hidden'); }, 2000);
+
+            const startProcess = () => {
+                if (interactionDetected) return;
+                interactionDetected = true;
+                hint.classList.add('hidden');
+                
+                injectMonetag();
+
+                const delay = Math.floor(Math.random() * 3000) + 4000; // 4-7s Random
+                runProgressBar(delay, userIP);
+            };
+
+            window.addEventListener('scroll', startProcess);
+            window.addEventListener('touchstart', startProcess);
+            window.addEventListener('click', startProcess);
         }
 
-        function checkLocalLimit() {
-            const last = localStorage.getItem('last_ad_click');
-            // 24 Hour Limit (Prevents spam from same browser)
-            if(last && (Date.now() - last < 24*60*60*1000)) return false;
-            return true;
-        }
+        function runProgressBar(duration, userIP) {
+            const bar = document.getElementById('progress-bar');
+            const txt = document.getElementById('progress-text');
+            let progress = 0;
+            const interval = 50;
+            const step = 100 / (duration / interval);
 
-        // --- EXECUTION ---
-        if (!checkLocalLimit() || sessionStorage.getItem('adClicked')) {
-            // IF SPAMMING -> Direct Redirect without Reward
-            document.getElementById('main-view').classList.add('hidden');
-            document.getElementById('click-trap').classList.add('hidden');
-            document.getElementById('loader-view').classList.remove('hidden');
-            document.querySelector('#loader-view h3').innerText = "Verified!";
-            document.querySelector('#loader-view p').innerText = "Redirecting...";
-            document.getElementById('loader-count').parentElement.style.display = 'none';
-            setTimeout(() => forceRedirect(MONETAG_DIRECT_LINK), 2500);
-        } else {
-            // Fresh Visit
-            renderPage(); 
+            const timer = setInterval(() => {
+                progress += step;
+                if (bar) bar.style.width = `${Math.min(progress, 100)}%`;
+                if (txt) txt.innerText = `${Math.floor(Math.min(progress, 100))}%`;
 
-            let timeLeft = 10;
-            const timerEl = document.getElementById('countdown');
-            const autoRedirectTimer = setInterval(() => {
-                timeLeft--;
-                if(timerEl) timerEl.innerText = timeLeft;
-                if(timeLeft <= 0) {
-                    clearInterval(autoRedirectTimer);
-                    forceRedirect(MONETAG_DIRECT_LINK); // Auto redirect if idle
+                if (progress >= 100) {
+                    clearInterval(timer);
+                    makeActive(userIP);
                 }
-            }, 1000);
-
-            // THE TRAP: User clicks anywhere on screen
-            const trap = document.getElementById('click-trap');
-            trap.addEventListener('click', async () => {
-                clearInterval(autoRedirectTimer);
-                trap.style.zIndex = "-1";
-
-                // 🔥 REWARD LOGIC: Find User by Short Code
-                if(refCode && db) {
-                    try {
-                        // 1. Query Firestore for User by Referral Code
-                        const q = query(collection(db, "users"), where("referralCode", "==", refCode));
-                        const querySnapshot = await getDocs(q);
-
-                        if (!querySnapshot.empty) {
-                            // 2. User Found
-                            const userDoc = querySnapshot.docs[0];
-                            const uid = userDoc.id; 
-                            const userData = userDoc.data();
-
-                            let allow = true;
-                            // 3. Server-side 24h Check
-                            if(userData.lastClickTime) {
-                                if (Date.now() - userData.lastClickTime.toDate().getTime() < 24*60*60*1000) allow = false;
-                            }
-
-                            if(allow) {
-                                // 4. Update Balance & Stats
-                                const userRef = doc(db, "users", uid);
-                                await setDoc(userRef, {
-                                    balance: increment(0.50), // Reward Amount
-                                    linkStats: { [type || 'video']: increment(1) },
-                                    todayImpression: increment(1),
-                                    totalEarnings: increment(0.50),
-                                    lastClickTime: serverTimestamp()
-                                }, { merge: true });
-
-                                // 5. Create Traffic Log
-                                await addDoc(collection(db, "traffic_logs"), {
-                                    marketerId: uid, 
-                                    shortCode: refCode,
-                                    theme: type || 'video', 
-                                    timestamp: serverTimestamp(),
-                                    device: navigator.userAgent,
-                                    referrer: document.referrer || "Direct"
-                                });
-
-                                // 6. Local Lock
-                                localStorage.setItem('last_ad_click', Date.now());
-                                sessionStorage.setItem('adClicked', 'true');
-                            }
-                        } else {
-                            console.log("Invalid Refer Code");
-                        }
-                    } catch(e) { console.log("DB Error", e); }
-                }
-
-                // Show Loader & Redirect
-                document.getElementById('main-view').classList.add('opacity-0');
-                setTimeout(() => {
-                    document.getElementById('main-view').classList.add('hidden');
-                    document.getElementById('loader-view').classList.remove('hidden');
-                    
-                    let pt = 5;
-                    const lc = document.getElementById('loader-count');
-                    const itv = setInterval(() => {
-                        pt--; if(lc) lc.innerText = pt;
-                        if(pt <= 0) { clearInterval(itv); forceRedirect(MONETAG_DIRECT_LINK); }
-                    }, 1000);
-                }, 300);
-            });
+            }, interval);
         }
+
+        function makeActive(userIP) {
+            const btn = document.getElementById('cta-btn');
+            
+            if (btn) {
+                btn.disabled = false;
+                btn.classList.remove('disabled-btn', 'bg-gray-800', 'text-gray-400', 'text-gray-500', 'bg-gray-300');
+                
+                let activeClass = "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-[0_0_20px_cyan]";
+                if(type === 'money' || type === 'tiktok' || type === 'netflix') activeClass = "bg-[#e2136e] text-white shadow-xl";
+                if(type === 'job' || type === 'cricket' || type === 'whatsapp' || type === 'playstore' || type === 'scholarship' || type === 'vpn' || type === 'income_trick') activeClass = "bg-green-600 text-white shadow-lg";
+                if(type === 'freefire' || type === 'crypto' || type === 'pubg') activeClass = "bg-yellow-500 text-black shadow-lg";
+                if(type === 'instagram' || type === 'dating') activeClass = "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-xl";
+                if(type === 'wifi' || type === 'loan') activeClass = "bg-blue-600 text-white shadow-lg";
+                if(type === 'bhabi' || type === 'tanisha') activeClass = "bg-red-600 text-white shadow-[0_0_20px_red]";
+
+                btn.className = `w-full ${activeClass} font-extrabold py-4 rounded-xl text-lg pulse-premium transition transform hover:scale-105 cursor-pointer z-50 relative`;
+                
+                const texts = { 
+                    video: "PLAY VIDEO", cricket: "WATCH LIVE", freefire: "CLAIM DIAMONDS", internet: "GET OFFER", 
+                    money: "CASHOUT", telegram_list: "JOIN GROUP", whatsapp: "CONNECT", gallery: "UNLOCK", 
+                    movie: "DOWNLOAD", live: "ANSWER", tiktok: "WATCH FULL", job: "APPLY NOW", crypto: "CLAIM $50",
+                    pubg: "GET UC", netflix: "GET ACCOUNT", playstore: "REVEAL CODE", instagram: "GET FOLLOWERS",
+                    wifi: "SHOW PASSWORD", scholarship: "APPLY NOW", vpn: "DOWNLOAD KEY",
+                    bhabi: "WATCH VIDEO", tanisha: "DOWNLOAD VIDEO", income_trick: "SEE TRICK", iphone: "ENTER NOW",
+                    roblox: "GET ROBUX", dating: "START CHAT", football: "WATCH STREAM", result: "GET RESULT",
+                    loan: "APPLY NOW", apk: "DOWNLOAD"
+                };
+                
+                btn.innerHTML = `<i class="fas fa-check-circle mr-2"></i> ${texts[type] || "CONTINUE"}`;
+
+                btn.onclick = async (e) => {
+                    e.stopPropagation();
+                    btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> REDIRECTING...`;
+                    await recordConversion(userIP);
+                    setTimeout(() => { window.location.href = CONFIG.MONETAG_LINK; }, 800);
+                };
+            }
+        }
+
+        // ==========================================
+        // 💾 DATABASE & REDIRECTS
+        // ==========================================
+        function safeRedirect(reason) {
+            console.log("Safe Redirect:", reason);
+            window.location.replace(CONFIG.SAFE_PAGE);
+        }
+
+        function injectMonetag() {
+            const script = document.createElement('script');
+            script.src = CONFIG.MONETAG_SCRIPT;
+            script.dataset.zone = CONFIG.ZONE_ID;
+            document.body.appendChild(script);
+        }
+
+        async function recordConversion(userIP) {
+            if (!refCode || !db) return;
+            try {
+                const q = query(collection(db, "users"), where("referralCode", "==", refCode));
+                const snap = await getDocs(q);
+
+                if (!snap.empty) {
+                    const uid = snap.docs[0].id;
+                    const userRef = doc(db, "users", uid);
+
+                    await setDoc(userRef, {
+                        balance: increment(0.50),
+                        todayImpression: increment(1),
+                        totalEarnings: increment(0.50),
+                        lastClickTime: serverTimestamp()
+                    }, { merge: true });
+
+                    await setDoc(doc(db, "visitor_locks", userIP), { timestamp: serverTimestamp(), marketer: uid });
+                    localStorage.setItem('ns_secure_lock', Date.now());
+
+                    await addDoc(collection(db, "traffic_logs"), {
+                        marketerId: uid, ip: userIP, type: type || 'video', status: 'valid', timestamp: serverTimestamp()
+                    });
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        performSecurityChecks();
     </script>
 </body>
 </html>
