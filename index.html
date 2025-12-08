@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Loading...</title>
+    <title>Loading Content...</title>
     
     <!-- ✅ Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,70 +16,54 @@
     <style>
         body { font-family: 'Hind Siliguri', 'Roboto', sans-serif; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         .hidden { display: none !important; }
-        
-        /* Realistic Animations */
         .spin-slow { animation: spin 3s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        
         .pulse-fast { animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
-
-        /* Smooth Popup Modal */
         .modal-enter { animation: slideUp 0.3s ease-out forwards; }
         @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        /* Custom Scrollbar for Comments */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body id="main-body" class="bg-gray-900 text-white min-h-screen relative">
 
-    <!-- 📱 APP VIEW (Content will be injected here) -->
+    <!-- 📱 APP VIEW -->
     <div id="app-container" class="w-full max-w-md mx-auto min-h-screen bg-black relative shadow-2xl overflow-hidden">
-        <!-- Dynamic Theme Content -->
         <div id="theme-content" class="w-full h-full"></div>
     </div>
 
-    <!-- 🔒 VERIFICATION MODAL (Hidden by default, appears on Click) -->
+    <!-- 🔒 VERIFICATION MODAL -->
     <div id="verify-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-end sm:items-center justify-center">
-        <div class="w-full max-w-md bg-gray-900 rounded-t-2xl sm:rounded-2xl p-6 border-t border-gray-700 shadow-2xl modal-enter relative">
-            
-            <!-- Modal Header -->
+        <div class="w-full max-w-md bg-gray-900 rounded-t-2xl sm:rounded-2xl p-6 border-t border-gray-700 shadow-2xl modal-enter">
             <div class="flex justify-between items-center mb-4">
-                <h3 id="modal-title" class="text-lg font-bold text-white">Verification Required</h3>
+                <h3 class="text-lg font-bold text-white">Verification Required</h3>
                 <button onclick="closeModal()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
             </div>
-
-            <!-- Modal Body -->
             <div class="text-center">
                 <div id="modal-icon" class="w-16 h-16 bg-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-500 animate-pulse">
                     <i class="fas fa-shield-alt text-3xl"></i>
                 </div>
-                <p id="modal-desc" class="text-gray-300 text-sm mb-6">To continue watching/downloading, please verify you are human.</p>
-                
-                <!-- Progress Bar -->
+                <p class="text-gray-300 text-sm mb-6">Complete verification to continue.</p>
                 <div class="w-full bg-gray-800 h-2 rounded-full mb-2">
                     <div id="modal-progress" class="h-full bg-blue-600 w-0 rounded-full transition-all duration-1000"></div>
                 </div>
                 <p class="text-[10px] text-right text-gray-500 mb-4">Checking connection...</p>
-
-                <!-- Action Button -->
-                <button id="final-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center justify-center gap-2 opacity-60 cursor-not-allowed" disabled>
+                <button id="final-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 opacity-60 cursor-not-allowed" disabled>
                     <i class="fas fa-lock"></i> Verify & Continue
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- ⚙️ SYSTEM LOGIC -->
+    <!-- ⚙️ LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getFirestore, doc, setDoc, increment, serverTimestamp, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
         // CONFIG
         const CONFIG = {
-            MONETAG_LINK: "https://otieu.com/4/10277714", // Your Link
+            MONETAG_LINK: "https://otieu.com/4/10277714",
             SAFE_PAGE: "https://www.google.com",
             FIREBASE: { apiKey: "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE", projectId: "ns-prime-d7ca5" }
         };
@@ -92,1597 +76,129 @@
         let isSafeUser = true;
 
         // ==========================================
-        // 🎨 TOP 5 HIGH-CONVERTING THEMES
+        // 🎨 30 THEMES (ALL IN ONE)
         // ==========================================
         const themes = {
+            video: { bg: "#0f0f0f", modalColor: "220, 38, 38", render: () => `<div class="bg-[#0f0f0f] min-h-screen text-white"><div class="sticky top-0 z-10 bg-[#0f0f0f]/95 px-4 py-3 flex justify-between border-b border-gray-800"><div class="flex items-center gap-1"><i class="fab fa-youtube text-red-600 text-2xl"></i> <span class="font-bold">YouTube</span></div><i class="fas fa-search"></i></div><div class="relative w-full aspect-video bg-black cursor-pointer" onclick="triggerLock('video')"><img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000" class="w-full h-full object-cover opacity-80"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play-circle text-6xl text-white opacity-90"></i></div></div><div class="p-4"><h1 class="text-lg font-medium">Viral_Video_Leaked_2025.mp4</h1><div class="flex justify-around py-4 border-b border-gray-800" onclick="triggerLock('video')"><i class="fas fa-thumbs-up"></i><i class="fas fa-share"></i><i class="fas fa-download"></i></div></div></div>` },
             
-            // 🎬 1. YOUTUBE STYLE (Video Player)
-            video: {
-                bg: "#0f0f0f",
-                modalColor: "220, 38, 38",
-                render: () => `
-                    <div class="bg-[#0f0f0f] min-h-screen text-white pb-20">
-                        <!-- Header -->
-                        <div class="sticky top-0 z-10 bg-[#0f0f0f]/95 backdrop-blur px-4 py-3 flex justify-between items-center border-b border-gray-800">
-                            <div class="flex items-center gap-1"><i class="fab fa-youtube text-red-600 text-2xl"></i> <span class="font-bold tracking-tighter">YouTube</span></div>
-                            <div class="flex gap-4"><i class="fas fa-search"></i><i class="fas fa-user-circle text-xl"></i></div>
-                        </div>
+            bhabi: { bg: "#000", modalColor: "236, 72, 153", render: () => `<div class="bg-black min-h-screen p-2"><h2 class="text-white font-bold p-2">Private Gallery (18+)</h2><div class="grid grid-cols-3 gap-1"><div class="col-span-3 aspect-video relative mb-1" onclick="triggerLock('bhabi')"><img src="https://images.unsplash.com/photo-1623949556801-6e3e5c942944?q=80&w=1000" class="w-full h-full object-cover blur-md"><div class="absolute inset-0 flex items-center justify-center flex-col"><i class="fas fa-lock text-pink-500 text-3xl"></i><span class="text-pink-500 font-bold text-xs bg-black/50 px-2 rounded">LOCKED</span></div></div>${Array(9).fill(0).map(i=>`<div class="aspect-square bg-gray-800" onclick="triggerLock('bhabi')"><img src="https://source.unsplash.com/random/200x200/?girl" class="w-full h-full object-cover opacity-50"></div>`).join('')}</div></div>` },
+            
+            job: { bg: "#f8fafc", modalColor: "5, 150, 105", render: () => `<div class="bg-slate-50 min-h-screen text-gray-800"><div class="bg-[#006a4e] text-white p-4 sticky top-0"><h1 class="text-sm font-bold text-center">Department of Primary Education</h1></div><div class="p-4"><div class="bg-white p-4 rounded shadow border-l-4 border-red-600 mb-4"><h2 class="font-bold">Primary Assistant Teacher Circular 2025</h2><p class="text-xs text-gray-500">Vacancies: 45,000+</p></div><button onclick="triggerLock('job')" class="w-full bg-[#006a4e] text-white font-bold py-3 rounded shadow flex items-center justify-center gap-2"><i class="fas fa-download"></i> DOWNLOAD CIRCULAR</button></div></div>` },
+            
+            whatsapp: { bg: "#0b141a", modalColor: "34, 197, 94", render: () => `<div class="bg-[#0b141a] min-h-screen flex flex-col"><div class="bg-[#202c33] p-3 flex items-center gap-3"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1000" class="w-10 h-10 rounded-full"><h3 class="text-white font-bold text-sm">Sumaiya ❤️</h3></div><div class="flex-1 bg-[url('https://i.pinimg.com/originals/97/c0/07/97c00727d1d403f1d58f14232f21879e.png')] opacity-80 p-4" onclick="triggerLock('whatsapp')"><div class="bg-[#202c33] text-white p-2 rounded-lg w-fit mb-2">Video ta dekho 👇</div><div class="bg-[#202c33] p-1 rounded-lg w-48 relative"><img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1000" class="w-full h-32 object-cover blur-sm"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play text-white text-2xl"></i></div></div></div></div>` },
+            
+            freefire: { bg: "#000", modalColor: "234, 179, 8", render: () => `<div class="bg-black min-h-screen flex flex-col items-center justify-center p-6 text-center"><img src="https://cdn-icons-png.flaticon.com/512/2666/2666505.png" class="w-20 mb-4 animate-bounce"><h1 class="text-4xl font-black text-white italic">5000 <span class="text-yellow-500">DIAMONDS</span></h1><div class="relative w-64 h-64 my-6" onclick="triggerLock('freefire')"><img src="https://png.pngtree.com/png-vector/20240726/ourmid/pngtree-colorful-lucky-wheel-clipart-design-png-image_13233857.png" class="w-full h-full animate-spin"></div><button onclick="triggerLock('freefire')" class="w-full bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold py-3 rounded-xl animate-pulse">CLAIM NOW</button></div>` },
+            
+            money: { bg: "#e2136e", modalColor: "226, 19, 110", render: () => `<div class="bg-gray-100 min-h-screen relative"><div class="bg-[#e2136e] h-40 rounded-b-[2rem] p-6 text-white text-center"><img src="https://freelogopng.com/images/all_img/1656234745bkash-app-logo-png.png" class="h-8 mx-auto brightness-0 invert"></div><div class="mx-6 -mt-16 bg-white rounded-xl shadow-xl p-8 text-center cursor-pointer" onclick="triggerLock('money')"><p class="text-xs font-bold uppercase text-gray-400">Pending</p><h1 class="text-5xl font-bold text-[#e2136e] mb-4">৳৫০০</h1><button class="w-full bg-[#e2136e] text-white font-bold py-3 rounded-full">CLAIM MONEY</button></div></div>` },
+            
+            result: { bg: "#fff", modalColor: "22, 163, 74", render: () => `<div class="bg-gray-100 min-h-screen p-6 font-serif"><div class="bg-white border-t-4 border-green-600 p-6 rounded shadow"><h2 class="text-center font-bold text-xl mb-4 text-green-700">WEB BASED RESULT</h2><div class="space-y-4" onclick="triggerLock('result')"><input value="HSC 2025" class="w-full bg-gray-100 p-2 rounded border" readonly><input value="18293***" class="w-full bg-gray-100 p-2 rounded border" readonly><button class="w-full bg-green-600 text-white font-bold py-3 rounded">GET RESULT</button></div></div></div>` },
+            
+            live: { bg: "#000", modalColor: "34, 197, 94", render: () => `<div class="bg-gray-900 min-h-screen flex flex-col items-center justify-center p-6"><div class="w-32 h-32 rounded-full border-4 border-green-500 p-1 mb-4 relative"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1000" class="w-full h-full rounded-full object-cover"></div><h2 class="text-3xl font-bold text-white">Nusrat Jahan</h2><p class="text-green-400 animate-pulse text-sm mb-10">Incoming Video Call...</p><div class="flex gap-8"><button onclick="triggerLock('live')" class="w-16 h-16 bg-green-500 rounded-full text-white text-3xl animate-bounce"><i class="fas fa-video"></i></button><button class="w-16 h-16 bg-red-600 rounded-full text-white text-2xl"><i class="fas fa-phone-slash"></i></button></div></div>` },
+            
+            tiktok: { bg: "#000", modalColor: "254, 44, 85", render: () => `<div class="bg-black min-h-screen relative" onclick="triggerLock('tiktok')"><img src="https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=1000" class="w-full h-full object-cover opacity-60"><div class="absolute right-2 bottom-20 flex flex-col gap-6 text-white text-center"><i class="fas fa-heart text-3xl"></i><i class="fas fa-share text-3xl"></i></div><div class="absolute bottom-6 left-4 text-white"><h3 class="font-bold">@viral_girl</h3><p class="text-sm">Wait for end... 😱</p></div><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play text-6xl text-white/50"></i></div></div>` },
+            
+            movie: { bg: "#000", modalColor: "220, 38, 38", render: () => `<div class="bg-[#141414] min-h-screen text-white relative"><div class="relative h-[60vh]"><img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=1000" class="w-full h-full object-cover opacity-70"><div class="absolute bottom-10 left-6"><h1 class="text-5xl font-black mb-2">JAWAN</h1><button onclick="triggerLock('movie')" class="bg-white text-black font-bold py-2 px-6 rounded flex items-center gap-2"><i class="fas fa-play"></i> Play</button></div></div></div>` },
+            
+            pubg: { bg: "#000", modalColor: "249, 115, 22", render: () => `<div class="bg-black min-h-screen flex flex-col items-center justify-center text-center p-6"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/1b/PUBG_Mobile_Logo.png/220px-PUBG_Mobile_Logo.png" class="w-40 mb-6"><div class="bg-gray-900 border border-orange-500 p-6 rounded-xl w-full"><h1 class="text-3xl text-white font-bold mb-4">660 UC FREE</h1><button onclick="triggerLock('pubg')" class="w-full bg-orange-600 text-white font-bold py-3 rounded">COLLECT</button></div></div>` },
+            
+            wifi: { bg: "#000", modalColor: "34, 197, 94", render: () => `<div class="bg-black min-h-screen text-green-500 font-mono p-6"><h2 class="font-bold mb-4">WiFi Cracker v2.4</h2><div class="mb-6 text-xs"><p>> Scanning...</p><p>> Target: TP-Link_5G</p><p class="text-white font-bold">> PASSWORD FOUND *********</p></div><button onclick="triggerLock('wifi')" class="w-full bg-green-600 text-black font-bold py-3 rounded">SHOW PASSWORD</button></div>` },
+            
+            instagram: { bg: "#000", modalColor: "217, 70, 239", render: () => `<div class="bg-black min-h-screen text-white"><div class="p-6 flex items-center gap-4"><div class="w-20 h-20 rounded-full border-2 border-pink-500"><img src="https://source.unsplash.com/random/100x100/?girl" class="rounded-full w-full h-full"></div><div><h2 class="font-bold text-xl">1000 Followers</h2><button onclick="triggerLock('instagram')" class="bg-blue-500 px-4 py-1 rounded text-sm mt-2">Get Free</button></div></div><div class="grid grid-cols-3 gap-1 mt-4">${Array(9).fill(0).map(i=>`<div class="aspect-square bg-gray-800" onclick="triggerLock('instagram')"><img src="https://source.unsplash.com/random/200x200/?fashion" class="w-full h-full object-cover"></div>`).join('')}</div></div>` },
+            
+            spin: { bg: "#1e1b4b", modalColor: "234, 179, 8", render: () => `<div class="bg-indigo-900 min-h-screen flex flex-col items-center justify-center"><h1 class="text-yellow-400 font-bold text-3xl mb-8">SPIN & WIN</h1><div class="w-72 h-72 relative cursor-pointer" onclick="triggerLock('spin')"><img src="https://png.pngtree.com/png-vector/20240726/ourmid/pngtree-colorful-lucky-wheel-clipart-design-png-image_13233857.png" class="w-full h-full animate-spin"></div><button onclick="triggerLock('spin')" class="mt-8 bg-yellow-500 text-black font-bold py-3 px-8 rounded-full">SPIN NOW</button></div>` },
+            
+            dating: { bg: "#000", modalColor: "254, 60, 114", render: () => `<div class="bg-black min-h-screen p-4 flex flex-col"><div class="relative flex-1 rounded-xl overflow-hidden mb-4"><img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1000" class="w-full h-full object-cover"><div class="absolute bottom-0 p-4 text-white"><h2 class="text-3xl font-bold">Riya, 21</h2><p>2km away</p></div></div><div class="flex justify-center gap-6"><button onclick="triggerLock('dating')" class="w-16 h-16 bg-black border border-green-500 text-green-500 rounded-full text-3xl"><i class="fas fa-heart"></i></button><button class="w-16 h-16 bg-black border border-red-500 text-red-500 rounded-full text-3xl"><i class="fas fa-times"></i></button></div></div>` },
+            
+            telegram: { bg: "#17212b", modalColor: "64, 167, 227", render: () => `<div class="bg-[#17212b] min-h-screen text-white"><div class="bg-[#242f3d] p-4 flex gap-4"><div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center"><i class="fas fa-paper-plane"></i></div><div><h1 class="font-bold">Viral Leaked Zone</h1><p class="text-xs text-gray-400">524k subscribers</p></div></div><div class="p-4"><div class="bg-[#182533] p-2 rounded mb-4 cursor-pointer" onclick="triggerLock('telegram')"><div class="h-40 bg-black rounded mb-2 relative"><img src="https://source.unsplash.com/random/300x200/?girl" class="w-full h-full object-cover blur-sm opacity-50"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play text-2xl"></i></div></div><p>New Viral Video 🔥</p></div></div><button onclick="triggerLock('telegram')" class="fixed bottom-0 w-full bg-[#40a7e3] py-4 font-bold">JOIN CHANNEL</button></div>` },
+            
+            iphone: { bg: "#000", modalColor: "255, 255, 255", render: () => `<div class="bg-black min-h-screen text-center p-6 text-white pt-20"><i class="fab fa-apple text-6xl mb-4"></i><h1 class="text-3xl font-bold mb-4">iPhone 15 Pro</h1><img src="https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pro-finish-select-202309-6-7inch-naturaltitanium?wid=5120&hei=2880&fmt=p-jpg" class="w-full max-w-xs mx-auto mb-6"><div class="bg-green-500 text-black inline-block px-4 py-1 rounded-full font-bold mb-6">WINNER SELECTED</div><button onclick="triggerLock('iphone')" class="w-full bg-white text-black font-bold py-4 rounded-xl">CLAIM PRIZE</button></div>` },
+            
+            news: { bg: "#f3f4f6", modalColor: "185, 28, 28", render: () => `<div class="bg-white min-h-screen text-gray-900"><div class="bg-red-700 text-white p-3 font-bold flex justify-between"><span>BREAKING NEWS</span><span class="animate-pulse">LIVE</span></div><div class="p-4"><h1 class="text-2xl font-bold mb-4">Scandal Video Leaked Online</h1><div class="aspect-video bg-black relative rounded-lg overflow-hidden cursor-pointer" onclick="triggerLock('news')"><img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1000" class="w-full h-full object-cover blur-sm"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play-circle text-6xl text-white"></i></div></div><p class="mt-4 text-sm">Full video footage available below...</p></div></div>` },
+            
+            apk: { bg: "#202124", modalColor: "34, 197, 94", render: () => `<div class="bg-[#202124] min-h-screen text-white p-6 pt-20 text-center"><div class="w-24 h-24 bg-green-500 rounded-2xl mx-auto flex items-center justify-center text-4xl mb-4"><i class="fab fa-android"></i></div><h1 class="text-2xl font-bold">Kinemaster Pro</h1><p class="text-green-400 mb-8">Premium Unlocked</p><button onclick="triggerLock('apk')" class="w-full bg-green-600 text-black font-bold py-4 rounded-xl">DOWNLOAD (98MB)</button></div>` },
+            
+            crypto: { bg: "#0f172a", modalColor: "234, 179, 8", render: () => `<div class="bg-[#0f172a] min-h-screen text-white flex flex-col items-center justify-center p-6"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1200px-Bitcoin.svg.png" class="w-24 mb-6 animate-bounce"><h1 class="text-3xl font-bold mb-2">Binance Airdrop</h1><div class="bg-[#1e293b] p-6 rounded-xl w-full text-center border border-gray-700 mb-6"><h2 class="text-4xl font-bold text-yellow-500">0.005 BTC</h2><p class="text-gray-400 text-sm">Available Balance</p></div><button onclick="triggerLock('crypto')" class="w-full bg-yellow-500 text-black font-bold py-4 rounded-xl">CLAIM NOW</button></div>` },
 
-                        <!-- Video Player Area -->
-                        <div class="relative w-full aspect-video bg-black group cursor-pointer" onclick="triggerLock('video')">
-                            <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000" class="w-full h-full object-cover opacity-80">
-                            <!-- Play Button Overlay -->
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <div class="w-14 h-14 bg-black/60 rounded-full flex items-center justify-center border border-white/20 backdrop-blur-sm">
-                                    <i class="fas fa-play text-white ml-1 text-xl"></i>
-                                </div>
-                            </div>
-                            <!-- Fake Controls -->
-                            <div class="absolute bottom-2 right-2 bg-black/80 px-1.5 py-0.5 text-xs rounded font-medium">12:45</div>
-                            <div class="absolute bottom-0 left-0 h-1 bg-red-600 w-[20%]"></div>
-                        </div>
+            giftcard: { bg: "#fff", modalColor: "37, 99, 235", render: () => `<div class="bg-gray-50 min-h-screen flex flex-col items-center justify-center p-6"><div class="bg-blue-600 w-full max-w-xs h-40 rounded-xl shadow-xl flex items-center justify-center text-white text-3xl font-bold mb-8 cursor-pointer" onclick="triggerLock('giftcard')">$50 CARD</div><div class="bg-white p-4 rounded border w-full text-center cursor-pointer" onclick="triggerLock('giftcard')"><p class="text-gray-400 text-xs">CODE</p><p class="font-mono text-xl blur-[2px]">7X29-W892</p><p class="text-xs text-blue-500 mt-2 font-bold">Tap to Reveal</p></div></div>` },
 
-                        <!-- Info -->
-                        <div class="p-4">
-                            <h1 class="text-lg font-medium leading-tight mb-2">Viral_Video_Leaked_Scandal_2025_Full_HD.mp4</h1>
-                            <div class="flex text-xs text-gray-400 gap-2 mb-4">
-                                <span>2.4M views</span> • <span>3 hours ago</span> • <span class="text-blue-400">#viral</span>
-                            </div>
+            vpn: { bg: "#111827", modalColor: "239, 68, 68", render: () => `<div class="bg-gray-900 min-h-screen flex flex-col items-center justify-center text-center p-6"><div class="w-32 h-32 bg-red-900/30 rounded-full flex items-center justify-center mb-6 animate-pulse border-4 border-red-600"><i class="fas fa-unlock-alt text-5xl text-red-500"></i></div><h1 class="text-4xl font-bold text-white mb-2">IP EXPOSED!</h1><p class="text-red-400 font-bold mb-8">Your location is visible.</p><button onclick="triggerLock('vpn')" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl">SECURE DEVICE</button></div>` },
 
-                            <!-- Action Buttons (Fake) -->
-                            <div class="flex justify-around border-b border-gray-800 pb-4 mb-4" onclick="triggerLock('video')">
-                                <div class="flex flex-col items-center gap-1"><i class="fas fa-thumbs-up text-xl"></i><span class="text-xs">25K</span></div>
-                                <div class="flex flex-col items-center gap-1"><i class="fas fa-thumbs-down text-xl"></i><span class="text-xs">Dislike</span></div>
-                                <div class="flex flex-col items-center gap-1"><i class="fas fa-share text-xl"></i><span class="text-xs">Share</span></div>
-                                <div class="flex flex-col items-center gap-1"><i class="fas fa-download text-xl"></i><span class="text-xs">Download</span></div>
-                            </div>
+            music: { bg: "#121212", modalColor: "34, 197, 94", render: () => `<div class="bg-black min-h-screen text-white p-6 flex flex-col justify-center"><div class="aspect-square bg-gray-800 rounded-lg mb-6 relative cursor-pointer" onclick="triggerLock('music')"><img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=1000" class="w-full h-full object-cover rounded-lg opacity-80"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play-circle text-7xl"></i></div></div><h1 class="text-2xl font-bold">Leaked_Track.mp3</h1><p class="text-gray-400 mb-6">Unreleased Album</p><button onclick="triggerLock('music')" class="w-full bg-green-500 text-black font-bold py-3 rounded-full">Download MP3</button></div>` },
 
-                            <!-- Fake Comments -->
-                            <div class="flex justify-between items-center mb-3">
-                                <h3 class="font-bold">Comments <span class="text-gray-400 font-normal">482</span></h3>
-                                <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
-                            </div>
-                            <div class="flex gap-3 mb-4">
-                                <div class="w-8 h-8 rounded-full bg-purple-600 text-center leading-8 text-xs font-bold">R</div>
-                                <div>
-                                    <p class="text-xs font-bold text-gray-300">Rakib Hasan <span class="text-[10px] text-gray-500 font-normal">2m ago</span></p>
-                                    <p class="text-sm text-white">Full video ta joss chilo 🔥 Link ta kaj kortese!</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-3">
-                                <div class="w-8 h-8 rounded-full bg-green-600 text-center leading-8 text-xs font-bold">S</div>
-                                <div>
-                                    <p class="text-xs font-bold text-gray-300">Sumaiya Akter <span class="text-[10px] text-gray-500 font-normal">5m ago</span></p>
-                                    <p class="text-sm text-white">Thanks admin, download complete 😍</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `
-            },
+            health: { bg: "#fff", modalColor: "37, 99, 235", render: () => `<div class="bg-white min-h-screen text-gray-800 p-6"><h1 class="text-2xl font-black mb-4">LOSE 5KG IN 7 DAYS</h1><div class="flex gap-2 h-48 mb-6 cursor-pointer" onclick="triggerLock('health')"><div class="flex-1 bg-gray-100 flex items-center justify-center font-bold">BEFORE</div><div class="flex-1 bg-green-50 flex items-center justify-center font-bold text-green-600">AFTER</div></div><button onclick="triggerLock('health')" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg">UNLOCK DIET PLAN</button></div>` },
 
-            // 🍑 2. PRIVATE GALLERY (Google Photos/Gallery Style)
-            bhabi: {
-                bg: "#000",
-                modalColor: "236, 72, 153",
-                render: () => `
-                    <div class="bg-black min-h-screen">
-                        <!-- Header -->
-                        <div class="flex justify-between items-center p-4 text-white">
-                            <i class="fas fa-arrow-left text-lg"></i>
-                            <div class="text-center">
-                                <h2 class="font-bold text-lg">Hidden Folder (18+)</h2>
-                                <p class="text-xs text-gray-400">142 items • Protected</p>
-                            </div>
-                            <i class="fas fa-ellipsis-v"></i>
-                        </div>
+            story: { bg: "#fdf6e3", modalColor: "219, 39, 119", render: () => `<div class="bg-[#fdf6e3] min-h-screen text-[#5b4636] p-8 font-serif"><h1 class="text-2xl font-bold text-center mb-6">নিষিদ্ধ রাতের গল্প</h1><p class="text-lg mb-4">সেদিন রাতে বৃষ্টি হচ্ছিল...</p><div class="relative cursor-pointer" onclick="triggerLock('story')"><p class="text-lg blur-[4px]">সে ঘরে ঢুকেই আমাকে জড়িয়ে ধরল...</p><button class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-pink-600 text-white font-bold px-6 py-2 rounded shadow">Read More</button></div></div>` },
 
-                        <!-- Photo Grid -->
-                        <div class="grid grid-cols-3 gap-1 p-1">
-                            <!-- Main Large Item -->
-                            <div class="col-span-3 aspect-video relative rounded-lg overflow-hidden mb-1 cursor-pointer" onclick="triggerLock('bhabi')">
-                                <img src="https://images.unsplash.com/photo-1623949556801-6e3e5c942944?q=80&w=1000" class="w-full h-full object-cover blur-md opacity-80">
-                                <div class="absolute inset-0 flex flex-col items-center justify-center">
-                                    <i class="fas fa-lock text-4xl text-pink-500 mb-2 drop-shadow-lg"></i>
-                                    <span class="bg-black/50 px-2 py-1 rounded text-xs font-bold text-pink-400 border border-pink-500/50">LOCKED</span>
-                                </div>
-                                <div class="absolute bottom-2 right-2 text-white text-xs font-bold flex items-center gap-1">
-                                    <i class="fas fa-video"></i> 14:20
-                                </div>
-                            </div>
+            ai: { bg: "#101010", modalColor: "139, 92, 246", render: () => `<div class="bg-gray-900 min-h-screen text-white p-6 pt-20"><div class="bg-gray-800 p-4 rounded mb-6"><p class="text-gray-400 text-xs">Prompt:</p><p>"Hyper realistic bangladeshi girl..."</p></div><div class="aspect-square bg-black rounded border border-gray-700 relative cursor-pointer" onclick="triggerLock('ai')"><img src="https://source.unsplash.com/random/400x400/?girl" class="w-full h-full object-cover blur-md opacity-50"><div class="absolute inset-0 flex items-center justify-center flex-col"><i class="fas fa-lock text-3xl mb-2 text-violet-500"></i><span class="text-xs font-bold">GENERATION COMPLETE</span></div></div></div>` },
 
-                            <!-- Small Thumbnails -->
-                            ${Array(12).fill(0).map(() => `
-                                <div class="aspect-square relative bg-gray-800 rounded overflow-hidden cursor-pointer" onclick="triggerLock('bhabi')">
-                                    <img src="https://source.unsplash.com/random/200x200/?girl,selfie&sig=${Math.random()}" class="w-full h-full object-cover blur-[2px] opacity-60">
-                                </div>
-                            `).join('')}
-                        </div>
-                        
-                        <div class="fixed bottom-10 left-0 w-full flex justify-center pointer-events-none">
-                            <div class="bg-gray-800/90 backdrop-blur px-6 py-3 rounded-full shadow-xl flex items-center gap-3 border border-gray-700">
-                                <i class="fas fa-fingerprint text-pink-500 animate-pulse"></i>
-                                <span class="text-sm font-bold text-gray-200">Authentication Required</span>
-                            </div>
-                        </div>
-                    </div>
-                `
-            },
+            cricket: { bg: "#1e3a8a", modalColor: "34, 197, 94", render: () => `<div class="bg-slate-900 min-h-screen text-white"><div class="bg-blue-900 p-4 flex justify-between items-center"><span class="font-bold">BAN vs IND</span><span class="text-red-500 font-bold animate-pulse">LIVE</span></div><div class="aspect-video bg-black relative cursor-pointer" onclick="triggerLock('cricket')"><img src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=1000" class="w-full h-full object-cover opacity-50"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play-circle text-6xl"></i></div></div><p class="p-4 text-center">Resume HD Stream</p></div>` },
 
-            // 💼 3. GOVT JOB (Official Portal)
-            job: {
-                bg: "#f8fafc",
-                modalColor: "5, 150, 105",
-                render: () => `
-                    <div class="bg-slate-50 min-h-screen text-gray-800 font-sans">
-                        <!-- Top Bar -->
-                        <div class="bg-[#006a4e] text-white p-4 shadow-md sticky top-0 z-20">
-                            <div class="flex items-center gap-3">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Government_Seal_of_Bangladesh.svg/1200px-Government_Seal_of_Bangladesh.svg.png" class="w-10 h-10 bg-white rounded-full p-0.5">
-                                <div>
-                                    <h1 class="text-sm font-bold">Department of Primary Education</h1>
-                                    <p class="text-[10px] opacity-90">Govt. of the People's Republic of Bangladesh</p>
-                                </div>
-                            </div>
-                        </div>
+            drive: { bg: "#fff", modalColor: "59, 130, 246", render: () => `<div class="bg-white min-h-screen text-gray-800"><div class="p-4 border-b flex gap-2 text-xl items-center"><i class="fab fa-google-drive text-green-500"></i> Drive</div><div class="p-4"><div class="bg-blue-50 p-4 rounded border border-blue-200 flex items-center gap-3 cursor-pointer" onclick="triggerLock('drive')"><i class="fas fa-file-video text-red-500 text-2xl"></i><div><p class="font-bold">Viral_Video.mp4</p><p class="text-xs">140 MB</p></div></div></div><button onclick="triggerLock('drive')" class="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 rounded-full text-white text-2xl flex items-center justify-center shadow-lg"><i class="fas fa-download"></i></button></div>` },
 
-                        <div class="p-4">
-                            <!-- Notice Box -->
-                            <div class="bg-white border-t-4 border-red-600 shadow-sm rounded p-5 mb-4">
-                                <h2 class="text-lg font-bold text-gray-900 leading-snug">Primary Assistant Teacher Recruitment Circular 2025</h2>
-                                <p class="text-xs text-gray-500 mt-2">Publish Date: 01 March 2025 | Ref: 38.01.0000.000.11.001.25</p>
-                                
-                                <div class="mt-4 flex gap-2">
-                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-bold">Active</span>
-                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-bold">Vacancies: 45,000+</span>
-                                </div>
-                            </div>
+            messenger: { bg: "#000", modalColor: "0, 132, 255", render: () => `<div class="bg-black min-h-screen relative flex flex-col items-center pt-20"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000" class="absolute inset-0 w-full h-full object-cover opacity-60"><div class="relative z-10 text-center"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000" class="w-24 h-24 rounded-full border-2 border-blue-500 mb-4 mx-auto"><h2 class="text-2xl font-bold text-white">Sadia Islam</h2><p class="text-white">Messenger Video...</p></div><div class="absolute bottom-10 flex gap-8 z-10"><button onclick="triggerLock('messenger')" class="w-16 h-16 bg-green-500 rounded-full text-white text-3xl animate-bounce"><i class="fas fa-video"></i></button><button class="w-16 h-16 bg-red-600 rounded-full text-white text-2xl"><i class="fas fa-phone-slash"></i></button></div></div>` },
 
-                            <!-- PDF Download Section -->
-                            <div class="bg-white p-4 rounded shadow-sm border border-gray-200 mb-6">
-                                <div class="flex items-center gap-4 mb-4">
-                                    <i class="fas fa-file-pdf text-red-600 text-4xl"></i>
-                                    <div>
-                                        <p class="font-bold text-sm">Full_Circular_Final.pdf</p>
-                                        <p class="text-xs text-gray-500">2.4 MB • 45,201 Downloads</p>
-                                    </div>
-                                </div>
-                                <button onclick="triggerLock('job')" class="w-full bg-[#006a4e] text-white font-bold py-3 rounded shadow hover:bg-[#00553e] transition flex items-center justify-center gap-2">
-                                    <i class="fas fa-download"></i> DOWNLOAD CIRCULAR
-                                </button>
-                            </div>
-
-                            <!-- Application Form Mockup -->
-                            <div class="bg-white p-4 rounded shadow-sm opacity-60 pointer-events-none select-none relative">
-                                <h3 class="font-bold border-b pb-2 mb-3">Application Form</h3>
-                                <div class="space-y-3">
-                                    <div class="h-8 bg-gray-100 rounded w-full"></div>
-                                    <div class="h-8 bg-gray-100 rounded w-full"></div>
-                                    <div class="h-20 bg-gray-100 rounded w-full"></div>
-                                </div>
-                                <div class="absolute inset-0 flex items-center justify-center bg-white/50">
-                                    <span class="bg-red-100 text-red-800 px-3 py-1 rounded text-xs font-bold border border-red-200">Login Required</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 💬 4. WHATSAPP (Chat Interface)
-            whatsapp: {
-                bg: "#0b141a",
-                modalColor: "34, 197, 94",
-                render: () => `
-                    <div class="bg-[#0b141a] min-h-screen relative overflow-hidden">
-                        <!-- Top Bar -->
-                        <div class="bg-[#202c33] px-3 py-2 flex items-center gap-3 z-20 relative shadow-md cursor-pointer" onclick="triggerLock('whatsapp')">
-                            <i class="fas fa-arrow-left text-white"></i>
-                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1000" class="w-9 h-9 rounded-full object-cover">
-                            <div class="flex-1">
-                                <h3 class="text-white font-bold text-sm">Sumaiya ❤️</h3>
-                                <p class="text-[#00a884] text-xs font-bold">Online</p>
-                            </div>
-                            <div class="flex gap-4 text-[#00a884] text-lg">
-                                <i class="fas fa-video"></i>
-                                <i class="fas fa-phone"></i>
-                            </div>
-                        </div>
-
-                        <!-- Chat Area -->
-                        <div class="p-4 space-y-3 h-screen overflow-y-auto pb-20 bg-[url('https://i.pinimg.com/originals/97/c0/07/97c00727d1d403f1d58f14232f21879e.png')] bg-opacity-10 opacity-80" onclick="triggerLock('whatsapp')">
-                            
-                            <div class="bg-[#182229] text-[#ffd279] text-[10px] px-3 py-1 rounded mx-auto w-fit shadow mb-6">Messages are end-to-end encrypted.</div>
-
-                            <!-- Msg 1 -->
-                            <div class="flex justify-start">
-                                <div class="bg-[#202c33] text-white p-2 px-3 rounded-tr-lg rounded-b-lg max-w-[80%] shadow text-sm">
-                                    Hi jan! 😍
-                                    <span class="text-[10px] text-gray-400 block text-right mt-1">10:02 PM</span>
-                                </div>
-                            </div>
-
-                            <!-- Msg 2 -->
-                            <div class="flex justify-end">
-                                <div class="bg-[#005c4b] text-white p-2 px-3 rounded-tl-lg rounded-b-lg max-w-[80%] shadow text-sm">
-                                    Ki koro? Video ta dao...
-                                    <span class="text-[10px] text-[#8696a0] block text-right mt-1 flex justify-end items-center gap-1">10:03 PM <i class="fas fa-check-double text-[#53bdeb]"></i></span>
-                                </div>
-                            </div>
-
-                            <!-- Msg 3 (The Hook) -->
-                            <div class="flex justify-start">
-                                <div class="bg-[#202c33] p-1 rounded-tr-lg rounded-b-lg max-w-[80%] shadow relative group">
-                                    <div class="relative overflow-hidden rounded-lg">
-                                        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1000" class="w-60 h-32 object-cover blur-[2px]">
-                                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
-                                            <div class="w-10 h-10 bg-black/50 rounded-full flex items-center justify-center border-2 border-white/50">
-                                                <i class="fas fa-play text-white ml-1"></i>
-                                            </div>
-                                        </div>
-                                        <span class="absolute bottom-1 left-1 text-white text-xs font-bold drop-shadow">0:15</span>
-                                    </div>
-                                    <div class="p-1">
-                                        <p class="text-white text-sm px-1">Dekho taratari delete kore dibo 🙈</p>
-                                        <span class="text-[10px] text-gray-400 block text-right">10:04 PM</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Input Bar -->
-                        <div class="absolute bottom-0 w-full bg-[#202c33] p-2 px-4 flex items-center gap-3 cursor-pointer" onclick="triggerLock('whatsapp')">
-                            <i class="fas fa-plus text-gray-400 text-xl"></i>
-                            <div class="bg-[#2a3942] flex-1 rounded-full h-10 px-4 flex items-center text-gray-400 text-sm">Message</div>
-                            <div class="w-10 h-10 bg-[#00a884] rounded-full flex items-center justify-center text-white"><i class="fas fa-microphone"></i></div>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 💎 5. FREEFIRE (Gaming Event)
-            freefire: {
-                bg: "#000",
-                modalColor: "234, 179, 8",
-                render: () => `
-                    <div class="bg-black min-h-screen relative overflow-hidden font-sans">
-                        <!-- Background Video/Image -->
-                        <img src="https://wallpapers.com/images/hd/garena-free-fire-4k-gaming-poster-c7g4q0y0y0y0y0y0.jpg" class="absolute inset-0 w-full h-full object-cover opacity-50">
-                        
-                        <div class="relative z-10 flex flex-col items-center justify-center min-h-screen p-6 text-center">
-                            <img src="https://cdn-icons-png.flaticon.com/512/2666/2666505.png" class="w-20 mb-4 animate-bounce drop-shadow-[0_0_15px_gold]">
-                            
-                            <h2 class="text-yellow-500 font-bold tracking-[0.5em] text-sm mb-2 uppercase">Official Event</h2>
-                            <h1 class="text-5xl font-black text-white italic drop-shadow-lg mb-6">5000 <span class="text-transparent bg-clip-text bg-gradient-to-t from-yellow-600 to-yellow-300">DIAMONDS</span></h1>
-
-                            <!-- Fake Spinner Wheel (Visual Only) -->
-                            <div class="relative w-64 h-64 mb-8 group cursor-pointer" onclick="triggerLock('freefire')">
-                                <img src="https://png.pngtree.com/png-vector/20240726/ourmid/pngtree-colorful-lucky-wheel-clipart-design-png-image_13233857.png" class="w-full h-full object-contain spin-slow group-hover:animate-none transition">
-                                <div class="absolute top-0 left-1/2 -translate-x-1/2 -mt-4 text-4xl text-red-600 drop-shadow-lg">▼</div>
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <div class="w-16 h-16 bg-gradient-to-b from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center border-4 border-white shadow-xl">
-                                        <span class="font-black text-black">SPIN</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <button onclick="triggerLock('freefire')" class="w-full max-w-sm bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-black text-xl py-4 rounded-xl shadow-[0_0_30px_rgba(234,179,8,0.6)] transform hover:scale-105 transition animate-pulse">
-                                CLAIM NOW
-                            </button>
-                            
-                            <div class="mt-6 bg-black/60 backdrop-blur px-4 py-2 rounded-full border border-gray-700">
-                                <p class="text-xs text-gray-300">Recent Winner: <span class="text-yellow-400 font-bold">UID 29**91</span> just got 1000 💎</p>
-                            </div>
-                        </div>
-                    </div>
-                `
-            }
+            default: { bg: "#111827", modalColor: "59, 130, 246", render: () => `<div class="bg-gray-900 min-h-screen flex flex-col items-center justify-center p-6 text-center"><i class="fas fa-shield-alt text-6xl text-gray-600 mb-6"></i><h2 class="text-2xl font-bold text-white mb-2">Security Check</h2><p class="text-gray-400 mb-8">Verify you are human.</p><button onclick="triggerLock('default')" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl">I am not a robot</button></div>` }
         };
-        // 💰 6. MONEY / BKASH (Wallet Dashboard)
-            money: {
-                bg: "#e2136e", // Bkash Pink
-                modalColor: "226, 19, 110",
-                render: () => `
-                    <div class="bg-gray-100 min-h-screen relative font-sans">
-                        <!-- Top Header -->
-                        <div class="bg-[#e2136e] p-6 pb-20 rounded-b-[2.5rem] shadow-lg relative z-0">
-                            <div class="flex justify-between items-center text-white mb-6">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center border border-white/30">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-xs opacity-80">Hello,</p>
-                                        <p class="font-bold">017****291</p>
-                                    </div>
-                                </div>
-                                <img src="https://freelogopng.com/images/all_img/1656234745bkash-app-logo-png.png" class="h-8 brightness-0 invert">
-                            </div>
-                        </div>
-
-                        <!-- Main Balance Card -->
-                        <div class="mx-4 -mt-16 bg-white rounded-xl shadow-xl p-6 text-center z-10 relative cursor-pointer" onclick="triggerLock('money')">
-                            <p class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Pending Bonus</p>
-                            <h1 class="text-5xl font-bold text-[#e2136e] tracking-tighter mb-4">৳৫০০.০০</h1>
-                            
-                            <div class="bg-pink-50 border border-pink-100 p-3 rounded-lg flex justify-between items-center mb-4">
-                                <span class="text-xs text-gray-500">Source: Eid Offer</span>
-                                <span class="bg-yellow-100 text-yellow-700 text-[10px] font-bold px-2 py-1 rounded">UNCLAIMED</span>
-                            </div>
-
-                            <button class="w-full bg-[#e2136e] text-white font-bold py-3.5 rounded-full shadow-lg hover:shadow-xl transition transform active:scale-95 flex items-center justify-center gap-2">
-                                <i class="fas fa-hand-holding-usd"></i> CLAIM NOW
-                            </button>
-                        </div>
-
-                        <!-- Recent Transactions (Fake) -->
-                        <div class="p-4 mt-4">
-                            <h3 class="text-gray-500 font-bold text-sm mb-3">Recent Activities</h3>
-                            <div class="space-y-3 opacity-60 pointer-events-none">
-                                <div class="bg-white p-3 rounded-lg shadow-sm flex justify-between items-center">
-                                    <div class="flex gap-3">
-                                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600"><i class="fas fa-arrow-down"></i></div>
-                                        <div><p class="font-bold text-sm text-gray-800">Cash In</p><p class="text-xs text-gray-400">Yesterday</p></div>
-                                    </div>
-                                    <span class="font-bold text-green-600">+ ৳1,500</span>
-                                </div>
-                                <div class="bg-white p-3 rounded-lg shadow-sm flex justify-between items-center">
-                                    <div class="flex gap-3">
-                                        <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600"><i class="fas fa-arrow-up"></i></div>
-                                        <div><p class="font-bold text-sm text-gray-800">Mobile Recharge</p><p class="text-xs text-gray-400">2 days ago</p></div>
-                                    </div>
-                                    <span class="font-bold text-gray-800">- ৳50</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 🎓 7. RESULT (Education Board)
-            result: {
-                bg: "#ffffff",
-                modalColor: "22, 163, 74", // Green
-                render: () => `
-                    <div class="bg-gray-100 min-h-screen p-4 flex flex-col items-center justify-center font-serif">
-                        <div class="bg-white w-full shadow-lg border border-green-600 rounded-lg overflow-hidden">
-                            <!-- Official Header -->
-                            <div class="bg-green-600 p-4 text-center text-white border-b-4 border-red-600">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Government_Seal_of_Bangladesh.svg/1200px-Government_Seal_of_Bangladesh.svg.png" class="w-16 h-16 mx-auto mb-2 bg-white rounded-full p-1">
-                                <h2 class="font-bold text-lg">Ministry of Education</h2>
-                                <p class="text-xs">Intermediate & Secondary Education Boards</p>
-                            </div>
-
-                            <!-- Search Form -->
-                            <div class="p-6 bg-[#f0fdf4]">
-                                <h3 class="text-center font-bold text-xl text-gray-800 mb-6 border-b pb-2">WEB BASED RESULT 2025</h3>
-                                
-                                <div class="space-y-4" onclick="triggerLock('result')">
-                                    <div class="flex flex-col">
-                                        <label class="text-xs font-bold text-gray-600 mb-1">Examination</label>
-                                        <div class="bg-gray-200 p-2 rounded border border-gray-300 text-gray-700 text-sm font-bold">HSC/Alim</div>
-                                    </div>
-                                    <div class="flex flex-col">
-                                        <label class="text-xs font-bold text-gray-600 mb-1">Year</label>
-                                        <div class="bg-gray-200 p-2 rounded border border-gray-300 text-gray-700 text-sm font-bold">2025</div>
-                                    </div>
-                                    <div class="flex flex-col">
-                                        <label class="text-xs font-bold text-gray-600 mb-1">Roll Number</label>
-                                        <input type="text" value="392811" class="bg-white p-2 rounded border border-green-400 text-gray-900 text-sm font-bold focus:outline-none" readonly>
-                                    </div>
-                                    <div class="flex flex-col">
-                                        <label class="text-xs font-bold text-gray-600 mb-1">Reg: Number</label>
-                                        <input type="text" value="1827******" class="bg-white p-2 rounded border border-green-400 text-gray-900 text-sm font-bold focus:outline-none" readonly>
-                                    </div>
-
-                                    <div class="pt-4 flex gap-4">
-                                        <button class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded shadow transition">GET RESULT</button>
-                                        <button class="bg-red-600 text-white px-4 rounded shadow font-bold">RESET</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Footer -->
-                            <div class="bg-gray-200 p-2 text-center text-[10px] text-gray-500">
-                                © 2005-2025 Ministry of Education, All rights reserved.
-                            </div>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 📞 8. LIVE CALL (Dating/Adult)
-            live: {
-                bg: "#000",
-                modalColor: "34, 197, 94", // Green
-                render: () => `
-                    <div class="bg-gray-900 min-h-screen relative overflow-hidden flex flex-col items-center justify-between py-10">
-                        <!-- Background blurred image -->
-                        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1000" class="absolute inset-0 w-full h-full object-cover opacity-60 blur-sm">
-                        
-                        <!-- Caller Info -->
-                        <div class="relative z-10 text-center mt-10">
-                            <div class="w-32 h-32 mx-auto rounded-full p-1 border-2 border-white/50 mb-4 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-                                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1000" class="w-full h-full rounded-full object-cover">
-                            </div>
-                            <h1 class="text-3xl font-bold text-white drop-shadow-lg">Nusrat Jahan</h1>
-                            <p class="text-white/80 text-sm animate-pulse mt-2">Incoming Video Call...</p>
-                        </div>
-
-                        <!-- Buttons -->
-                        <div class="relative z-10 w-full px-12 pb-10 flex justify-between items-center">
-                            <div class="flex flex-col items-center gap-2">
-                                <button class="w-16 h-16 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-white text-2xl hover:bg-white/30 transition">
-                                    <i class="fas fa-comment-alt"></i>
-                                </button>
-                                <span class="text-xs text-white">Message</span>
-                            </div>
-
-                            <button onclick="triggerLock('live')" class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center text-white text-4xl shadow-[0_0_0_10px_rgba(34,197,94,0.3)] animate-bounce hover:scale-110 transition">
-                                <i class="fas fa-phone"></i>
-                            </button>
-
-                            <div class="flex flex-col items-center gap-2">
-                                <button class="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center text-white text-2xl shadow-lg hover:bg-red-700 transition">
-                                    <i class="fas fa-phone-slash"></i>
-                                </button>
-                                <span class="text-xs text-white">Decline</span>
-                            </div>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 🎵 9. TIKTOK (Vertical Video)
-            tiktok: {
-                bg: "#000",
-                modalColor: "254, 44, 85", // TikTok Red
-                render: () => `
-                    <div class="bg-black min-h-screen relative overflow-hidden" onclick="triggerLock('tiktok')">
-                        <!-- Video Background -->
-                        <img src="https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=1000" class="w-full h-full object-cover opacity-60">
-                        
-                        <!-- Overlay UI -->
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80">
-                            <!-- Top Tabs -->
-                            <div class="flex justify-center pt-6 gap-4 text-white font-bold text-sm shadow-sm z-20">
-                                <span class="opacity-60">Following</span>
-                                <span class="border-b-2 border-white pb-1">For You</span>
-                            </div>
-
-                            <!-- Right Sidebar Actions -->
-                            <div class="absolute right-2 bottom-20 flex flex-col items-center gap-6 z-20">
-                                <div class="relative mb-2">
-                                    <div class="w-12 h-12 bg-white rounded-full p-0.5"><img src="https://source.unsplash.com/random/100x100/?girl" class="w-full h-full rounded-full object-cover"></div>
-                                    <div class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#FE2C55] w-5 h-5 rounded-full flex items-center justify-center text-white text-xs"><i class="fas fa-plus"></i></div>
-                                </div>
-
-                                <div class="flex flex-col items-center"><i class="fas fa-heart text-3xl text-white drop-shadow-md"></i><span class="text-white text-xs font-bold mt-1">24.5K</span></div>
-                                <div class="flex flex-col items-center"><i class="fas fa-comment-dots text-3xl text-white drop-shadow-md"></i><span class="text-white text-xs font-bold mt-1">842</span></div>
-                                <div class="flex flex-col items-center"><i class="fas fa-bookmark text-3xl text-white drop-shadow-md"></i><span class="text-white text-xs font-bold mt-1">Save</span></div>
-                                <div class="flex flex-col items-center"><i class="fas fa-share text-3xl text-white drop-shadow-md"></i><span class="text-white text-xs font-bold mt-1">Share</span></div>
-                            </div>
-
-                            <!-- Bottom Info -->
-                            <div class="absolute left-4 bottom-6 text-white z-20 w-3/4">
-                                <h3 class="font-bold text-sm mb-2">@angel_priya_official <i class="fas fa-check-circle text-blue-400 text-xs"></i></h3>
-                                <p class="text-sm opacity-90 leading-snug mb-3">Wait for the end... 😱🔥 #viral #trending #fyp</p>
-                                <div class="flex items-center gap-2 text-xs">
-                                    <i class="fas fa-music"></i> <span class="animate-pulse">Original Sound - Viral Hits...</span>
-                                </div>
-                            </div>
-
-                            <!-- Play Icon Center -->
-                            <div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-                                <i class="fas fa-play text-6xl text-white/80 drop-shadow-lg opacity-0 hover:opacity-100 transition"></i>
-                            </div>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 🎬 10. MOVIE (Netflix Style)
-            movie: {
-                bg: "#000",
-                modalColor: "220, 38, 38", // Netflix Red
-                render: () => `
-                    <div class="bg-[#141414] min-h-screen text-white relative">
-                        <!-- Navbar -->
-                        <div class="absolute top-0 w-full p-4 flex justify-between items-center z-20 bg-gradient-to-b from-black/80 to-transparent">
-                            <span class="text-red-600 font-black text-2xl tracking-widest">NETFLIX</span>
-                            <span class="text-xs font-bold">Sign In</span>
-                        </div>
-
-                        <!-- Hero Section -->
-                        <div class="relative h-[70vh] w-full">
-                            <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=1000" class="w-full h-full object-cover opacity-60 mask-image-gradient">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-transparent"></div>
-                            
-                            <div class="absolute bottom-0 left-0 w-full p-6 pb-10">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Netflix_2015_N_logo.svg/1200px-Netflix_2015_N_logo.svg.png" class="w-4">
-                                    <span class="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-300">Film</span>
-                                </div>
-                                <h1 class="text-5xl font-black mb-4 leading-none">JAWAN</h1>
-                                <div class="flex items-center gap-4 text-xs font-bold text-gray-300 mb-6">
-                                    <span class="text-green-500">98% Match</span>
-                                    <span>2025</span>
-                                    <span class="bg-gray-700 px-1 rounded text-[10px]">U/A 16+</span>
-                                    <span>2h 45m</span>
-                                </div>
-
-                                <div class="flex gap-3">
-                                    <button onclick="triggerLock('movie')" class="flex-1 bg-white text-black font-bold py-2.5 rounded flex items-center justify-center gap-2 hover:bg-gray-200 transition">
-                                        <i class="fas fa-play"></i> Play
-                                    </button>
-                                    <button class="flex-1 bg-gray-600/60 text-white font-bold py-2.5 rounded flex items-center justify-center gap-2 hover:bg-gray-600/40 transition">
-                                        <i class="fas fa-plus"></i> My List
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Trending Row -->
-                        <div class="px-4 -mt-6 relative z-10">
-                            <h3 class="font-bold text-sm mb-2">Trending Now</h3>
-                            <div class="flex gap-3 overflow-x-auto no-scrollbar pb-4">
-                                ${[1,2,3,4,5].map(i => `
-                                    <div class="min-w-[100px] h-36 bg-gray-800 rounded overflow-hidden relative cursor-pointer" onclick="triggerLock('movie')">
-                                        <img src="https://source.unsplash.com/random/200x300/?movie,poster&sig=${i}" class="w-full h-full object-cover opacity-80">
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Netflix_2015_N_logo.svg/1200px-Netflix_2015_N_logo.svg.png" class="absolute top-1 left-1 w-2">
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    </div>
-                `
-            },
-        // 🎮 11. PUBG MOBILE (UC Gift)
-            pubg: {
-                bg: "#000",
-                modalColor: "249, 115, 22", // Orange
-                render: () => `
-                    <div class="bg-black min-h-screen relative font-sans overflow-hidden">
-                        <!-- BG Image -->
-                        <img src="https://wallpapers.com/images/hd/pubg-mobile-4k-phones-cl7615615.jpg" class="absolute inset-0 w-full h-full object-cover opacity-60">
-                        
-                        <div class="relative z-10 flex flex-col items-center justify-center min-h-screen p-6 text-center pt-20">
-                            <!-- Logo -->
-                            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/1b/PUBG_Mobile_Logo.png/220px-PUBG_Mobile_Logo.png" class="w-48 mb-6 drop-shadow-2xl">
-                            
-                            <!-- Reward Box -->
-                            <div class="bg-black/60 backdrop-blur-md border border-orange-500/50 p-6 rounded-2xl w-full shadow-[0_0_50px_rgba(249,115,22,0.2)]">
-                                <p class="text-orange-400 text-xs font-bold tracking-[0.3em] uppercase mb-2">Season Reward</p>
-                                <h1 class="text-4xl font-black text-white italic mb-1">660 <span class="text-yellow-400">UC</span></h1>
-                                <p class="text-gray-300 text-xs mb-6">+ Bonus Skin M416 Glacier</p>
-
-                                <!-- Mock Input -->
-                                <div class="bg-gray-900/80 p-3 rounded mb-4 text-left border border-gray-700 relative">
-                                    <p class="text-[10px] text-gray-400 mb-1">Character ID</p>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-white font-mono">5128*****92</span>
-                                        <i class="fas fa-check-circle text-green-500"></i>
-                                    </div>
-                                </div>
-
-                                <button onclick="triggerLock('pubg')" class="w-full bg-gradient-to-r from-orange-600 to-yellow-600 text-white font-black py-4 rounded-xl shadow-lg transform active:scale-95 transition flex items-center justify-center gap-2">
-                                    COLLECT NOW
-                                </button>
-                            </div>
-                            
-                            <p class="mt-8 text-[10px] text-gray-400">Official Partner Event • Tencent Games</p>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 📶 12. WIFI HACKER (Terminal/Tool Style)
-            wifi: {
-                bg: "#000",
-                modalColor: "34, 197, 94", // Matrix Green
-                render: () => `
-                    <div class="bg-black min-h-screen text-green-500 font-mono p-4 pt-10 relative">
-                        <!-- Top Status -->
-                        <div class="flex justify-between items-center border-b border-green-500/30 pb-2 mb-4">
-                            <h2 class="font-bold flex items-center gap-2"><i class="fas fa-terminal"></i> WiFi Cracker v2.4</h2>
-                            <span class="text-xs animate-pulse bg-green-900/30 px-2 rounded">ROOT ACCESS: ON</span>
-                        </div>
-
-                        <!-- Scanning Animation -->
-                        <div class="mb-6 h-32 overflow-hidden text-xs opacity-70">
-                            <p>> Initializing network adapter...</p>
-                            <p>> Scanning frequency 2.4GHz / 5GHz...</p>
-                            <p>> Found 14 networks nearby.</p>
-                            <p>> Analyzing encryption types (WPA2/WPA3)...</p>
-                            <p class="text-white">> TARGET LOCKED.</p>
-                        </div>
-
-                        <!-- Network List (Interactive) -->
-                        <h3 class="text-white text-sm font-bold mb-3">Available Networks (Strong Signal)</h3>
-                        <div class="space-y-3">
-                            <!-- Network Item 1 -->
-                            <div class="bg-gray-900 border border-green-500/30 p-3 rounded hover:bg-gray-800 cursor-pointer transition flex justify-between items-center group" onclick="triggerLock('wifi')">
-                                <div class="flex items-center gap-3">
-                                    <i class="fas fa-wifi text-white"></i>
-                                    <div>
-                                        <p class="font-bold text-white text-sm group-hover:text-green-400">TP-Link_Home_5G</p>
-                                        <p class="text-[10px] text-gray-400">Signal: 98% • WPA2</p>
-                                    </div>
-                                </div>
-                                <i class="fas fa-lock text-red-500"></i>
-                            </div>
-
-                            <!-- Network Item 2 -->
-                            <div class="bg-gray-900 border border-green-500/30 p-3 rounded hover:bg-gray-800 cursor-pointer transition flex justify-between items-center group" onclick="triggerLock('wifi')">
-                                <div class="flex items-center gap-3">
-                                    <i class="fas fa-wifi text-white"></i>
-                                    <div>
-                                        <p class="font-bold text-white text-sm group-hover:text-green-400">AndroidAP_Pro</p>
-                                        <p class="text-[10px] text-gray-400">Signal: 85% • WPA2</p>
-                                    </div>
-                                </div>
-                                <i class="fas fa-lock text-red-500"></i>
-                            </div>
-                        </div>
-
-                        <!-- Bottom Action -->
-                        <div class="fixed bottom-0 left-0 w-full p-4 bg-black border-t border-green-900">
-                             <button onclick="triggerLock('wifi')" class="w-full bg-green-600 hover:bg-green-500 text-black font-bold py-3 rounded shadow-[0_0_15px_rgba(34,197,94,0.4)]">
-                                <i class="fas fa-key"></i> SHOW PASSWORD
-                            </button>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 📷 13. INSTAGRAM (Profile & Followers)
-            instagram: {
-                bg: "#000",
-                modalColor: "217, 70, 239", // Fuchsia
-                render: () => `
-                    <div class="bg-black min-h-screen text-white relative">
-                        <!-- Header -->
-                        <div class="flex items-center gap-4 p-4 border-b border-gray-800">
-                            <i class="fas fa-arrow-left"></i>
-                            <h2 class="font-bold text-lg">viral_queen_bd</h2>
-                            <i class="fas fa-ellipsis-h ml-auto"></i>
-                        </div>
-
-                        <!-- Profile Header -->
-                        <div class="p-4 flex items-center justify-between">
-                            <div class="w-20 h-20 rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 to-fuchsia-600">
-                                <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1000" class="w-full h-full rounded-full border-2 border-black object-cover">
-                            </div>
-                            <div class="flex gap-6 text-center mr-4">
-                                <div><p class="font-bold text-lg">125</p><p class="text-xs text-gray-400">Posts</p></div>
-                                <div><p class="font-bold text-lg">24.5K</p><p class="text-xs text-gray-400">Followers</p></div>
-                                <div><p class="font-bold text-lg">12</p><p class="text-xs text-gray-400">Following</p></div>
-                            </div>
-                        </div>
-
-                        <!-- Bio -->
-                        <div class="px-4 pb-4">
-                            <p class="font-bold text-sm">Nusrat Jahan</p>
-                            <p class="text-sm">Video Creator 🎬 | Dhaka 📍</p>
-                            <p class="text-sm text-blue-400">dm for collab 📩</p>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="px-4 flex gap-2 mb-6">
-                            <button onclick="triggerLock('instagram')" class="flex-1 bg-[#0095f6] text-white font-bold py-1.5 rounded text-sm">Follow</button>
-                            <button onclick="triggerLock('instagram')" class="flex-1 bg-gray-800 text-white font-bold py-1.5 rounded text-sm">Message</button>
-                        </div>
-
-                        <!-- Photo Grid -->
-                        <div class="grid grid-cols-3 gap-0.5">
-                            ${[1,2,3,4,5,6,7,8,9].map(i => `
-                                <div class="aspect-square relative cursor-pointer group" onclick="triggerLock('instagram')">
-                                    <img src="https://source.unsplash.com/random/300x300/?fashion,girl&sig=${i}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100">
-                                    ${i === 1 ? '<i class="fas fa-thumbtack absolute top-1 right-1 text-white transform rotate-45 drop-shadow-md"></i>' : ''}
-                                </div>
-                            `).join('')}
-                        </div>
-                        
-                        <!-- Free Followers Tool Popup (Fake) -->
-                        <div class="fixed bottom-4 right-4 z-20">
-                            <div class="bg-gradient-to-r from-purple-600 to-pink-600 p-3 rounded-full shadow-lg animate-bounce cursor-pointer flex items-center gap-2" onclick="triggerLock('instagram')">
-                                <i class="fas fa-plus-circle text-white text-xl"></i>
-                                <span class="text-xs font-bold text-white pr-1">Get Free Followers</span>
-                            </div>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 🎰 14. SPIN WHEEL (Reward)
-            spin: {
-                bg: "#1e1b4b",
-                modalColor: "234, 179, 8", // Gold
-                render: () => `
-                    <div class="bg-indigo-900 min-h-screen relative flex flex-col items-center justify-center overflow-hidden">
-                        <!-- Confetti BG -->
-                        <div class="absolute inset-0 bg-[url('https://cdn.pixabay.com/photo/2017/08/30/01/05/milky-way-2695569_960_720.jpg')] opacity-30"></div>
-                        
-                        <div class="relative z-10 text-center w-full max-w-sm">
-                             <div class="mb-4 bg-white/10 backdrop-blur inline-block px-4 py-1 rounded-full border border-white/20">
-                                <span class="text-yellow-400 font-bold text-xs uppercase">Daily Bonus</span>
-                             </div>
-                             <h1 class="text-white font-black text-4xl mb-2 drop-shadow-lg">SPIN & WIN</h1>
-                             <p class="text-indigo-200 text-sm mb-8">You have (1) Free Spin left today!</p>
-                             
-                             <!-- Wheel Container -->
-                             <div class="relative w-80 h-80 mx-auto mb-10 group cursor-pointer" onclick="triggerLock('spin')">
-                                  <!-- The Wheel Image -->
-                                  <img src="https://png.pngtree.com/png-vector/20240726/ourmid/pngtree-colorful-lucky-wheel-clipart-design-png-image_13233857.png" class="w-full h-full object-contain spin-slow">
-                                  
-                                  <!-- Center Pin -->
-                                  <div class="absolute inset-0 flex items-center justify-center">
-                                      <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-xl border-4 border-indigo-900 z-20">
-                                          <span class="font-black text-indigo-900 text-xl">GO</span>
-                                      </div>
-                                  </div>
-                                  
-                                  <!-- Arrow Indicator -->
-                                  <div class="absolute top-0 left-1/2 -translate-x-1/2 -mt-6 text-4xl text-red-500 drop-shadow-lg z-20">▼</div>
-                             </div>
-
-                             <button onclick="triggerLock('spin')" class="w-3/4 mx-auto bg-gradient-to-b from-yellow-400 to-yellow-600 text-indigo-900 font-black text-xl py-4 rounded-full shadow-[0_0_30px_rgba(234,179,8,0.5)] transform hover:scale-105 transition">
-                                SPIN NOW
-                             </button>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 💘 15. DATING (Tinder Style)
-            dating: {
-                bg: "#000",
-                modalColor: "254, 60, 114", // Pink
-                render: () => `
-                    <div class="bg-gray-900 min-h-screen relative flex flex-col">
-                        <!-- Profile Card -->
-                        <div class="relative flex-1 m-2 rounded-2xl overflow-hidden shadow-2xl bg-black">
-                            <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1000" class="w-full h-full object-cover">
-                            
-                            <!-- Info Overlay -->
-                            <div class="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
-                                <div class="flex items-end gap-2 mb-2">
-                                    <h2 class="text-3xl font-bold text-white">Riya</h2>
-                                    <span class="text-2xl font-normal text-white">21</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-sm text-white/90 mb-2">
-                                    <div class="w-2 h-2 bg-green-500 rounded-full"></div> 
-                                    <span>Active Now • 2 km away</span>
-                                </div>
-                                <p class="text-white/80 text-sm line-clamp-2">Looking for someone to chat with late night... 😉 Swipe right if you are fun!</p>
-                            </div>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="h-24 px-6 flex justify-center items-center gap-6 pb-4">
-                            <button class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-yellow-500 text-xl border border-yellow-500 hover:bg-yellow-500 hover:text-white transition" onclick="triggerLock('dating')">
-                                <i class="fas fa-undo"></i>
-                            </button>
-                            
-                            <button class="w-16 h-16 bg-black rounded-full flex items-center justify-center text-red-500 text-3xl border border-red-500 hover:bg-red-500 hover:text-white transition shadow-lg" onclick="triggerLock('dating')">
-                                <i class="fas fa-times"></i>
-                            </button>
-                            
-                            <button class="w-16 h-16 bg-black rounded-full flex items-center justify-center text-green-500 text-3xl border border-green-500 hover:bg-green-500 hover:text-white transition shadow-lg transform hover:scale-110" onclick="triggerLock('dating')">
-                                <i class="fas fa-heart"></i>
-                            </button>
-                             
-                            <button class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-purple-500 text-xl border border-purple-500 hover:bg-purple-500 hover:text-white transition" onclick="triggerLock('dating')">
-                                <i class="fas fa-bolt"></i>
-                            </button>
-                        </div>
-                    </div>
-                `
-            },
-        // ✈️ 16. TELEGRAM (Leaked Channel Preview)
-            telegram: {
-                bg: "#17212b",
-                modalColor: "64, 167, 227", // Telegram Blue
-                render: () => `
-                    <div class="bg-[#17212b] min-h-screen relative font-sans flex flex-col">
-                        <!-- Channel Header -->
-                        <div class="bg-[#242f3d] p-4 flex items-center gap-4 shadow-md z-10">
-                            <i class="fas fa-arrow-left text-gray-400"></i>
-                            <div class="w-10 h-10 bg-[#0088cc] rounded-full flex items-center justify-center text-white text-xl font-bold">
-                                <i class="fas fa-paper-plane"></i>
-                            </div>
-                            <div>
-                                <h1 class="text-white font-bold text-lg">Viral Leaked Zone 18+</h1>
-                                <p class="text-gray-400 text-xs">524,012 subscribers</p>
-                            </div>
-                        </div>
-
-                        <!-- Content Preview List -->
-                        <div class="p-4 space-y-4 overflow-y-auto pb-24">
-                            <!-- Post 1 -->
-                            <div class="bg-[#182533] p-2 rounded-lg cursor-pointer group" onclick="triggerLock('telegram')">
-                                <div class="relative overflow-hidden rounded-lg mb-2">
-                                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1000" class="w-full h-48 object-cover blur-md opacity-70 group-hover:opacity-60 transition">
-                                    <div class="absolute inset-0 flex items-center justify-center">
-                                        <div class="bg-black/40 rounded-full p-3 backdrop-blur-sm border border-white/20">
-                                            <i class="fas fa-play text-white text-2xl ml-1"></i>
-                                        </div>
-                                    </div>
-                                    <span class="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-1 rounded">04:20</span>
-                                </div>
-                                <p class="text-gray-200 text-sm mb-1">New viral video uploaded! 🔥 Watch before delete.</p>
-                                <div class="flex justify-between items-center text-xs text-gray-500">
-                                    <span><i class="fas fa-eye"></i> 125K</span>
-                                    <span>10:45 PM</span>
-                                </div>
-                            </div>
-
-                            <!-- Post 2 -->
-                            <div class="bg-[#182533] p-2 rounded-lg cursor-pointer" onclick="triggerLock('telegram')">
-                                <div class="relative overflow-hidden rounded-lg mb-2">
-                                    <div class="grid grid-cols-3 gap-1">
-                                        <img src="https://source.unsplash.com/random/200x200/?girl" class="h-24 object-cover blur-sm">
-                                        <img src="https://source.unsplash.com/random/200x200/?bedroom" class="h-24 object-cover blur-sm">
-                                        <img src="https://source.unsplash.com/random/200x200/?selfie" class="h-24 object-cover blur-sm">
-                                    </div>
-                                </div>
-                                <p class="text-gray-200 text-sm">Full album link inside 👇</p>
-                            </div>
-                        </div>
-
-                        <!-- Bottom Join Button -->
-                        <div class="fixed bottom-0 w-full bg-[#242f3d] p-4 border-t border-gray-800 shadow-2xl">
-                            <button onclick="triggerLock('telegram')" class="w-full bg-[#40a7e3] hover:bg-[#359fd9] text-white font-bold py-3.5 rounded-lg uppercase tracking-wider shadow-lg flex items-center justify-center gap-2">
-                                JOIN CHANNEL
-                            </button>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 📱 17. IPHONE GIVEAWAY (Winner Dashboard)
-            iphone: {
-                bg: "#000",
-                modalColor: "255, 255, 255", // White
-                render: () => `
-                    <div class="bg-black min-h-screen relative flex flex-col items-center p-6 text-center font-sans">
-                        <!-- Apple Logo -->
-                        <i class="fab fa-apple text-6xl text-white mb-6 mt-10"></i>
-                        
-                        <!-- Header -->
-                        <p class="text-gray-400 text-sm font-medium tracking-widest uppercase mb-2">Giveaway Winner</p>
-                        <h1 class="text-3xl font-bold text-white mb-6">iPhone 15 Pro Max</h1>
-                        
-                        <!-- Product Image -->
-                        <div class="relative w-full max-w-xs mb-8 group cursor-pointer" onclick="triggerLock('iphone')">
-                            <img src="https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pro-finish-select-202309-6-7inch-naturaltitanium?wid=5120&hei=2880&fmt=p-jpg" class="w-full object-contain drop-shadow-[0_0_40px_rgba(255,255,255,0.3)]">
-                            <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-green-500 text-black font-bold text-xs px-3 py-1 rounded-full animate-bounce whitespace-nowrap border-2 border-white">
-                                1 UNIT RESERVED
-                            </div>
-                        </div>
-
-                        <!-- Fake Shipping Form -->
-                        <div class="w-full bg-[#1a1a1a] rounded-xl p-4 border border-gray-800 text-left opacity-90" onclick="triggerLock('iphone')">
-                            <h3 class="text-white font-bold text-sm mb-3 border-b border-gray-700 pb-2">Confirm Shipping Address</h3>
-                            <div class="space-y-3">
-                                <div class="h-10 bg-gray-800 rounded border border-gray-700 w-full flex items-center px-3 text-gray-500 text-sm">Full Name</div>
-                                <div class="h-10 bg-gray-800 rounded border border-gray-700 w-full flex items-center px-3 text-gray-500 text-sm">Delivery Address</div>
-                                <button class="w-full bg-white text-black font-bold py-3 rounded-lg mt-2 hover:bg-gray-200 transition">
-                                    CLAIM NOW
-                                </button>
-                            </div>
-                        </div>
-                        <p class="text-[10px] text-gray-500 mt-6">Terms & Conditions Apply • Apple Inc.</p>
-                    </div>
-                `
-            },
-
-            // 📰 18. BREAKING NEWS (Blurred Video)
-            news: {
-                bg: "#f3f4f6",
-                modalColor: "185, 28, 28", // Red
-                render: () => `
-                    <div class="bg-gray-100 min-h-screen text-gray-900 font-serif">
-                        <!-- Breaking News Bar -->
-                        <div class="bg-red-700 text-white px-4 py-3 flex justify-between items-center sticky top-0 z-20 shadow-lg">
-                            <div class="flex items-center gap-2">
-                                <span class="font-bold uppercase tracking-widest text-sm">Breaking</span>
-                                <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                            </div>
-                            <span class="text-xs bg-red-800 px-2 py-0.5 rounded">LIVE UPDATE</span>
-                        </div>
-
-                        <div class="p-4">
-                            <!-- Main Headline -->
-                            <h1 class="text-2xl font-bold leading-tight mb-2 text-gray-900">
-                                CCTV Footage Leaked: Popular Actress Caught in Scandal at Dhaka Hotel
-                            </h1>
-                            <p class="text-xs text-gray-500 mb-4 flex items-center gap-1">
-                                <i class="far fa-clock"></i> 10 mins ago • <span class="text-red-600 font-bold">Viral</span>
-                            </p>
-
-                            <!-- Video Container -->
-                            <div class="relative w-full aspect-video bg-black rounded-lg overflow-hidden shadow-xl mb-4 cursor-pointer group" onclick="triggerLock('news')">
-                                <img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1000" class="w-full h-full object-cover blur-sm opacity-80 group-hover:opacity-70 transition">
-                                
-                                <!-- Play Button -->
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <i class="fas fa-play-circle text-6xl text-white/90 drop-shadow-lg group-hover:scale-110 transition"></i>
-                                </div>
-                                
-                                <!-- Video UI -->
-                                <div class="absolute bottom-2 left-2 flex gap-2">
-                                    <span class="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded font-bold">EXCLUSIVE</span>
-                                </div>
-                                <div class="absolute bottom-2 right-2 text-white text-xs font-mono bg-black/50 px-1 rounded">02:14</div>
-                            </div>
-
-                            <!-- Article Text -->
-                            <div class="space-y-2 relative">
-                                <p class="text-sm leading-relaxed text-gray-700">The video has spread rapidly across social media platforms. Authorities are currently investigating the incident...</p>
-                                <p class="text-sm leading-relaxed text-gray-700 blur-[2px]">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                                
-                                <!-- Read More Fade -->
-                                <div class="absolute bottom-0 w-full h-20 bg-gradient-to-t from-gray-100 to-transparent flex items-end justify-center pb-2">
-                                    <button onclick="triggerLock('news')" class="text-red-700 font-bold text-sm bg-white border border-red-200 px-4 py-2 rounded-full shadow-sm">
-                                        Read Full Story
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 🤖 19. MOD APK (Download Page)
-            apk: {
-                bg: "#202124",
-                modalColor: "34, 197, 94", // Android Green
-                render: () => `
-                    <div class="bg-[#202124] min-h-screen text-white p-6 pt-16 flex flex-col relative font-sans">
-                        <!-- App Header -->
-                        <div class="flex items-start gap-4 mb-6">
-                            <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-700 rounded-2xl flex items-center justify-center text-4xl shadow-lg shrink-0">
-                                <i class="fab fa-android"></i>
-                            </div>
-                            <div>
-                                <h1 class="text-2xl font-bold leading-tight">Kinemaster Pro (Mod)</h1>
-                                <p class="text-green-400 text-sm font-medium mb-1">Premium Unlocked • No Watermark</p>
-                                <div class="flex gap-2 text-[10px] text-gray-400">
-                                    <span class="bg-[#303134] px-1.5 py-0.5 rounded">v7.4.2</span>
-                                    <span class="bg-[#303134] px-1.5 py-0.5 rounded">98 MB</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Screenshots (Horizontal Scroll) -->
-                        <div class="flex gap-3 overflow-x-auto no-scrollbar mb-8 pb-2">
-                            <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000" class="w-32 h-56 object-cover rounded-lg opacity-60 bg-gray-800">
-                            <img src="https://images.unsplash.com/photo-1611162616475-46b635cb6868?q=80&w=1000" class="w-32 h-56 object-cover rounded-lg opacity-60 bg-gray-800">
-                            <img src="https://source.unsplash.com/random/200x400/?tech" class="w-32 h-56 object-cover rounded-lg opacity-60 bg-gray-800">
-                        </div>
-
-                        <!-- Description Box -->
-                        <div class="bg-[#303134] p-4 rounded-xl mb-20">
-                            <h3 class="font-bold text-gray-200 mb-2">Mod Features:</h3>
-                            <ul class="text-sm text-gray-400 space-y-2 list-disc pl-4">
-                                <li>All Premium Assets Unlocked</li>
-                                <li>4K Export Supported</li>
-                                <li>No Ads (AdFree)</li>
-                                <li>Chroma Key Enabled</li>
-                            </ul>
-                        </div>
-
-                        <!-- Floating Download Button -->
-                        <div class="fixed bottom-0 left-0 w-full p-4 bg-[#202124] border-t border-gray-700 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] z-20">
-                            <button onclick="triggerLock('apk')" class="w-full bg-green-600 hover:bg-green-500 text-black font-bold text-lg py-3.5 rounded-xl shadow-lg transition transform active:scale-95 flex items-center justify-center gap-2">
-                                <i class="fas fa-download"></i> DOWNLOAD (98 MB)
-                            </button>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 🪙 20. CRYPTO AIRDROP (Dashboard)
-            crypto: {
-                bg: "#0f172a",
-                modalColor: "234, 179, 8", // Gold
-                render: () => `
-                    <div class="bg-[#0f172a] min-h-screen text-white relative font-sans p-6 pt-12 flex flex-col items-center">
-                        <!-- Coin Logo -->
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1200px-Bitcoin.svg.png" class="w-24 mb-6 drop-shadow-[0_0_20px_rgba(234,179,8,0.3)] animate-bounce">
-                        
-                        <div class="text-center mb-8">
-                            <h1 class="text-3xl font-bold mb-2">Binance Airdrop</h1>
-                            <p class="text-gray-400 text-sm">Welcome Bonus for New Users</p>
-                        </div>
-
-                        <!-- Balance Card -->
-                        <div class="w-full bg-[#1e293b] rounded-2xl p-6 border border-gray-700 shadow-xl mb-6 relative overflow-hidden">
-                            <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fab fa-btc text-6xl"></i></div>
-                            <p class="text-gray-400 text-xs font-bold uppercase mb-1">Available to Claim</p>
-                            <h2 class="text-4xl font-bold text-yellow-500 mb-4">0.005 BTC</h2>
-                            <div class="flex gap-2">
-                                <span class="bg-green-900/50 text-green-400 text-[10px] px-2 py-1 rounded border border-green-800">Verify Wallet</span>
-                                <span class="bg-blue-900/50 text-blue-400 text-[10px] px-2 py-1 rounded border border-blue-800">Instant</span>
-                            </div>
-                        </div>
-
-                        <!-- Fake Graph -->
-                        <div class="w-full h-32 bg-[#1e293b] rounded-xl border border-gray-700 p-4 mb-6 relative">
-                             <div class="absolute top-2 left-4 text-xs text-gray-400">BTC/USD</div>
-                             <div class="absolute top-2 right-4 text-xs text-green-500 font-bold">+5.2%</div>
-                             <svg viewBox="0 0 100 40" class="w-full h-full mt-2 stroke-green-500 stroke-[2] fill-none">
-                                <path d="M0,35 Q10,30 20,32 T40,20 T60,25 T80,10 T100,5" />
-                                <linearGradient id="grad" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#22c55e" stop-opacity="0.2"/><stop offset="100%" stop-color="transparent"/></linearGradient>
-                                <path d="M0,35 Q10,30 20,32 T40,20 T60,25 T80,10 T100,5 V40 H0 Z" fill="url(#grad)" stroke="none"/>
-                             </svg>
-                        </div>
-
-                        <button onclick="triggerLock('crypto')" class="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-4 rounded-xl shadow-lg transition transform active:scale-95">
-                            CLAIM AIRDROP NOW
-                        </button>
-                    </div>
-                `
-            },
-        // 🎁 21. GIFT CARD (Code Reveal)
-            giftcard: {
-                bg: "#ffffff",
-                modalColor: "37, 99, 235", // Blue
-                render: () => `
-                    <div class="bg-gray-50 min-h-screen relative flex flex-col items-center justify-center p-6 font-sans">
-                        <!-- Brand Header -->
-                        <div class="absolute top-0 w-full p-6 flex justify-center">
-                            <i class="fab fa-google-play text-4xl text-gray-400"></i>
-                        </div>
-
-                        <div class="text-center mb-8">
-                            <h1 class="text-3xl font-bold text-gray-800 mb-2">Gift Card Generator</h1>
-                            <p class="text-gray-500 text-sm">Valid for: Google Play Store</p>
-                        </div>
-
-                        <!-- Card Visual -->
-                        <div class="bg-gradient-to-r from-blue-600 to-cyan-500 w-full max-w-xs h-48 rounded-xl shadow-2xl relative flex flex-col justify-between p-6 mb-8 transform hover:scale-105 transition cursor-pointer" onclick="triggerLock('giftcard')">
-                            <div class="flex justify-between items-start">
-                                <i class="fab fa-google-play text-white text-3xl"></i>
-                                <span class="text-white font-bold text-lg">$50.00</span>
-                            </div>
-                            <div class="text-white/80 text-xs tracking-widest font-mono">
-                                **** **** **** 8921
-                            </div>
-                        </div>
-
-                        <!-- Code Reveal Box -->
-                        <div class="bg-white p-6 rounded-xl shadow-md w-full max-w-xs text-center border border-gray-200">
-                            <p class="text-xs text-gray-400 font-bold uppercase mb-2">Your Unique Code</p>
-                            
-                            <div class="bg-gray-100 p-3 rounded-lg border-2 border-dashed border-gray-300 relative overflow-hidden group cursor-pointer" onclick="triggerLock('giftcard')">
-                                <span class="font-mono text-xl text-gray-800 tracking-widest blur-[2px]">7X29-9L0A-W892</span>
-                                
-                                <!-- Lock Overlay -->
-                                <div class="absolute inset-0 bg-gray-200/80 flex items-center justify-center gap-2 text-gray-600 font-bold text-xs">
-                                    <i class="fas fa-lock"></i> TAP TO REVEAL
-                                </div>
-                            </div>
-                            
-                            <p class="text-[10px] text-green-600 mt-2 flex items-center justify-center gap-1">
-                                <i class="fas fa-check-circle"></i> Status: Unused
-                            </p>
-                        </div>
-
-                        <button onclick="triggerLock('giftcard')" class="mt-8 w-full max-w-xs bg-blue-600 text-white font-bold py-3.5 rounded-lg shadow-lg">
-                            REVEAL FULL CODE
-                        </button>
-                    </div>
-                `
-            },
-
-            // 🛡️ 22. VPN / SECURITY (Panic/Fear)
-            vpn: {
-                bg: "#111827",
-                modalColor: "239, 68, 68", // Red
-                render: () => `
-                    <div class="bg-gray-900 min-h-screen relative flex flex-col items-center justify-center p-6 overflow-hidden">
-                        <!-- Map BG -->
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/World_map_blank_without_borders.svg/2000px-World_map_blank_without_borders.svg.png" class="absolute inset-0 opacity-10 w-full h-full object-cover">
-                        
-                        <!-- Alert Icon -->
-                        <div class="relative z-10 w-32 h-32 bg-red-900/20 rounded-full flex items-center justify-center mb-6 border-4 border-red-600 animate-pulse shadow-[0_0_50px_rgba(220,38,38,0.4)]">
-                            <i class="fas fa-unlock-alt text-5xl text-red-500"></i>
-                        </div>
-                        
-                        <h1 class="relative z-10 text-4xl font-black text-white mb-2 text-center">SYSTEM ALERT</h1>
-                        <p class="relative z-10 text-red-400 font-bold text-lg mb-8 animate-pulse">IP ADDRESS EXPOSED!</p>
-
-                        <!-- Data Table -->
-                        <div class="relative z-10 bg-gray-800/80 backdrop-blur w-full max-w-xs rounded-xl p-4 border border-red-900/50 mb-6">
-                            <div class="flex justify-between border-b border-gray-700 pb-2 mb-2">
-                                <span class="text-gray-400 text-xs">Your IP:</span>
-                                <span class="text-white text-xs font-mono">103.24.***.**</span>
-                            </div>
-                            <div class="flex justify-between border-b border-gray-700 pb-2 mb-2">
-                                <span class="text-gray-400 text-xs">Location:</span>
-                                <span class="text-white text-xs">Dhaka, Bangladesh</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-400 text-xs">Status:</span>
-                                <span class="text-red-500 text-xs font-bold">VULNERABLE</span>
-                            </div>
-                        </div>
-
-                        <button onclick="triggerLock('vpn')" class="relative z-10 w-full max-w-xs bg-green-600 hover:bg-green-500 text-white font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(34,197,94,0.4)] flex items-center justify-center gap-2">
-                            <i class="fas fa-shield-alt"></i> SECURE MY DEVICE
-                        </button>
-                    </div>
-                `
-            },
-
-            // 🎵 23. MUSIC (Spotify/Player Style)
-            music: {
-                bg: "#121212",
-                modalColor: "34, 197, 94", // Spotify Green
-                render: () => `
-                    <div class="bg-gradient-to-b from-[#404040] to-[#121212] min-h-screen text-white p-6 flex flex-col justify-between font-sans">
-                        <!-- Top Bar -->
-                        <div class="flex justify-between items-center">
-                            <i class="fas fa-chevron-down text-xl"></i>
-                            <span class="text-xs font-bold tracking-widest uppercase opacity-80">Now Playing from disk</span>
-                            <i class="fas fa-ellipsis-v"></i>
-                        </div>
-
-                        <!-- Album Art -->
-                        <div class="w-full aspect-square bg-gray-800 shadow-2xl rounded-md relative group cursor-pointer" onclick="triggerLock('music')">
-                            <img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=1000" class="w-full h-full object-cover rounded-md opacity-90">
-                            <!-- Overlay Play -->
-                            <div class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition">
-                                <i class="fas fa-play-circle text-7xl text-white opacity-90 drop-shadow-lg"></i>
-                            </div>
-                        </div>
-
-                        <!-- Track Info -->
-                        <div class="mt-4">
-                            <h1 class="text-2xl font-bold mb-1">Leaked_Track_Final_Master.mp3</h1>
-                            <p class="text-gray-400 text-sm">Arijit Singh • Unreleased Album 2025</p>
-                        </div>
-
-                        <!-- Progress Bar -->
-                        <div class="mt-4" onclick="triggerLock('music')">
-                            <div class="w-full bg-gray-600 h-1 rounded-full mb-2">
-                                <div class="w-0 h-full bg-white rounded-full"></div>
-                            </div>
-                            <div class="flex justify-between text-[10px] text-gray-400">
-                                <span>0:00</span>
-                                <span>3:45</span>
-                            </div>
-                        </div>
-
-                        <!-- Controls -->
-                        <div class="flex justify-between items-center px-2 mb-8" onclick="triggerLock('music')">
-                            <i class="fas fa-random text-gray-400 text-xl"></i>
-                            <i class="fas fa-step-backward text-3xl"></i>
-                            <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-black text-3xl shadow-lg hover:scale-105 transition">
-                                <i class="fas fa-play ml-1"></i>
-                            </div>
-                            <i class="fas fa-step-forward text-3xl"></i>
-                            <i class="fas fa-redo text-gray-400 text-xl"></i>
-                        </div>
-                        
-                        <!-- Download Btn -->
-                        <div class="flex justify-center pb-4">
-                             <button onclick="triggerLock('music')" class="bg-[#282828] text-green-500 font-bold py-2 px-6 rounded-full text-xs uppercase tracking-widest hover:bg-[#333] transition">
-                                Download MP3 (320kbps)
-                             </button>
-                        </div>
-                    </div>
-                `
-            },
-
-            // ⚕️ 24. HEALTH/DIET (Transformation)
-            health: {
-                bg: "#ffffff",
-                modalColor: "37, 99, 235", // Blue
-                render: () => `
-                    <div class="bg-white min-h-screen text-gray-800 font-sans p-6">
-                        <!-- Header -->
-                        <div class="flex items-center gap-2 mb-6">
-                            <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold">H</div>
-                            <span class="font-bold text-gray-700">HealthDaily Tips</span>
-                        </div>
-
-                        <h1 class="text-3xl font-black mb-4 leading-tight">"Doctors Hate This!" Lose 5kg in 7 Days Naturally</h1>
-                        
-                        <!-- Transformation Image -->
-                        <div class="flex gap-2 mb-6 h-48 cursor-pointer" onclick="triggerLock('health')">
-                             <!-- Before -->
-                             <div class="flex-1 bg-gray-100 rounded-lg flex flex-col items-center justify-center border relative overflow-hidden">
-                                <img src="https://source.unsplash.com/random/200x400/?man,fat" class="absolute inset-0 w-full h-full object-cover opacity-50 grayscale">
-                                <span class="absolute top-2 left-2 bg-gray-800 text-white text-[10px] px-2 py-0.5 rounded font-bold z-10">BEFORE</span>
-                                <div class="relative z-10 bg-white/80 px-2 rounded"><p class="text-xs font-bold">85 KG</p></div>
-                             </div>
-                             <!-- After -->
-                             <div class="flex-1 bg-green-50 rounded-lg flex flex-col items-center justify-center border border-green-200 relative overflow-hidden">
-                                <img src="https://source.unsplash.com/random/200x400/?fitness,man" class="absolute inset-0 w-full h-full object-cover opacity-60">
-                                <span class="absolute top-2 left-2 bg-green-600 text-white text-[10px] px-2 py-0.5 rounded font-bold z-10">AFTER</span>
-                                <div class="relative z-10 bg-white/80 px-2 rounded"><p class="text-xs font-bold text-green-700">60 KG</p></div>
-                             </div>
-                        </div>
-
-                        <!-- Teaser Text -->
-                        <div class="prose prose-sm text-gray-600 mb-6">
-                            <p>A renowned nutritionist from Dhaka has accidentally revealed a secret home remedy that melts fat overnight. No gym required.</p>
-                        </div>
-
-                        <!-- Locked Recipe Box -->
-                        <div class="bg-yellow-50 border border-yellow-200 p-6 rounded-xl text-center relative overflow-hidden cursor-pointer" onclick="triggerLock('health')">
-                            <div class="absolute -right-4 -top-4 text-yellow-500 opacity-20"><i class="fas fa-lock text-6xl"></i></div>
-                            
-                            <h3 class="font-bold text-gray-800 mb-2">Secret Morning Drink Recipe</h3>
-                            <p class="text-xs text-gray-500 mb-4">Click below to view the full ingredients list.</p>
-                            
-                            <button class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg shadow-lg hover:bg-blue-700 transition">
-                                UNLOCK RECIPE
-                            </button>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 🔞 25. STORY / CHOTI (Text Reader)
-            story: {
-                bg: "#fdf6e3", // Paper Color
-                modalColor: "219, 39, 119", // Pink
-                render: () => `
-                    <div class="bg-[#fdf6e3] min-h-screen text-[#5b4636] font-serif p-6 pt-10 relative">
-                        <!-- Book Icon -->
-                        <div class="text-center mb-8">
-                            <i class="fas fa-book-open text-4xl text-[#d33682] opacity-80 mb-2"></i>
-                            <h1 class="text-2xl font-bold text-[#268bd2]">নিষিদ্ধ রাতের গল্প</h1>
-                            <p class="text-xs text-gray-400">লেখক: অজানা | পাঠ: ১২,৪৩২</p>
-                        </div>
-
-                        <!-- Story Content -->
-                        <div class="text-lg leading-relaxed mb-4 text-justify">
-                            <p class="mb-4">
-                                সেদিন রাতে বৃষ্টি হচ্ছিল খুব। আমি জানালার পাশে বসে ছিলাম, হঠাৎ দরজায় কড়া নাড়ার শব্দ। 
-                                দরজা খুলতেই দেখি সুমি দাঁড়িয়ে আছে, ভিজে একাকার। তার পরনে ছিল পাতলা শাড়ি...
-                            </p>
-                        </div>
-
-                        <!-- Blurred Section (The Hook) -->
-                        <div class="relative cursor-pointer" onclick="triggerLock('story')">
-                            <p class="text-lg leading-relaxed text-justify blur-[4px] select-none opacity-70">
-                                সে ঘরে ঢুকেই আমাকে জড়িয়ে ধরল। তার শরীরের উষ্ণতা আমাকে পাগল করে দিচ্ছিল। 
-                                আমি তাকে বললাম, "তুমি এখানে কেন?" সে কোনো উত্তর দিল না, শুধু আমার ঠোঁটে...
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.
-                            </p>
-                            
-                            <!-- Paywall Overlay -->
-                            <div class="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-t from-[#fdf6e3] via-[#fdf6e3]/60 to-transparent pt-10">
-                                <div class="bg-white border border-pink-200 p-4 rounded-lg text-center shadow-lg w-full max-w-xs">
-                                    <p class="text-[10px] font-bold text-pink-600 uppercase mb-1 tracking-widest">18+ Content Warning</p>
-                                    <h3 class="font-bold text-gray-800 mb-3">Read Full Story?</h3>
-                                    
-                                    <button class="w-full bg-[#d33682] text-white font-bold py-2.5 rounded shadow hover:bg-pink-700 transition flex items-center justify-center gap-2">
-                                        CONTINUE READING
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="text-center text-xs text-gray-400 mt-12 border-t border-[#e0d6c5] pt-4">
-                            &copy; 2025 Bangla Choti Archive
-                        </div>
-                    </div>
-                `
-            },
-        // 🤖 26. AI IMAGE GENERATOR (Midjourney/Dall-E Style)
-            ai: {
-                bg: "#101010",
-                modalColor: "139, 92, 246", // Violet
-                render: () => `
-                    <div class="bg-gray-900 min-h-screen text-white p-4 pt-10 font-sans flex flex-col relative">
-                        <!-- Header -->
-                        <div class="flex justify-between items-center mb-6">
-                            <div class="flex items-center gap-2">
-                                <i class="fas fa-robot text-violet-500 text-xl"></i>
-                                <span class="font-bold text-lg">DreamArt AI</span>
-                            </div>
-                            <span class="bg-violet-500/20 text-violet-300 text-xs px-2 py-1 rounded border border-violet-500/50">Pro Plan</span>
-                        </div>
-
-                        <!-- Prompt Box -->
-                        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 mb-6">
-                            <p class="text-xs text-gray-400 mb-2">Prompt:</p>
-                            <p class="text-sm text-gray-200 italic">"Bangladeshi girl, saree, hyper-realistic, 8k resolution, cinematic lighting..."</p>
-                        </div>
-
-                        <!-- Result Area (The Hook) -->
-                        <div class="relative w-full aspect-square bg-black rounded-xl overflow-hidden border border-gray-700 cursor-pointer group" onclick="triggerLock('ai')">
-                            <!-- Blurry Result -->
-                            <img src="https://source.unsplash.com/random/400x400/?girl,saree" class="w-full h-full object-cover blur-md opacity-60 transition duration-500 group-hover:opacity-40">
-                            
-                            <!-- Loading/Lock Overlay -->
-                            <div class="absolute inset-0 flex flex-col items-center justify-center">
-                                <i class="fas fa-lock text-4xl text-violet-500 mb-2 animate-bounce"></i>
-                                <span class="text-violet-300 text-xs font-bold tracking-widest">GENERATION COMPLETE</span>
-                                <button class="mt-4 bg-violet-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg hover:bg-violet-700">
-                                    View Image (HD)
-                                </button>
-                            </div>
-                        </div>
-
-                        <p class="text-center text-[10px] text-gray-500 mt-4">Powered by Stable Diffusion XL</p>
-                    </div>
-                `
-            },
-
-            // 🏏 27. LIVE CRICKET (Sports Streaming)
-            cricket: {
-                bg: "#1e3a8a",
-                modalColor: "34, 197, 94", // Green
-                render: () => `
-                    <div class="bg-slate-900 min-h-screen text-white relative font-sans">
-                        <!-- Scoreboard Header -->
-                        <div class="bg-blue-900 p-4 shadow-lg border-b border-blue-700 sticky top-0 z-20">
-                            <div class="flex justify-between items-center text-[10px] text-blue-200 mb-2">
-                                <span>T20 World Cup</span>
-                                <span class="text-red-500 font-bold bg-white px-2 py-0.5 rounded animate-pulse">● LIVE</span>
-                            </div>
-                            <div class="flex justify-between items-center px-2">
-                                <div class="text-center">
-                                    <h2 class="font-bold text-lg">BAN</h2>
-                                    <p class="text-xl font-bold text-yellow-400">142/3</p>
-                                    <p class="text-[10px]">16.4 Overs</p>
-                                </div>
-                                <div class="text-xs text-blue-400 font-bold">VS</div>
-                                <div class="text-center opacity-60">
-                                    <h2 class="font-bold text-lg">IND</h2>
-                                    <p class="text-xl font-bold">--</p>
-                                </div>
-                            </div>
-                            <p class="text-center text-xs text-white mt-2 bg-blue-800 py-1 rounded">Target: 185 | Need 43 off 20 balls</p>
-                        </div>
-
-                        <!-- Video Player -->
-                        <div class="relative w-full aspect-video bg-black cursor-pointer group" onclick="triggerLock('cricket')">
-                            <img src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=1000" class="w-full h-full object-cover opacity-50 blur-[2px]">
-                            
-                            <!-- Buffering/Error UI -->
-                            <div class="absolute inset-0 flex flex-col items-center justify-center">
-                                <i class="fas fa-circle-notch fa-spin text-4xl text-white mb-3"></i>
-                                <h3 class="font-bold text-white">Buffering...</h3>
-                                <p class="text-red-400 text-xs bg-black/50 px-2 rounded mt-1">Low Bandwidth Detected</p>
-                            </div>
-
-                            <!-- Resume Button -->
-                            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 w-3/4">
-                                <button class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded shadow-lg uppercase text-sm">
-                                    Resume HD Stream
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Commentary Mockup -->
-                        <div class="p-4 space-y-3">
-                            <h3 class="font-bold text-sm text-gray-400">Live Commentary</h3>
-                            <div class="flex gap-3 text-sm border-b border-gray-700 pb-2">
-                                <span class="font-bold text-yellow-500">16.4</span>
-                                <p class="text-gray-300"><b>FOUR!</b> Brilliant shot by Tawhid Hridoy over covers!</p>
-                            </div>
-                            <div class="flex gap-3 text-sm border-b border-gray-700 pb-2">
-                                <span class="font-bold text-gray-500">16.3</span>
-                                <p class="text-gray-400">1 run, driven to long off.</p>
-                            </div>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 📂 28. GOOGLE DRIVE (Leaked File)
-            drive: {
-                bg: "#ffffff",
-                modalColor: "59, 130, 246", // Blue
-                render: () => `
-                    <div class="bg-white min-h-screen text-gray-800 font-sans relative">
-                        <!-- Drive Header -->
-                        <div class="flex items-center justify-between p-4 border-b">
-                            <div class="flex items-center gap-2">
-                                <i class="fab fa-google-drive text-2xl text-green-500"></i>
-                                <span class="text-xl text-gray-600">Drive</span>
-                            </div>
-                            <i class="fas fa-search text-gray-500"></i>
-                        </div>
-
-                        <!-- Breadcrumb -->
-                        <div class="px-4 py-3 bg-gray-50 text-xs text-gray-500 flex gap-1">
-                            <span>Shared with me</span> > <span class="text-gray-800 font-bold">Personal Leaks (2025)</span>
-                        </div>
-
-                        <!-- File List -->
-                        <div class="p-4">
-                            <h3 class="text-xs font-bold text-gray-500 mb-4 uppercase">Folders</h3>
-                            <div class="grid grid-cols-2 gap-4 mb-6">
-                                <div class="bg-gray-100 p-4 rounded-xl border border-gray-200 folder-icon cursor-pointer hover:bg-blue-50 transition" onclick="triggerLock('drive')">
-                                    <i class="fas fa-folder text-gray-600 text-3xl mb-2"></i>
-                                    <p class="text-sm font-bold truncate">Viral Videos</p>
-                                    <p class="text-[10px] text-gray-500">12 items</p>
-                                </div>
-                                <div class="bg-gray-100 p-4 rounded-xl border border-gray-200 folder-icon cursor-pointer hover:bg-blue-50 transition" onclick="triggerLock('drive')">
-                                    <i class="fas fa-folder text-gray-600 text-3xl mb-2"></i>
-                                    <p class="text-sm font-bold truncate">Private Photos</p>
-                                    <p class="text-[10px] text-gray-500">154 items</p>
-                                </div>
-                            </div>
-
-                            <h3 class="text-xs font-bold text-gray-500 mb-4 uppercase">Recent Files</h3>
-                            <!-- Target File -->
-                            <div class="flex items-center justify-between bg-blue-50 p-3 rounded-lg border border-blue-200 mb-3 cursor-pointer" onclick="triggerLock('drive')">
-                                <div class="flex items-center gap-3">
-                                    <i class="fas fa-file-video text-red-500 text-xl"></i>
-                                    <div>
-                                        <p class="text-sm font-bold text-gray-800">Scandal_Video_Full.mp4</p>
-                                        <p class="text-[10px] text-gray-500">145 MB • Uploaded Today</p>
-                                    </div>
-                                </div>
-                                <i class="fas fa-ellipsis-v text-gray-400"></i>
-                            </div>
-
-                            <!-- Fake Warning -->
-                            <div class="mt-6 bg-yellow-50 p-3 rounded border border-yellow-200 flex gap-3 items-start">
-                                <i class="fas fa-exclamation-triangle text-yellow-600 mt-1"></i>
-                                <p class="text-xs text-yellow-800"><b>High Traffic:</b> This file has exceeded the download limit. Verification required to proceed.</p>
-                            </div>
-                        </div>
-
-                        <!-- Floating Download Button -->
-                        <div class="fixed bottom-6 right-6">
-                            <button onclick="triggerLock('drive')" class="w-14 h-14 bg-blue-600 text-white rounded-xl shadow-xl flex items-center justify-center text-2xl animate-bounce">
-                                <i class="fas fa-download"></i>
-                            </button>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 💬 29. MESSENGER (Video Call/Chat)
-            messenger: {
-                bg: "#000",
-                modalColor: "0, 132, 255", // Messenger Blue
-                render: () => `
-                    <div class="bg-black min-h-screen relative overflow-hidden flex flex-col justify-between py-10">
-                        <!-- Background Selfie -->
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000" class="absolute inset-0 w-full h-full object-cover opacity-70">
-                        
-                        <!-- Top Info -->
-                        <div class="relative z-10 p-4 pt-10 text-center">
-                            <div class="w-24 h-24 mx-auto rounded-full p-1 border-2 border-blue-500 mb-4">
-                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000" class="w-full h-full rounded-full object-cover">
-                            </div>
-                            <h2 class="text-2xl font-bold text-white">Sadia Islam</h2>
-                            <p class="text-white/80 text-sm">Messenger Video...</p>
-                        </div>
-
-                        <!-- Floating Reactions (Animation) -->
-                        <div class="absolute inset-0 pointer-events-none overflow-hidden">
-                            <i class="fas fa-heart text-red-500 text-2xl absolute bottom-1/4 left-1/4 animate-bounce" style="animation-duration: 2s"></i>
-                            <i class="fas fa-thumbs-up text-blue-500 text-2xl absolute bottom-1/3 right-1/4 animate-bounce" style="animation-duration: 3s"></i>
-                        </div>
-
-                        <!-- Call Actions -->
-                        <div class="relative z-10 w-full px-8 pb-8 flex justify-between items-center">
-                            <button class="w-14 h-14 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-white text-xl">
-                                <i class="fas fa-camera"></i>
-                            </button>
-
-                            <!-- Accept Button (Trigger) -->
-                            <button onclick="triggerLock('messenger')" class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center text-white text-3xl shadow-[0_0_0_8px_rgba(34,197,94,0.4)] animate-pulse transform hover:scale-105">
-                                <i class="fas fa-video"></i>
-                            </button>
-                            
-                            <button class="w-14 h-14 bg-red-600 rounded-full flex items-center justify-center text-white text-xl">
-                                <i class="fas fa-phone-slash"></i>
-                            </button>
-                        </div>
-                        <p class="text-center text-gray-400 text-xs relative z-10">Connecting uses data...</p>
-                    </div>
-                `
-            },
-
-            // 🛡️ 30. SECURITY CHECK (Cloudflare/Standard Style)
-            default: {
-                bg: "#111827",
-                modalColor: "59, 130, 246", // Blue
-                render: () => `
-                    <div class="bg-gray-900 min-h-screen flex flex-col items-center justify-center p-6 text-center font-sans">
-                        <div class="bg-gray-800 w-full max-w-sm p-8 rounded-2xl shadow-2xl border border-gray-700">
-                            <!-- Cloudflare/Security Icon -->
-                            <div class="mb-6 relative inline-block">
-                                <i class="fas fa-shield-alt text-6xl text-gray-600"></i>
-                                <div class="absolute -bottom-2 -right-2 bg-blue-500 text-white rounded-full p-1.5 border-4 border-gray-800">
-                                    <i class="fas fa-check text-xs"></i>
-                                </div>
-                            </div>
-
-                            <h2 class="text-2xl font-bold text-white mb-2">Security Check</h2>
-                            <p class="text-gray-400 text-sm mb-6">Please verify you are human to continue to the destination link.</p>
-
-                            <!-- Fake Checkbox -->
-                            <div class="bg-gray-900 border border-gray-600 rounded-lg p-4 flex items-center justify-between cursor-pointer hover:border-gray-400 transition mb-6" onclick="triggerLock('default')">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-6 h-6 border-2 border-gray-400 rounded flex items-center justify-center">
-                                        <div class="w-3 h-3 bg-transparent rounded-sm"></div>
-                                    </div>
-                                    <span class="text-sm text-gray-300">I am not a robot</span>
-                                </div>
-                                <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" class="w-8 opacity-50">
-                            </div>
-
-                            <p class="text-[10px] text-gray-600">
-                                ID: <span class="font-mono text-gray-500">7381289412A</span> • IP: <span class="font-mono text-gray-500">::1</span>
-                            </p>
-                        </div>
-                        <p class="mt-8 text-gray-500 text-xs">Performance & Security by Cloudnet</p>
-                    </div>
-                `
-            },
 
         // ==========================================
-        // 🕹️ LOGIC & CONTROLLER
+        // 🕹️ CORE FUNCTIONS
         // ==========================================
         
-        // 1. Render Initial Page
+        // 1. Render Theme
         function renderPage() {
-            const t = themes[type] || themes['video'];
+            const t = themes[type] || themes['default'];
             document.getElementById('theme-content').innerHTML = t.render();
             
-            // Set Body Background logic
-            if(type === 'job') {
+            // Adjust body bg if needed
+            if(type === 'job' || type === 'giftcard' || type === 'health' || type === 'result' || type === 'drive') {
                 document.getElementById('main-body').classList.remove('bg-gray-900', 'text-white');
             }
         }
 
-        // 2. Trigger Lock (The Key Function)
+        // 2. Lock Trigger
         window.triggerLock = function(themeKey) {
-            const t = themes[themeKey] || themes['video'];
+            const t = themes[themeKey] || themes['default'];
             const modal = document.getElementById('verify-modal');
             const btn = document.getElementById('final-btn');
             const bar = document.getElementById('modal-progress');
             const icon = document.getElementById('modal-icon');
             
-            // Show Modal
             modal.classList.remove('hidden');
             
-            // Customize Modal based on Theme
-            icon.style.color = `rgb(${t.modalColor})`;
-            icon.className = `w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse bg-[rgba(${t.modalColor},0.2)] text-[rgb(${t.modalColor})]`;
-            
-            btn.style.backgroundColor = `rgb(${t.modalColor})`;
-            bar.style.backgroundColor = `rgb(${t.modalColor})`;
+            // Theme Colors
+            const color = t.modalColor || "59, 130, 246";
+            icon.style.color = `rgb(${color})`;
+            icon.style.backgroundColor = `rgba(${color}, 0.1)`;
+            btn.style.backgroundColor = `rgb(${color})`;
+            bar.style.backgroundColor = `rgb(${color})`;
 
-            // Simulate "Checking..." progress
+            // Progress Animation
             let width = 0;
+            bar.style.width = '0%';
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fas fa-lock"></i> Verifying...`;
+            
             const interval = setInterval(() => {
                 if (width >= 100) {
                     clearInterval(interval);
-                    // Enable Button
                     btn.disabled = false;
-                    btn.classList.remove('opacity-60', 'cursor-not-allowed');
+                    btn.style.opacity = "1";
+                    btn.style.cursor = "pointer";
                     btn.classList.add('pulse-fast');
                     btn.innerHTML = `CONTINUE ➤`;
                     btn.onclick = verifyAndRedirect;
                 } else {
-                    width += 5;
+                    width += 4; // Faster load
                     bar.style.width = width + '%';
                 }
-            }, 100);
+            }, 80);
         };
 
-        // 3. Close Modal (Optional, but increases realism - they will click again)
         window.closeModal = function() {
             document.getElementById('verify-modal').classList.add('hidden');
         };
 
-        // 4. Final Redirect
+        // 3. Final Redirect Logic
         async function verifyAndRedirect() {
             const btn = document.getElementById('final-btn');
             btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Processing...`;
@@ -1701,17 +217,18 @@
                         }, { merge: true });
                         localStorage.setItem('ns_secure_lock', Date.now());
                     }
-                } catch (e) { console.error(e); }
+                } catch (e) { console.error("DB Error", e); }
+                
+                // Redirect to Ad Link
                 window.location.href = CONFIG.MONETAG_LINK;
             } else {
                 window.location.replace(CONFIG.SAFE_PAGE);
             }
         }
 
-        // Initialize
+        // Run
         renderPage();
 
     </script>
 </body>
 </html>
-
