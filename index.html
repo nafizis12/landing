@@ -3,776 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifying Connection...</title>
-    
-    <!-- Design Libraries -->
+    <title>Secure Gateway</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <!-- 🔥 MONETAG MULTITAG (Head Section) -->
-    <!-- আপনার মাল্টিট্যাগ স্ক্রিপ্ট এখানে দিন -->
-    <script>
-        // Example Placeholder for Multitag
-        // (function(s,u,z,p){s.src=u,s.setAttribute('data-zone',z),p.appendChild(s);})(document.createElement('script'),'https://zpro.com/tag.min.js',123456,document.body||document.documentElement)
-    </script>
 
     <style>
         body { font-family: 'Inter', 'Hind Siliguri', sans-serif; user-select: none; }
         .hidden-force { display: none !important; }
-        .blur-content { filter: blur(5px); pointer-events: none; }
         
-        /* Custom Animations */
-        @keyframes scan { 0% { top: 0%; } 100% { top: 100%; } }
-        .scanner-line { position: absolute; width: 100%; height: 2px; background: #00ff00; animation: scan 2s infinite linear; box-shadow: 0 0 10px #00ff00; }
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
         
-        .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: loading 1.5s infinite; }
-        @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #444; rounded: 5px; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 overflow-x-hidden">
+<body class="bg-gray-900 text-white min-h-screen">
 
-    <!-- 🛡️ SECURITY OVERLAY (Fingerprinting) -->
-    <div id="security-check" class="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center text-white">
-        <div class="w-16 h-16 border-4 border-gray-800 border-t-green-500 rounded-full animate-spin mb-4"></div>
-        <div class="text-center">
-            <h2 class="text-lg font-bold tracking-widest">CLOUDFLARE CHECK</h2>
-            <p class="text-xs text-gray-400 mt-2">Verifying your browser...</p>
-            <p id="check-status" class="text-[10px] text-gray-500 mt-4 font-mono">ID: <span id="visitor-id">...</span></p>
-        </div>
-    </div>
-
-    <!-- 📦 MAIN CONTAINER -->
-    <div id="app-container" class="hidden-force min-h-screen relative pb-20">
+    <!-- 🏠 HOME MENU (Dashboard) -->
+    <div id="home-menu" class="hidden-force max-w-md mx-auto min-h-screen bg-gray-900 pb-10">
         <!-- Header -->
-        <div id="header-area"></div>
-        
-        <!-- Content -->
-        <div id="main-content"></div>
+        <div class="bg-gradient-to-r from-blue-900 to-gray-900 p-6 rounded-b-3xl shadow-2xl border-b border-gray-700">
+            <h1 class="text-2xl font-bold text-white">🔥 Trending Now</h1>
+            <p class="text-sm text-gray-400">Select a category to continue</p>
+        </div>
 
-        <!-- Sticky Footer Ad / Fake Warning -->
-        <div class="fixed bottom-0 w-full bg-white/90 backdrop-blur border-t p-3 text-center text-xs text-gray-500 z-40">
-            Protected by Google reCAPTCHA <br> Privacy - Terms
+        <!-- Grid Menu -->
+        <div class="p-4 grid grid-cols-2 gap-4 mt-2" id="menu-grid">
+            <!-- Items injected via JS -->
         </div>
     </div>
 
-    <script type="module">
+    <!-- 📄 LANDING PAGE CONTAINER -->
+    <div id="landing-page" class="hidden-force w-full max-w-md mx-auto min-h-screen relative bg-black">
+        <div id="page-content"></div>
+    </div>
+
+    <script>
         // ==========================================
-        // ⚙️ CONFIGURATION
+        // ⚙️ CONFIGURATION & THEMES
         // ==========================================
         const CONFIG = {
-            // আপনার মনিট্যাগ ডাইরেক্ট লিংক এখানে দিন
             DIRECT_LINK: "https://your-monetag-direct-link.com", 
-            WAIT_TIME: 6000, // 6 Seconds
-            SCROLL_TRIGGER: 100, // Pixels to scroll before timer starts
-            MAX_DAILY_VIEWS: 4, // Max views per IP/User per day
-            FIREBASE_CONFIG: {
-                // আপনার ফায়ারবেস কনফিগ এখানে বসান
-                apiKey: "YOUR_API_KEY",
-                authDomain: "YOUR_PROJECT.firebaseapp.com",
-                projectId: "YOUR_PROJECT_ID",
-                storageBucket: "YOUR_PROJECT.appspot.com",
-                messagingSenderId: "123456",
-                appId: "1:123456:web:abcde"
-            }
+            WAIT_TIME: 6000, 
         };
 
-        // ==========================================
-        // 🎨 12 PROFESSIONAL THEMES
-        // ==========================================
         const THEMES = {
-            // 🎬 1. MOVIE (Netflix Style)
+            // 🎬 1. MOVIE
             movie: {
-                bg: "bg-[#141414] text-white",
-                render: () => `
-                    <div class="relative h-[400px]">
-                        <img src="https://assets.nflxext.com/ffe/siteui/vlv3/c38a2d52-138e-48a3-ab68-36787ece46b3/eeb03fc9-99bt-458a-b47f-20678a07a054/BD-en-20240101-popsignuptwoweeks-perspective_alpha_website_small.jpg" class="w-full h-full object-cover opacity-50">
-                        <div class="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-black/60"></div>
-                        <div class="absolute bottom-0 p-6 w-full">
-                            <span class="text-red-600 font-bold tracking-widest text-xs">NETFLIX ORIGINAL</span>
-                            <h1 class="text-4xl font-extrabold mt-2 mb-2">Jawan: Extended Cut</h1>
-                            <div class="flex items-center gap-2 text-sm text-gray-300 mb-4">
-                                <span class="bg-gray-700 px-1 rounded">HD</span>
-                                <span class="text-green-400">98% Match</span>
-                                <span>2h 45m</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="p-6 space-y-4">
-                        <p class="text-gray-400 text-sm">A high-octane action thriller where a man is driven by a personal vendetta to rectify the wrongs in society.</p>
-                        
-                        <!-- Interaction Zone -->
-                        <div id="interaction-box" class="bg-[#1f1f1f] border border-gray-700 p-4 rounded-lg text-center mt-6">
-                            <p class="text-sm text-gray-300 mb-3"><i class="fas fa-server text-red-500"></i> Server 1: <span id="status-text">Waiting for connection...</span></p>
-                            
-                            <div class="h-1 bg-gray-700 w-full rounded mb-4 overflow-hidden">
-                                <div id="progress-bar" class="h-full bg-red-600 w-0 transition-all duration-300"></div>
-                            </div>
-
-                            <button id="action-btn" class="w-full bg-gray-600 text-gray-300 py-3 rounded font-bold cursor-not-allowed opacity-50" disabled>
-                                <i class="fas fa-lock"></i> LOADING PLAYER...
-                            </button>
-                        </div>
-                        
-                        <!-- Fake Reviews to force scroll -->
-                        <h3 class="font-bold text-lg mt-8">More Like This</h3>
-                        <div class="grid grid-cols-3 gap-2">
-                             <div class="h-32 bg-gray-800 rounded"></div>
-                             <div class="h-32 bg-gray-800 rounded"></div>
-                             <div class="h-32 bg-gray-800 rounded"></div>
-                        </div>
-                    </div>
-                `
+                title: "Viral Movie",
+                icon: "fa-film",
+                color: "text-red-500",
+                render: () => `<div class="bg-[#141414] min-h-screen text-white p-6"><h1 class="text-3xl font-bold text-red-600 mb-4">NETFLIX LEAK</h1><p class="text-gray-400 mb-8">Jawan Extended Cut (4K)</p><div class="bg-gray-800 p-6 rounded-lg text-center"><i class="fas fa-play-circle text-6xl mb-4"></i><p class="mb-4 text-sm">Server needs verification</p><div class="h-2 bg-gray-600 rounded mb-4"><div id="progress-bar" class="h-full bg-red-600 w-0"></div></div><button id="action-btn" class="w-full bg-red-600 py-3 rounded font-bold disabled:opacity-50" disabled>Unlock Player</button></div></div>`
             },
-
-            // 📥 2. DOWNLOAD (Mediafire Style)
-            download: {
-                bg: "bg-[#f3f4f6] text-gray-800",
-                render: () => `
-                    <div class="bg-[#0070f0] p-4 text-white flex justify-between items-center shadow-lg">
-                        <h2 class="font-bold text-xl">MediaFire</h2>
-                        <i class="fas fa-bars"></i>
-                    </div>
-                    <div class="p-6 flex flex-col items-center mt-4">
-                        <div class="bg-white p-8 rounded shadow-md w-full text-center border border-gray-200">
-                            <div class="text-6xl text-gray-400 mb-4"><i class="fas fa-file-archive"></i></div>
-                            <h1 class="text-lg font-bold break-all">GTA_V_Mobile_Original.apk</h1>
-                            <p class="text-sm text-gray-500 mt-1">Size: 1.2 GB • Uploaded: Today</p>
-                            
-                            <div id="interaction-box" class="mt-8">
-                                <p id="status-text" class="text-xs text-blue-600 font-bold mb-2 animate-pulse">Scanning for viruses...</p>
-                                <div class="h-2 bg-gray-200 w-full rounded-full mb-4 overflow-hidden">
-                                    <div id="progress-bar" class="h-full bg-blue-500 w-0"></div>
-                                </div>
-                                <button id="action-btn" class="w-full bg-gray-400 text-white py-4 rounded shadow font-bold cursor-not-allowed" disabled>
-                                    GENERATING LINK...
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-8 text-left w-full">
-                            <h3 class="font-bold border-b pb-2 mb-2">Description</h3>
-                            <p class="text-sm text-gray-600">Download the full compressed version for Android. High graphics supported.</p>
-                            <div class="mt-4 h-20 bg-gray-200 w-full animate-pulse rounded"></div>
-                        </div>
-                    </div>
-                `
-            },
-
-            // ⚽ 3. SPORTS (Live Match)
-            sports: {
-                bg: "bg-[#0f172a] text-white",
-                render: () => `
-                    <div class="bg-gradient-to-r from-blue-900 to-slate-900 p-4 sticky top-0 z-10 shadow-lg border-b border-blue-700">
-                        <div class="flex justify-between items-center">
-                            <span class="bg-red-600 text-xs px-2 py-1 rounded font-bold animate-pulse">● LIVE</span>
-                            <span class="text-xs font-mono text-gray-300">ICC T20 WC</span>
-                        </div>
-                        <div class="flex justify-between items-center mt-4 px-2">
-                            <div class="text-center">
-                                <img src="https://flagcdn.com/w40/bd.png" class="mx-auto w-10 mb-1 shadow">
-                                <h2 class="font-bold text-xl">BAN</h2>
-                                <p class="text-sm text-gray-400">142/4</p>
-                            </div>
-                            <div class="text-2xl font-bold text-yellow-500">VS</div>
-                            <div class="text-center">
-                                <img src="https://flagcdn.com/w40/in.png" class="mx-auto w-10 mb-1 shadow">
-                                <h2 class="font-bold text-xl">IND</h2>
-                                <p class="text-sm text-gray-400">Target: 180</p>
-                            </div>
-                        </div>
-                        <p class="text-center text-xs text-blue-300 mt-2">18.2 Overs • Rain Delay</p>
-                    </div>
-
-                    <div class="p-4 mt-2">
-                        <div id="interaction-box" class="bg-[#1e293b] p-6 rounded-xl border border-blue-900/50 shadow-2xl text-center">
-                            <i class="fas fa-tv text-4xl text-blue-500 mb-3"></i>
-                            <h3 class="font-bold text-lg">Watch Live Stream (HD)</h3>
-                            <p class="text-xs text-gray-400 mb-6">Server load is high. Verify you are human.</p>
-
-                            <div class="h-1.5 bg-gray-700 w-full rounded-full mb-4">
-                                <div id="progress-bar" class="h-full bg-blue-500 w-0"></div>
-                            </div>
-
-                            <button id="action-btn" class="w-full bg-slate-700 text-gray-400 py-3 rounded-lg font-bold border border-slate-600" disabled>
-                                CONNECTING...
-                            </button>
-                        </div>
-
-                        <!-- Commentary / Filler to force scroll -->
-                        <div class="mt-6 space-y-3">
-                            <div class="bg-[#1e293b] p-3 rounded text-sm"><span class="font-bold text-blue-400">18.1</span> Four! beautiful shot through covers.</div>
-                            <div class="bg-[#1e293b] p-3 rounded text-sm"><span class="font-bold text-blue-400">17.6</span> Wicket! Caught behind.</div>
-                            <div class="bg-[#1e293b] p-3 rounded text-sm"><span class="font-bold text-blue-400">Commentary</span> Loading previous over data...</div>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 💼 4. JOB (Official Govt Circular)
+            // 💼 2. JOB
             job: {
-                bg: "bg-white text-gray-900",
-                render: () => `
-                    <div class="bg-[#006a4e] p-4 text-center sticky top-0 z-20 shadow-md flex items-center justify-center gap-3">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Government_Seal_of_Bangladesh.svg/1200px-Government_Seal_of_Bangladesh.svg.png" class="w-10 h-10 bg-white rounded-full p-1">
-                        <div class="text-left text-white">
-                            <h2 class="font-bold text-sm leading-tight">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</h2>
-                            <p class="text-[10px] opacity-80">প্রাথমিক ও গণশিক্ষা মন্ত্রণালয়</p>
-                        </div>
-                    </div>
-
-                    <div class="p-6 min-h-screen">
-                        <div class="border border-green-200 bg-green-50 p-4 rounded-lg mb-6 text-center shadow-sm">
-                            <h1 class="text-xl font-bold text-gray-800">নিয়োগ বিজ্ঞপ্তি ২০২৫</h1>
-                            <p class="text-sm text-gray-600 mt-1">শূন্য পদের তালিকা প্রকাশ</p>
-                        </div>
-
-                        <table class="w-full text-sm text-left mb-6 border-collapse">
-                            <tr class="border-b"><td class="py-2 text-gray-500">পদসংখ্যা</td><td class="font-bold text-right">৪৫০০+</td></tr>
-                            <tr class="border-b"><td class="py-2 text-gray-500">বেতন স্কেল</td><td class="font-bold text-right">১১,০০০-২৬,৫৯০/-</td></tr>
-                            <tr class="border-b"><td class="py-2 text-gray-500">শিক্ষাগত যোগ্যতা</td><td class="font-bold text-right">স্নাতক/সমমান</td></tr>
-                            <tr><td class="py-2 text-gray-500">আবেদনের শেষ তারিখ</td><td class="font-bold text-right text-red-600">৩০ ডিসেম্বর</td></tr>
-                        </table>
-
-                        <div id="interaction-box" class="bg-gray-100 p-5 rounded-lg border border-gray-300 text-center">
-                            <p class="text-sm font-bold text-gray-700 mb-2">আবেদন ফর্ম ডাউনলোড করুন</p>
-                            <p id="status-text" class="text-xs text-gray-500 mb-4">সার্ভার যাচাই করা হচ্ছে...</p>
-                            
-                            <div class="h-2 bg-gray-300 w-full rounded mb-4">
-                                <div id="progress-bar" class="h-full bg-[#006a4e] w-0"></div>
-                            </div>
-
-                            <button id="action-btn" class="w-full bg-gray-400 text-white py-3 rounded shadow font-bold" disabled>
-                                অপেক্ষা করুন...
-                            </button>
-                        </div>
-                        
-                        <div class="mt-8 opacity-50 text-justify text-xs text-gray-500">
-                            বিঃদ্রঃ অসম্পূর্ণ আবেদন বাতিল বলে গণ্য হবে। প্রার্থীর বয়স অবশ্যই ১৮ থেকে ৩০ বছরের মধ্যে হতে হবে। মুক্তিযোদ্ধা কোটার ক্ষেত্রে বয়সসীমা ৩২ বছর।
-                        </div>
-                    </div>
-                `
+                title: "Govt Job",
+                icon: "fa-briefcase",
+                color: "text-green-500",
+                render: () => `<div class="bg-white min-h-screen text-gray-800 p-6"><div class="border-b-2 border-green-600 pb-4 mb-4 text-center"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Government_Seal_of_Bangladesh.svg/1200px-Government_Seal_of_Bangladesh.svg.png" class="w-16 mx-auto mb-2"><h2 class="font-bold text-green-800">Govt Circular 2025</h2></div><div class="bg-green-50 p-4 rounded border border-green-200 mb-6"><p class="font-bold">Total Post: 4500+</p><p>Salary: 26,000/-</p></div><div class="text-center"><p class="text-xs mb-2">Downloading Application Form...</p><div class="h-2 bg-gray-300 rounded mb-4"><div id="progress-bar" class="h-full bg-green-600 w-0"></div></div><button id="action-btn" class="w-full bg-green-700 text-white py-3 rounded font-bold disabled:opacity-50" disabled>Download PDF</button></div></div>`
             },
-
-            // 💎 5. CRYPTO (Airdrop Claim)
-            crypto: {
-                bg: "bg-[#0b0e11] text-white",
-                render: () => `
-                    <div class="p-6 flex flex-col items-center justify-center min-h-[80vh]">
-                        <div class="w-20 h-20 bg-yellow-500 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(234,179,8,0.5)]">
-                            <i class="fab fa-bitcoin text-5xl text-white"></i>
-                        </div>
-                        <h1 class="text-3xl font-bold text-center">Binance Airdrop</h1>
-                        <p class="text-gray-400 mt-2 mb-8 text-center text-sm">Claim 10 USDT Welcome Bonus</p>
-                        
-                        <div class="bg-[#1e2329] w-full p-4 rounded-lg border border-gray-700 mb-6">
-                            <div class="flex justify-between text-sm mb-2">
-                                <span>Wallet Status:</span>
-                                <span class="text-green-500 font-mono">Connected</span>
-                            </div>
-                            <div class="flex justify-between text-sm mb-4">
-                                <span>Network:</span>
-                                <span class="text-yellow-500">BNB Smart Chain</span>
-                            </div>
-                        </div>
-
-                        <div id="interaction-box" class="w-full">
-                            <div class="h-1 bg-gray-800 w-full rounded mb-4">
-                                <div id="progress-bar" class="h-full bg-yellow-500 w-0 shadow-[0_0_10px_gold]"></div>
-                            </div>
-                            <button id="action-btn" class="w-full bg-[#2b3139] text-gray-400 font-bold py-4 rounded-lg uppercase tracking-wider" disabled>
-                                Processing Transaction...
-                            </button>
-                        </div>
-                        
-                        <div class="mt-8 w-full">
-                             <img src="https://s3.coinmarketcap.com/generated/sparklines/web/7d/2781.svg" class="w-full opacity-30 filter grayscale">
-                        </div>
-                    </div>
-                `
+            // ⚽ 3. SPORTS
+            sports: {
+                title: "Live Cricket",
+                icon: "fa-baseball-bat-ball",
+                color: "text-blue-500",
+                render: () => `<div class="bg-[#0f172a] min-h-screen text-white p-4"><div class="bg-blue-900 p-4 rounded-lg mb-6 text-center"><span class="bg-red-600 text-xs px-2 py-1 rounded animate-pulse">LIVE</span><h2 class="text-xl font-bold mt-2">BAN vs IND</h2><p class="text-yellow-400 font-bold">142/3 (18.2 ov)</p></div><div class="bg-[#1e293b] p-6 rounded text-center"><i class="fas fa-tv text-4xl text-blue-400 mb-4"></i><p class="text-sm text-gray-400 mb-4">High traffic on server. Verify to watch.</p><div class="h-1 bg-gray-700 rounded mb-4"><div id="progress-bar" class="h-full bg-blue-500 w-0"></div></div><button id="action-btn" class="w-full bg-blue-600 py-3 rounded font-bold disabled:opacity-50" disabled>Watch Stream</button></div></div>`
             },
-            // 🔞 7. TELEGRAM 18+ (Viral Group)
+            // 🔞 4. TELEGRAM 18+
             telegram_18: {
-                bg: "bg-[#229ED9] text-white",
-                render: () => `
-                    <div class="max-w-md mx-auto min-h-screen bg-[#1c242f]">
-                        <!-- Header -->
-                        <div class="bg-[#233040] p-4 flex items-center gap-3 shadow-lg">
-                            <i class="fas fa-arrow-left text-gray-400"></i>
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Telegram_logo.svg/2048px-Telegram_logo.svg.png" class="w-10 h-10">
-                            <div>
-                                <h2 class="font-bold text-lg">Desi Viral Leaks 🔞</h2>
-                                <p class="text-xs text-[#5bb6eb]">125,403 subscribers</p>
-                            </div>
-                        </div>
-
-                        <!-- Content -->
-                        <div class="p-4 space-y-4">
-                            <!-- Fake Post -->
-                            <div class="bg-[#233040] p-2 rounded-lg rounded-tl-none border-l-4 border-[#229ED9]">
-                                <div class="relative h-48 bg-black rounded mb-2 overflow-hidden group">
-                                    <img src="https://images.unsplash.com/photo-1596706037380-0010952d7189?q=80&w=400" class="w-full h-full object-cover opacity-30 blur-sm">
-                                    <div class="absolute inset-0 flex items-center justify-center">
-                                        <div class="w-12 h-12 bg-[#00000080] rounded-full flex items-center justify-center border-2 border-white">
-                                            <i class="fas fa-play text-white ml-1"></i>
-                                        </div>
-                                    </div>
-                                    <span class="absolute bottom-2 right-2 bg-black/60 px-1 text-xs rounded">12:45</span>
-                                </div>
-                                <p class="text-sm text-gray-300">New college viral video uploaded! 🔥 Watch before delete.</p>
-                                <p class="text-[10px] text-gray-500 text-right mt-1">10:30 PM <i class="fas fa-eye"></i> 45k</p>
-                            </div>
-
-                            <!-- Interaction Zone -->
-                            <div id="interaction-box" class="mt-8 bg-[#151a21] p-6 rounded-xl border border-gray-700 text-center shadow-2xl">
-                                <i class="fas fa-lock text-4xl text-[#229ED9] mb-4"></i>
-                                <h3 class="font-bold text-xl mb-2">Private Channel</h3>
-                                <p class="text-xs text-gray-400 mb-6">This invite link is valid for 5 minutes only.</p>
-
-                                <div class="h-2 bg-gray-700 w-full rounded-full mb-4">
-                                    <div id="progress-bar" class="h-full bg-[#229ED9] w-0"></div>
-                                </div>
-
-                                <button id="action-btn" class="w-full bg-[#2f3b4d] text-gray-400 py-3.5 rounded-lg font-bold uppercase tracking-wide transition-all" disabled>
-                                    Generating Link...
-                                </button>
-                            </div>
-                            
-                            <!-- Fake Join Message -->
-                            <div class="text-center text-xs text-gray-500 mt-4 animate-pulse">
-                                🟢 45 people joined in last 2 minutes
-                            </div>
-                        </div>
-                    </div>
-                `
+                title: "18+ Leaks",
+                icon: "fa-paper-plane",
+                color: "text-sky-400",
+                render: () => `<div class="bg-[#1c242f] min-h-screen text-white p-4"><div class="flex items-center gap-3 bg-[#233040] p-3 rounded mb-6"><i class="fab fa-telegram text-4xl text-[#229ED9]"></i><div><h2 class="font-bold">Desi Viral Leaks 🔞</h2><p class="text-xs text-blue-400">125k Members</p></div></div><div class="bg-[#151a21] p-6 rounded border border-gray-700 text-center"><div class="blur-sm mb-4"><img src="https://images.unsplash.com/photo-1596706037380-0010952d7189?q=80&w=300" class="rounded opacity-50"></div><p class="text-sm text-gray-300 mb-4">Private Invite Link (Expiring...)</p><div class="h-2 bg-gray-700 rounded mb-4"><div id="progress-bar" class="h-full bg-[#229ED9] w-0"></div></div><button id="action-btn" class="w-full bg-[#229ED9] py-3 rounded font-bold disabled:opacity-50" disabled>Join Channel</button></div></div>`
             },
-
-            // 💋 8. LEAKED BHABI (Video Player)
-            bhabi_leak: {
-                bg: "bg-[#000] text-white",
-                render: () => `
-                    <div class="relative w-full h-[60vh] bg-gray-900 border-b border-gray-800">
-                        <img src="https://images.unsplash.com/photo-1570158268183-d296b2892211?q=80&w=400" class="w-full h-full object-cover blur-md opacity-40">
-                        
-                        <!-- Fake Player Controls -->
-                        <div class="absolute inset-0 flex flex-col items-center justify-center z-10">
-                            <div class="bg-red-600 px-3 py-1 rounded text-xs font-bold mb-4 animate-bounce">18+ ONLY</div>
-                            <i class="fas fa-play-circle text-7xl text-white/90 drop-shadow-lg"></i>
-                            <p class="mt-4 text-sm font-mono text-red-500 bg-black/50 px-2">Access Denied</p>
-                        </div>
-                        
-                        <!-- Bottom Bar -->
-                        <div class="absolute bottom-0 w-full p-3 bg-gradient-to-t from-black to-transparent">
-                            <div class="h-1 bg-gray-600 rounded w-full mb-2 flex">
-                                <div class="h-full bg-red-600 w-[10%]"></div>
-                            </div>
-                            <div class="flex justify-between text-xs">
-                                <span>01:45 / 15:30</span>
-                                <i class="fas fa-expand"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="p-5">
-                        <h1 class="text-lg font-bold leading-tight">Desi Bhabi Viral Home Video (Full HD)</h1>
-                        <div class="flex items-center gap-3 text-xs text-gray-400 mt-2 pb-4 border-b border-gray-800">
-                            <span><i class="fas fa-eye text-green-500"></i> 1.2M Views</span>
-                            <span><i class="fas fa-clock"></i> 2 hours ago</span>
-                        </div>
-
-                        <!-- Interaction -->
-                        <div id="interaction-box" class="mt-6">
-                            <p class="text-sm text-center text-gray-300 mb-2">To watch the full uncensored video, verify your age.</p>
-                            
-                            <div class="h-2 bg-gray-800 w-full rounded mb-4">
-                                <div id="progress-bar" class="h-full bg-red-600 w-0"></div>
-                            </div>
-
-                            <button id="action-btn" class="w-full bg-gray-800 text-gray-400 py-4 rounded font-bold uppercase shadow-lg border border-gray-700" disabled>
-                                Verify 18+ & Play
-                            </button>
-                        </div>
-
-                        <!-- Comments to force scroll -->
-                        <div class="mt-8 space-y-4 opacity-70">
-                            <h3 class="font-bold text-sm text-gray-500">Comments (452)</h3>
-                            <div class="flex gap-3">
-                                <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center font-bold">R</div>
-                                <div>
-                                    <p class="text-xs font-bold">Rahul K.</p>
-                                    <p class="text-xs text-gray-400">Link is working! Thanks bro.</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-3">
-                                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center font-bold">S</div>
-                                <div>
-                                    <p class="text-xs font-bold">Sumon</p>
-                                    <p class="text-xs text-gray-400">Full video ta sera 🔥</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 🤖 9. AI GIRLFRIEND (Chat UI)
-            ai_gf: {
-                bg: "bg-[#111] text-white",
-                render: () => `
-                    <div class="flex flex-col h-screen">
-                        <!-- Chat Header -->
-                        <div class="bg-[#202020] p-4 flex items-center gap-3 border-b border-gray-800 sticky top-0 z-20">
-                            <div class="relative">
-                                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=150" class="w-10 h-10 rounded-full object-cover border-2 border-green-500">
-                                <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border border-black"></div>
-                            </div>
-                            <div>
-                                <h2 class="font-bold text-white">Natasha (AI)</h2>
-                                <p class="text-xs text-green-400 animate-pulse">Typing...</p>
-                            </div>
-                            <i class="fas fa-video ml-auto text-gray-500"></i>
-                        </div>
-
-                        <!-- Chat Body -->
-                        <div class="flex-1 p-4 space-y-4 overflow-y-auto">
-                            <div class="flex gap-2">
-                                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=100" class="w-8 h-8 rounded-full object-cover">
-                                <div class="bg-[#202020] p-3 rounded-2xl rounded-tl-none max-w-[80%] text-sm text-gray-200">
-                                    Hey! I'm feeling lonely tonight. 🫦
-                                </div>
-                            </div>
-                            
-                            <div class="flex gap-2">
-                                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=100" class="w-8 h-8 rounded-full object-cover">
-                                <div class="bg-[#202020] p-3 rounded-2xl rounded-tl-none max-w-[80%] text-sm text-gray-200">
-                                    I sent you a private photo. Want to see it? 🔥
-                                </div>
-                            </div>
-
-                            <!-- Locked Photo -->
-                            <div class="flex gap-2">
-                                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=100" class="w-8 h-8 rounded-full object-cover">
-                                <div class="relative w-48 h-64 bg-gray-800 rounded-lg overflow-hidden border border-pink-500/50">
-                                    <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=300" class="w-full h-full object-cover blur-xl opacity-60">
-                                    <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/40">
-                                        <i class="fas fa-lock text-3xl text-pink-500 mb-2"></i>
-                                        <span class="text-xs font-bold text-white">NSFW CONTENT</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Interaction Footer -->
-                        <div id="interaction-box" class="p-4 bg-[#1a1a1a] border-t border-gray-800">
-                            <div class="h-1.5 bg-gray-700 w-full rounded mb-3">
-                                <div id="progress-bar" class="h-full bg-pink-600 w-0"></div>
-                            </div>
-                            <button id="action-btn" class="w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white py-3 rounded-full font-bold shadow-lg disabled:opacity-50" disabled>
-                                Unlock Photo
-                            </button>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 💘 10. DATING (Tinder Style)
-            dating: {
-                bg: "bg-gray-100 text-gray-800",
-                render: () => `
-                    <div class="flex flex-col items-center justify-center min-h-screen p-4 bg-gradient-to-b from-pink-50 to-white">
-                        <div class="w-full max-w-sm bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200 relative">
-                            <!-- Match Badge -->
-                            <div class="absolute top-4 left-4 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded shadow z-10 animate-bounce">
-                                ONLINE NOW
-                            </div>
-
-                            <div class="relative h-96">
-                                <img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?q=80&w=400" class="w-full h-full object-cover">
-                                <div class="absolute bottom-0 w-full bg-gradient-to-t from-black/90 to-transparent p-6 pt-20 text-white">
-                                    <h2 class="text-3xl font-bold">Riya, 23 <i class="fas fa-check-circle text-blue-400 text-sm"></i></h2>
-                                    <p class="text-sm opacity-90"><i class="fas fa-map-marker-alt text-red-500"></i> 2 km away</p>
-                                </div>
-                            </div>
-
-                            <div class="p-6 text-center">
-                                <p class="text-gray-600 italic text-lg mb-6">"Looking for fun tonight... are you free? 😉"</p>
-                                
-                                <div id="interaction-box">
-                                    <div class="h-2 bg-gray-200 w-full rounded-full mb-4">
-                                        <div id="progress-bar" class="h-full bg-pink-500 w-0"></div>
-                                    </div>
-                                    <div class="flex gap-4 justify-center">
-                                        <button class="w-14 h-14 rounded-full border-2 border-red-500 text-red-500 flex items-center justify-center text-2xl hover:bg-red-50"><i class="fas fa-times"></i></button>
-                                        <button id="action-btn" class="flex-1 bg-pink-500 text-white rounded-full font-bold shadow-lg flex items-center justify-center gap-2 hover:bg-pink-600 transition-all" disabled>
-                                            <i class="fas fa-heart text-xl"></i> MATCH
-                                        </button>
-                                    </div>
-                                    <p id="status-text" class="text-xs text-gray-400 mt-3">Verifying profile...</p>
-                                </div>
-                            </div>
-                        </div>
-                        <p class="mt-4 text-xs text-gray-400">145 people active in your area.</p>
-                    </div>
-                `
-            },
-
-            // 📹 11. LIVE CAM (Private Room)
-            live_cam: {
-                bg: "bg-[#000] text-white",
-                render: () => `
-                    <div class="min-h-screen flex flex-col">
-                        <!-- Video Feed -->
-                        <div class="relative w-full h-[50vh] bg-[#111] overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400" class="w-full h-full object-cover blur-lg opacity-50">
-                            
-                            <div class="absolute top-4 left-4 flex gap-2">
-                                <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded">LIVE</span>
-                                <span class="bg-black/50 text-white text-[10px] px-2 py-1 rounded"><i class="fas fa-user"></i> 12,402</span>
-                            </div>
-
-                            <div class="absolute inset-0 flex items-center justify-center flex-col">
-                                <div class="w-20 h-20 border-4 border-t-pink-500 border-gray-600 rounded-full animate-spin"></div>
-                                <p class="mt-4 text-pink-500 font-bold tracking-widest text-sm">LOADING STREAM...</p>
-                            </div>
-                        </div>
-
-                        <!-- Chat Section (Scrollable) -->
-                        <div class="flex-1 bg-black p-4 overflow-hidden flex flex-col">
-                            <div class="flex-1 overflow-y-hidden relative">
-                                <div class="absolute bottom-0 w-full space-y-2 text-sm mask-image-linear-gradient">
-                                    <p><span class="text-orange-500 font-bold">User99:</span> Show more! 😍</p>
-                                    <p><span class="text-blue-500 font-bold">Mike_D:</span> Just tipped 500 tokens 💎</p>
-                                    <p><span class="text-purple-500 font-bold">CoolBoy:</span> Beautiful...</p>
-                                    <p class="text-yellow-500 font-bold italic">System: Private show starting...</p>
-                                </div>
-                            </div>
-
-                            <!-- Action -->
-                            <div id="interaction-box" class="mt-4 pt-4 border-t border-gray-800">
-                                <div class="h-1 bg-gray-800 w-full rounded mb-3">
-                                    <div id="progress-bar" class="h-full bg-pink-600 w-0"></div>
-                                </div>
-                                <button id="action-btn" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 rounded uppercase text-sm disabled:opacity-50" disabled>
-                                    Enter Private Room (Free)
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `
-            },
-
-            // 📞 12. VIDEO CALL (Incoming Call)
+            // 📞 5. VIDEO CALL
             video_call: {
-                bg: "bg-[#0b1016] text-white",
-                render: () => `
-                    <div class="h-screen w-full relative overflow-hidden flex flex-col items-center pt-20">
-                        <!-- Blurred Background -->
-                        <img src="https://images.unsplash.com/photo-1605949405965-d4219a90d4ca?q=80&w=400" class="absolute inset-0 w-full h-full object-cover blur-xl opacity-60 z-0">
-                        
-                        <!-- Caller Info -->
-                        <div class="relative z-10 text-center">
-                            <div class="w-32 h-32 rounded-full p-1 bg-gradient-to-r from-pink-500 to-purple-500 mx-auto mb-6 shadow-[0_0_30px_rgba(236,72,153,0.5)] animate-pulse">
-                                <img src="https://images.unsplash.com/photo-1605949405965-d4219a90d4ca?q=80&w=200" class="w-full h-full object-cover rounded-full border-4 border-black">
-                            </div>
-                            <h1 class="text-3xl font-bold mb-1">Priya 💖</h1>
-                            <p class="text-lg text-gray-300 animate-pulse">Incoming Video Call...</p>
-                            <p class="text-sm text-gray-400 mt-2">WhatsApp Video</p>
-                        </div>
-
-                        <!-- Fake Buttons (Bottom) -->
-                        <div class="absolute bottom-16 w-full px-10 flex justify-between items-center z-10">
-                            <div class="flex flex-col items-center">
-                                <button class="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center text-2xl shadow-lg hover:scale-110 transition-transform">
-                                    <i class="fas fa-phone-slash"></i>
-                                </button>
-                                <span class="text-sm mt-2 font-bold opacity-80">Decline</span>
-                            </div>
-
-                            <!-- Interaction Logic Hidden Inside Accept Button -->
-                            <div id="interaction-box" class="flex flex-col items-center w-24"> 
-                                <div class="w-20 h-1 bg-gray-500 rounded mb-2 overflow-hidden">
-                                     <div id="progress-bar" class="h-full bg-green-400 w-0"></div>
-                                </div>
-                                <button id="action-btn" class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center text-3xl shadow-[0_0_0_10px_rgba(34,197,94,0.3)] animate-bounce" disabled>
-                                    <i class="fas fa-video"></i>
-                                </button>
-                                <span id="status-text" class="text-sm mt-4 font-bold opacity-80 whitespace-nowrap">Connecting...</span>
-                            </div>
-                        </div>
-                    </div>
-                `
+                title: "Video Call",
+                icon: "fa-video",
+                color: "text-green-400",
+                render: () => `<div class="bg-black min-h-screen text-white flex flex-col items-center pt-20 relative"><img src="https://images.unsplash.com/photo-1605949405965-d4219a90d4ca?q=80&w=400" class="absolute inset-0 w-full h-full object-cover blur-xl opacity-60"><div class="z-10 text-center"><img src="https://images.unsplash.com/photo-1605949405965-d4219a90d4ca?q=80&w=150" class="w-32 h-32 rounded-full border-4 border-green-500 mx-auto mb-4 animate-pulse"><h2 class="text-2xl font-bold">Priya 💖</h2><p class="animate-pulse text-green-400">Incoming Video Call...</p></div><div class="absolute bottom-20 w-full px-10 z-10"><div class="h-1 bg-gray-500 rounded mb-4"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div><button id="action-btn" class="w-full bg-green-600 h-16 rounded-full text-2xl shadow-[0_0_20px_lime] disabled:bg-gray-600" disabled><i class="fas fa-phone"></i></button><p class="text-center mt-2 text-sm">Accept</p></div></div>`
             },
-
-            // 📶 6. WIFI (Password Reveal)
+            // 💋 6. BHABI VIDEO
+            bhabi_leak: {
+                title: "Bhabi Video",
+                icon: "fa-play",
+                color: "text-pink-500",
+                render: () => `<div class="bg-black min-h-screen text-white"><div class="relative h-64 bg-gray-800"><div class="absolute inset-0 flex items-center justify-center bg-black/50"><i class="fas fa-lock text-4xl"></i></div><img src="https://images.unsplash.com/photo-1570158268183-d296b2892211?q=80&w=400" class="w-full h-full object-cover blur-sm opacity-50"></div><div class="p-4"><h1 class="text-xl font-bold text-pink-500">Desi Bhabi Viral.mp4</h1><p class="text-xs text-gray-400 mb-6">1.5M Views • 2h ago</p><div class="bg-gray-900 p-4 rounded text-center"><p class="mb-2 text-sm">Verify Age (18+) to Watch</p><div class="h-2 bg-gray-800 rounded mb-4"><div id="progress-bar" class="h-full bg-pink-600 w-0"></div></div><button id="action-btn" class="w-full bg-pink-600 py-3 rounded font-bold disabled:opacity-50" disabled>Verify & Play</button></div></div></div>`
+            },
+            // 🤖 7. AI GF
+            ai_gf: {
+                title: "AI Chat",
+                icon: "fa-robot",
+                color: "text-purple-400",
+                render: () => `<div class="bg-[#111] min-h-screen text-white flex flex-col"><div class="p-4 border-b border-gray-800 flex gap-3"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=100" class="w-10 h-10 rounded-full"><div class="text-sm"><p class="font-bold">Natasha (AI)</p><p class="text-green-500 text-xs">Online</p></div></div><div class="p-4 space-y-4 flex-1"><div class="bg-gray-800 p-3 rounded-xl rounded-tl-none max-w-[80%] text-sm">Send me a pic? 🫦</div><div class="bg-gray-800 p-2 rounded-xl rounded-tl-none max-w-[80%]"><div class="w-40 h-48 bg-black flex items-center justify-center border border-purple-500 rounded"><i class="fas fa-lock text-purple-500"></i></div></div></div><div class="p-4"><div class="h-1 bg-gray-700 rounded mb-2"><div id="progress-bar" class="h-full bg-purple-600 w-0"></div></div><button id="action-btn" class="w-full bg-purple-600 py-3 rounded-full font-bold disabled:opacity-50" disabled>Unlock Photo</button></div></div>`
+            },
+            // 💘 8. DATING
+            dating: {
+                title: "Dating App",
+                icon: "fa-heart",
+                color: "text-red-500",
+                render: () => `<div class="bg-gray-100 min-h-screen flex items-center justify-center p-4"><div class="bg-white p-4 rounded-xl shadow-xl w-full max-w-sm"><img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?q=80&w=400" class="w-full h-80 object-cover rounded-lg mb-4"><h2 class="text-2xl font-bold text-gray-800">Riya, 22</h2><p class="text-gray-500 mb-4">2 km away • Active Now</p><div class="h-2 bg-gray-200 rounded mb-4"><div id="progress-bar" class="h-full bg-pink-500 w-0"></div></div><div class="flex gap-2"><button id="action-btn" class="flex-1 bg-pink-500 text-white py-3 rounded-full font-bold shadow-lg disabled:opacity-50" disabled>MATCH ❤️</button></div></div></div>`
+            },
+            // 📹 9. LIVE CAM
+            live_cam: {
+                title: "Live Cam",
+                icon: "fa-video",
+                color: "text-orange-500",
+                render: () => `<div class="bg-black min-h-screen text-white"><div class="relative h-96 w-full"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400" class="w-full h-full object-cover blur-md opacity-60"><div class="absolute inset-0 flex items-center justify-center flex-col"><div class="w-16 h-16 border-4 border-t-orange-500 rounded-full animate-spin mb-4"></div><span class="text-orange-500 font-bold">PRIVATE ROOM</span></div></div><div class="p-6"><p class="text-center text-sm mb-4">Connecting to secure stream...</p><div class="h-1 bg-gray-800 rounded mb-4"><div id="progress-bar" class="h-full bg-orange-600 w-0"></div></div><button id="action-btn" class="w-full bg-orange-600 py-3 rounded font-bold disabled:opacity-50" disabled>Enter Room</button></div></div>`
+            },
+            // 💎 10. CRYPTO
+            crypto: {
+                title: "Free USDT",
+                icon: "fa-bitcoin",
+                color: "text-yellow-500",
+                render: () => `<div class="bg-[#0b0e11] min-h-screen text-white flex flex-col items-center justify-center p-6"><i class="fab fa-bitcoin text-6xl text-yellow-500 mb-6 animate-bounce"></i><h1 class="text-2xl font-bold mb-2">Binance Airdrop</h1><p class="text-gray-400 mb-8">Claim 10 USDT Bonus</p><div class="w-full bg-gray-800 h-2 rounded mb-6"><div id="progress-bar" class="h-full bg-yellow-500 w-0"></div></div><button id="action-btn" class="w-full bg-yellow-600 text-black font-bold py-3 rounded disabled:opacity-50" disabled>CLAIM NOW</button></div>`
+            },
+             // 📥 11. DOWNLOAD
+            download: {
+                title: "MediaFire",
+                icon: "fa-download",
+                color: "text-blue-400",
+                render: () => `<div class="bg-[#f3f4f6] min-h-screen p-6 flex flex-col items-center"><div class="bg-white p-6 rounded shadow-lg w-full text-center"><i class="fas fa-file-archive text-5xl text-blue-500 mb-4"></i><h1 class="font-bold text-gray-800">GTA_V_Mobile.apk</h1><p class="text-sm text-gray-500 mb-6">1.2 GB</p><p class="text-xs text-blue-600 animate-pulse mb-2">Scanning for viruses...</p><div class="h-2 bg-gray-200 rounded mb-4"><div id="progress-bar" class="h-full bg-blue-500 w-0"></div></div><button id="action-btn" class="w-full bg-blue-500 text-white py-3 rounded font-bold disabled:opacity-50" disabled>GENERATE LINK</button></div></div>`
+            },
+             // 📶 12. WIFI
             wifi: {
-                bg: "bg-black text-[#00ff00] font-mono",
-                render: () => `
-                    <div class="p-4 min-h-screen relative overflow-hidden">
-                        <div class="scanner-line"></div>
-                        <h2 class="text-xl font-bold mb-4 border-b border-green-800 pb-2">> SYSTEM_ROOT_ACCESS</h2>
-                        
-                        <div class="space-y-2 text-xs opacity-80 mb-6">
-                            <p>> Scanning local networks...</p>
-                            <p>> Target Found: TP-Link_5G</p>
-                            <p>> Encryption: WPA2-PSK</p>
-                            <p>> Attempting brute force...</p>
-                        </div>
-
-                        <div id="interaction-box" class="border border-green-800 p-4 bg-green-900/10 mt-10">
-                            <div class="flex items-center gap-4 mb-4">
-                                <i class="fas fa-wifi text-4xl animate-pulse"></i>
-                                <div>
-                                    <h3 class="font-bold text-lg">WIFI PASSWORD</h3>
-                                    <p class="text-xs">Hidden: ********</p>
-                                </div>
-                            </div>
-                            
-                            <p id="status-text" class="text-xs mb-2">> Decrypting packets...</p>
-                            <div class="h-2 bg-green-900 w-full mb-4">
-                                <div id="progress-bar" class="h-full bg-[#00ff00] w-0"></div>
-                            </div>
-
-                            <button id="action-btn" class="w-full border border-green-600 text-green-600 hover:bg-green-600 hover:text-black py-3 font-bold transition-all" disabled>
-                                [ LOCKED ]
-                            </button>
-                        </div>
-                        
-                        <div class="absolute bottom-4 left-4 text-[10px] opacity-50">
-                            IP: 192.168.0.1 <br> MAC: AA:BB:CC:DD:EE
-                        </div>
-                    </div>
-                `
+                title: "WiFi Hack",
+                icon: "fa-wifi",
+                color: "text-green-500",
+                render: () => `<div class="bg-black min-h-screen text-green-500 font-mono p-6"><h1 class="text-xl border-b border-green-800 pb-2 mb-4">> ROOT_ACCESS</h1><p class="opacity-70 mb-2">> Scanning networks...</p><p class="opacity-70 mb-8">> Found: TP-Link_5G</p><div class="border border-green-800 p-4"><i class="fas fa-lock text-3xl mb-3 text-center block"></i><p class="text-center mb-2">Decrypting Password...</p><div class="h-2 bg-green-900 rounded mb-4"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div><button id="action-btn" class="w-full border border-green-600 py-3 hover:bg-green-900 transition disabled:opacity-50" disabled>[ UNLOCK ]</button></div></div>`
             }
-            // ... (আরও ৬টি থিম একইভাবে তৈরি করা যাবে যেমন Result, TikTok, AI, Gift Card ইত্যাদি)
-            // কোড ছোট রাখার জন্য আমি এই ৬টি দিয়ে লজিক দেখাচ্ছি, বাকিগুলো একই ফরম্যাটে হবে।
         };
 
-        // Fallback for missing themes (Using Movie as default)
-        const getTheme = (type) => THEMES[type] || THEMES['movie'];
-
         // ==========================================
-        // 🧠 CORE LOGIC
+        // 🧠 LOGIC: MENU vs LANDING PAGE
         // ==========================================
         const params = new URLSearchParams(window.location.search);
-        const themeType = params.get('type') || 'movie';
-        const currentTheme = getTheme(themeType);
-        
-        let hasInteracted = false;
-        let isScrolled = false;
+        const selectedType = params.get('type');
 
-        // 1. Initial Render
-        function init() {
-            // Apply theme styles
-            const body = document.querySelector('body');
-            body.className = currentTheme.bg + " overflow-x-hidden min-h-screen selection:bg-none";
+        if (!selectedType) {
+            // 👉 SCENARIO 1: SHOW HOME MENU
+            document.getElementById('home-menu').classList.remove('hidden-force');
+            const grid = document.getElementById('menu-grid');
             
-            document.getElementById('header-area').innerHTML = ""; // Optional header logic
-            document.getElementById('main-content').innerHTML = currentTheme.render();
+            Object.keys(THEMES).forEach(key => {
+                const t = THEMES[key];
+                const card = document.createElement('div');
+                card.className = "bg-[#1f2937] p-4 rounded-xl shadow-lg border border-gray-700 flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform cursor-pointer fade-in";
+                card.onclick = () => window.location.search = `?type=${key}`;
+                card.innerHTML = `
+                    <div class="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center shadow-inner">
+                        <i class="fas ${t.icon} text-2xl ${t.color}"></i>
+                    </div>
+                    <h3 class="font-bold text-sm text-gray-200">${t.title}</h3>
+                `;
+                grid.appendChild(card);
+            });
+
+        } else {
+            // 👉 SCENARIO 2: SHOW SPECIFIC LANDING PAGE
+            const theme = THEMES[selectedType] || THEMES['movie']; // Fallback
+            document.getElementById('landing-page').classList.remove('hidden-force');
+            document.getElementById('page-content').innerHTML = theme.render();
             
-            // Start Security Check
-            performSecurityCheck();
+            // Start Interaction Logic (Scroll & Click)
+            initLandingLogic();
         }
 
-        // 2. Security & Fingerprinting Mock
-        async function performSecurityCheck() {
-            const status = document.getElementById('check-status');
-            const visitorId = Math.random().toString(36).substring(7);
-            document.getElementById('visitor-id').innerText = visitorId;
-
-            // Simulate Checks
-            await new Promise(r => setTimeout(r, 800));
-            status.innerText = "Checking IP reputation...";
-            await new Promise(r => setTimeout(r, 800));
-            status.innerText = "Validating browser integrity...";
+        // ==========================================
+        // ⏳ LANDING PAGE LOGIC (Scroll + Timer)
+        // ==========================================
+        function initLandingLogic() {
+            let isScrolled = false;
             
-            // Check Frequency (LocalStorage)
-            const today = new Date().toDateString();
-            let views = parseInt(localStorage.getItem('ad_views_' + today) || '0');
-            
-            if (views >= CONFIG.MAX_DAILY_VIEWS) {
-                // If exceeded, show generic safe page or error
-                document.body.innerHTML = `<div class='h-screen flex items-center justify-center bg-white text-black'><h1>Service Temporarily Unavailable</h1></div>`;
-                return;
-            }
-
-            // Finish Loading
-            setTimeout(() => {
-                document.getElementById('security-check').classList.add('hidden-force');
-                document.getElementById('app-container').classList.remove('hidden-force');
-                
-                // Start Scroll Listener
-                window.addEventListener('scroll', handleScroll);
-            }, 1000);
-        }
-
-        // 3. Interaction Logic (Scroll + Timer)
-        function handleScroll() {
-            if (isScrolled) return;
-            
-            if (window.scrollY > 50) { // Small scroll threshold
-                isScrolled = true;
-                startTimer();
-            }
-        }
-
-        function startTimer() {
-            const bar = document.getElementById('progress-bar');
-            const btn = document.getElementById('action-btn');
-            const status = document.getElementById('status-text');
-            let progress = 0;
-            const intervalTime = CONFIG.WAIT_TIME / 100;
-
-            const timer = setInterval(() => {
-                progress++;
-                if (bar) bar.style.width = progress + '%';
-                
-                if (progress % 20 === 0 && status) {
-                    status.innerText = `Verifying... ${progress}%`;
+            // Scroll Trigger
+            window.addEventListener('scroll', () => {
+                if (!isScrolled && window.scrollY > 20) {
+                    isScrolled = true;
+                    startTimer();
                 }
+            });
+            // Touch Trigger (for mobile if scroll is minimal)
+            window.addEventListener('touchstart', () => {
+                if(!isScrolled) { isScrolled = true; startTimer(); }
+            });
 
-                if (progress >= 100) {
-                    clearInterval(timer);
-                    activateButton(btn, status);
-                }
-            }, intervalTime);
+            function startTimer() {
+                const bar = document.getElementById('progress-bar');
+                const btn = document.getElementById('action-btn');
+                let width = 0;
+                
+                const timer = setInterval(() => {
+                    if (width >= 100) {
+                        clearInterval(timer);
+                        if(btn) {
+                            btn.disabled = false;
+                            btn.classList.remove('disabled:opacity-50', 'bg-gray-600');
+                            btn.classList.add('animate-pulse', 'shadow-2xl');
+                            btn.innerHTML = `CONTINUE ➤`;
+                            
+                            // CLICK ACTION
+                            btn.onclick = () => {
+                                btn.innerHTML = "Processing...";
+                                setTimeout(() => window.location.href = CONFIG.DIRECT_LINK, 800);
+                            };
+                        }
+                    } else {
+                        width++;
+                        if(bar) bar.style.width = width + '%';
+                    }
+                }, CONFIG.WAIT_TIME / 100); // Smooth fill based on Wait Time
+            }
         }
-
-        function activateButton(btn, status) {
-            if (!btn) return;
-            btn.disabled = false;
-            btn.classList.remove('opacity-50', 'cursor-not-allowed', 'bg-gray-600', 'bg-gray-400', 'bg-slate-700');
-            
-            // Style based on theme (Generic Success Style)
-            btn.classList.add('bg-green-600', 'text-white', 'shadow-lg', 'animate-pulse', 'hover:bg-green-700');
-            btn.innerHTML = `<i class="fas fa-check-circle"></i> CLICK TO CONTINUE`;
-            
-            if (status) status.innerText = "Verification Complete!";
-
-            // 4. Click Handling & Tracking
-            btn.onclick = async () => {
-                // Prevent double clicks
-                btn.disabled = true;
-                btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing...`;
-
-                // Log View Count
-                const today = new Date().toDateString();
-                let views = parseInt(localStorage.getItem('ad_views_' + today) || '0');
-                localStorage.setItem('ad_views_' + today, views + 1);
-
-                // --- FIREBASE LOGGING PLACEHOLDER ---
-                // Here you would call addDoc(collection(db, "clicks"), { ... });
-                // console.log("Logging click to server...");
-
-                // Simulate brief delay then redirect
-                setTimeout(() => {
-                    window.location.href = CONFIG.DIRECT_LINK;
-                }, 500);
-            };
-        }
-
-        // Initialize App
-        init();
 
     </script>
 </body>
