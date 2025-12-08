@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Secure Access...</title>
+    <title>Secure Access</title>
     
     <!-- ✅ Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,318 +11,327 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Hind Siliguri', 'Roboto', sans-serif; background-color: #050505; overflow: hidden; user-select: none; }
+        body { font-family: 'Hind Siliguri', 'Roboto', sans-serif; background-color: #050505; overflow-x: hidden; user-select: none; }
         
         /* 🛡️ UI Styles */
         .glass-panel {
-            background: rgba(20, 20, 25, 0.8);
+            background: rgba(20, 20, 25, 0.95);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
         }
-        .fade-in { animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
         
-        .pulse-premium { animation: pulseGlow 1.5s infinite; }
+        .pulse-premium { animation: pulseGlow 2s infinite; }
         @keyframes pulseGlow {
             0% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0.4); }
             70% { box-shadow: 0 0 0 15px rgba(0, 243, 255, 0); }
             100% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0); }
         }
 
-        .video-overlay { background: rgba(0,0,0,0.5); }
-        .disabled-btn { opacity: 0.6; cursor: not-allowed; filter: grayscale(100%); }
+        /* 🔒 Interaction Trap Blur */
+        .blur-content { filter: blur(8px); pointer-events: none; transition: all 0.5s; opacity: 0.5; }
         .hidden { display: none !important; }
-        .loader-spin { border-top-color: #00f3ff; }
+        
+        /* Disabled Button */
+        .disabled-btn { opacity: 0.6; cursor: not-allowed; filter: grayscale(100%); pointer-events: none; }
     </style>
 </head>
-<body class="text-white h-screen flex flex-col relative bg-gray-950">
+<body class="text-white min-h-screen flex flex-col relative bg-gray-950">
 
     <!-- 🌌 Dynamic Background -->
-    <div id="bg-layer" class="absolute inset-0 bg-cover bg-center opacity-40 blur-xl scale-110 transition-all duration-1000"></div>
-    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black opacity-90"></div>
+    <div id="bg-layer" class="absolute inset-0 bg-cover bg-center opacity-30 blur-md transition-all duration-1000"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/90 to-transparent"></div>
 
-    <!-- 🛡️ Security Scanner (First View) -->
-    <div id="security-screen" class="absolute z-50 inset-0 flex flex-col items-center justify-center bg-black">
-        <div class="w-16 h-16 border-4 border-gray-800 border-t-cyan-500 rounded-full animate-spin mb-4 loader-spin"></div>
-        <h3 class="text-lg font-bold text-cyan-400 tracking-[3px] animate-pulse">ANALYZING...</h3>
-        <p id="security-log" class="text-xs text-gray-500 mt-2 font-mono">Checking Connection Safety</p>
+    <!-- 🛡️ LAYER 1: BOT TRAP (Invisible Shield) -->
+    <div id="bot-trap" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm">
+        <div class="w-16 h-16 border-4 border-gray-700 border-t-cyan-500 rounded-full animate-spin mb-6"></div>
+        <div class="text-center animate-pulse">
+            <h2 class="text-xl font-bold text-white mb-2">Security Check</h2>
+            <p class="text-sm text-gray-400">Touch screen to verify you are human</p>
+        </div>
+        <i class="fas fa-fingerprint text-6xl text-gray-700 mt-8 opacity-50"></i>
     </div>
 
     <!-- 📦 Main Content -->
-    <div id="main-view" class="relative z-10 w-full h-full flex flex-col items-center justify-center p-4 fade-in hidden">
-        <div id="theme-content" class="w-full max-w-md"></div>
+    <div id="main-view" class="relative z-10 w-full min-h-screen flex flex-col items-center justify-center p-4 blur-content">
+        <div id="theme-content" class="w-full max-w-md transition-all duration-500"></div>
         
-        <!-- Human Verify Hint -->
-        <div id="interaction-hint" class="absolute bottom-12 text-gray-400 text-xs animate-bounce hidden bg-black/50 px-4 py-2 rounded-full border border-white/10">
-            <i class="fas fa-hand-pointer mr-1"></i> Tap screen to verify
+        <!-- Footer -->
+        <div class="mt-8 opacity-30 text-[10px] text-center font-mono">
+            <p>Protected by SmartGuard • ID: <span id="session-id">...</span></p>
         </div>
     </div>
 
     <!-- 🧠 LOGIC SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, increment, serverTimestamp, addDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, increment, serverTimestamp, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
         // ==========================================
         // ⚙️ CONFIGURATION
         // ==========================================
         const CONFIG = {
-            MONETAG_LINK: "https://otieu.com/4/10277714", // আপনার ইনকাম লিংক
-            SAFE_PAGE: "https://www.google.com",          // সেফ রিডাইরেক্ট (10h ব্লক হলে)
+            MONETAG_LINK: "https://otieu.com/4/10277714", 
+            SAFE_PAGE: "https://www.google.com", 
             MONETAG_SCRIPT: "https://quge5.com/88/tag.min.js",
             ZONE_ID: "190384",
-            LOCK_HOURS: 10,
-            FIREBASE: { apiKey: "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE", projectId: "ns-prime-d7ca5" }
+            LOCK_HOURS: 24,
+            FIREBASE: { 
+                apiKey: "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE", 
+                projectId: "ns-prime-d7ca5" 
+            }
         };
 
-        let db; try { const app = initializeApp(CONFIG.FIREBASE); db = getFirestore(app); } catch(e){ console.log("DB Err"); }
+        let db; try { const app = initializeApp(CONFIG.FIREBASE); db = getFirestore(app); } catch(e){}
 
         const params = new URLSearchParams(window.location.search);
         const refCode = params.get('ref'); 
-        let type = params.get('type');
+        const type = params.get('type') || 'video';
 
         // ==========================================
-        // 🎨 13 THEMES (Premium UI)
+        // 🎨 ALL 13 THEMES
         // ==========================================
         const themes = {
             // 1. Viral Video
             video: {
                 bg: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden relative group"><div class="relative h-60 bg-gray-900"><img src="https://images.unsplash.com/photo-1596700813959-1e3093222d4f?q=80&w=600" class="w-full h-full object-cover opacity-60"><div class="absolute inset-0 flex items-center justify-center video-overlay"><div id="play-icon" class="w-16 h-16 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 shadow-2xl"><i class="fas fa-lock text-2xl text-white/80"></i></div></div><div class="absolute top-3 left-3 bg-red-600/90 text-white text-[10px] px-3 py-1 rounded-full font-bold animate-pulse">● LIVE</div></div><div class="p-5"><h2 class="text-lg font-bold text-gray-100 mb-2">Viral_Video_Leaked_2025.mp4</h2><div class="flex items-center gap-2 mb-4"><div class="h-1.5 w-full bg-gray-700 rounded-full overflow-hidden"><div class="h-full bg-cyan-500 w-[0%]" id="progress-bar"></div></div><span class="text-[10px] text-cyan-400 font-mono" id="progress-text">0%</span></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-400 font-bold py-4 rounded-xl text-sm uppercase tracking-wider transition-all duration-300 disabled-btn" disabled><i class="fas fa-circle-notch fa-spin mr-2"></i> Verifying...</button></div></div>`
+                color: "cyan",
+                html: `<div class="glass-panel rounded-2xl overflow-hidden"><div class="relative h-60 bg-gray-900"><img src="https://images.unsplash.com/photo-1596700813959-1e3093222d4f?q=80&w=600" class="w-full h-full object-cover opacity-60"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-lock text-4xl text-white/50"></i></div><div class="absolute top-3 left-3 bg-red-600 text-white text-[10px] px-3 py-1 rounded-full font-bold animate-pulse">● LIVE</div></div><div class="p-5"><h2 class="text-lg font-bold text-gray-100 mb-2">Viral_Video_Leaked_2025.mp4</h2><div class="h-1.5 w-full bg-gray-700 rounded-full mb-2"><div class="h-full bg-cyan-500 w-[0%]" id="progress-bar"></div></div><p class="text-[10px] text-cyan-400" id="progress-text">Waiting...</p><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl mt-4 disabled-btn">Loading...</button></div></div>`
             },
             // 2. Cricket
             cricket: {
                 bg: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=1000",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden"><div class="relative h-56"><img src="https://images.unsplash.com/photo-1624195289965-06757b855268?q=80&w=600" class="w-full h-full object-cover"><div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center"><div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border-2 border-white mb-2"><i class="fas fa-lock text-3xl text-white"></i></div><p class="text-white font-bold text-sm">Locked Stream</p></div></div><div class="p-5 text-center"><h2 class="text-xl font-bold text-white mb-2">BAN vs IND (HD Stream)</h2><div class="h-1 w-full bg-gray-800 rounded mb-4"><div id="progress-bar" class="h-full bg-green-500 w-0 transition-all duration-300"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl text-lg disabled-btn" disabled>Loading...</button></div></div>`
+                color: "green",
+                html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><h2 class="text-xl font-bold text-white mb-2">BAN vs IND (Live)</h2><div class="bg-black/40 p-2 rounded mb-4 text-xs text-green-400">● Live Streaming Available</div><div class="h-1 w-full bg-gray-800 rounded mb-4"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl disabled-btn">Connecting...</button></div>`
             },
             // 3. FreeFire
             freefire: {
                 bg: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-24 h-24 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-yellow-500 shadow-[0_0_20px_orange]"><img src="https://cdn-icons-png.flaticon.com/512/2666/2666505.png" class="w-16 h-16"></div><h2 class="text-3xl font-bold text-white mb-1">5000 <span class="text-yellow-400">💎</span></h2><p class="text-gray-400 text-xs mb-6 uppercase">Redeem Code Ready</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-yellow-500 w-0 transition-all duration-300"></div></div><button id="cta-btn" class="w-full bg-yellow-600/30 text-yellow-500 font-bold py-4 rounded-xl uppercase border border-yellow-600/50 disabled-btn" disabled>Generating...</button></div>`
+                color: "yellow",
+                html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-20 h-20 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-yellow-500"><i class="fas fa-gem text-yellow-400 text-3xl"></i></div><h2 class="text-2xl font-bold text-white mb-1">5000 DIAMONDS</h2><p class="text-gray-400 text-xs mb-6">Redeem Code Found</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-yellow-500 w-0"></div></div><button id="cta-btn" class="w-full bg-yellow-900/40 text-yellow-500 font-bold py-4 rounded-xl disabled-btn">Verifying...</button></div>`
             },
-            // 4. Internet
-            internet: {
-                bg: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden"><div class="bg-blue-600 p-6 text-center"><h2 class="text-white font-bold text-2xl">Internet Offer</h2></div><div class="p-8 text-center"><h2 class="text-6xl font-bold text-blue-400 mb-2">50 GB</h2><p class="text-gray-400 text-sm mb-6">Validity 30 Days (Free)</p><div class="h-1.5 w-full bg-gray-800 rounded-full mb-6"><div id="progress-bar" class="h-full bg-blue-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl disabled-btn" disabled>Check Eligibility</button></div></div>`
-            },
-            // 5. Money
+            // 4. Money/Bkash
             money: {
                 bg: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=1000",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden"><div class="bg-[#e2136e] p-5 text-center"><img src="https://freelogopng.com/images/all_img/1656234745bkash-app-logo-png.png" class="h-10 mx-auto brightness-0 invert"></div><div class="p-8 text-center"><h2 class="text-5xl font-bold text-white mb-2">৳ ৫০০.০০</h2><p class="text-gray-400 text-xs mb-6">Cashback Bonus</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-[#e2136e] w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-full disabled-btn" disabled>Claiming...</button></div></div>`
+                color: "pink",
+                html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><h2 class="text-5xl font-bold text-pink-500 mb-2">৳ ৫০০.০০</h2><p class="text-white text-xs mb-6">Cashback Offer</p><div class="h-1 bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-pink-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-full disabled-btn">Processing...</button></div>`
             },
-            // 6. Telegram
-            telegram_list: {
-                bg: "",
-                html: `<div class="bg-[#17212b] rounded-2xl overflow-hidden border border-gray-700 shadow-2xl p-4"><div class="flex items-center gap-4 mb-4 border-b border-gray-700 pb-4"><div class="w-12 h-12 bg-[#2AABEE] rounded-full flex items-center justify-center text-white text-2xl"><i class="fas fa-paper-plane"></i></div><div><h1 class="font-bold text-lg text-white">Viral Leaked 18+</h1><p class="text-gray-400 text-xs">50K Members</p></div></div><div class="bg-[#0e1621] p-4 rounded-lg text-center mb-4"><div class="h-1 w-full bg-gray-700 rounded-full mb-2"><div id="progress-bar" class="h-full bg-[#2AABEE] w-0"></div></div><p class="text-[10px] text-gray-500">Generating Invite Link...</p></div><button id="cta-btn" class="w-full bg-gray-700 text-gray-400 font-bold py-3 rounded-xl disabled-btn" disabled>JOIN CHANNEL</button></div>`
-            },
-            // 7. WhatsApp
-            whatsapp: {
-                bg: "",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden p-4"><div class="flex items-center gap-3 mb-6"><div class="relative"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150" class="w-14 h-14 rounded-full border-2 border-green-500"><div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border border-black"></div></div><div><h3 class="font-bold text-white text-lg">Sumaiya (Online)</h3><p class="text-green-400 text-xs animate-pulse">Typing...</p></div></div><div class="bg-white/5 p-4 rounded-xl mb-4"><div class="h-1.5 w-full bg-gray-700 rounded-full"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-full flex items-center justify-center gap-2 disabled-btn" disabled><i class="fab fa-whatsapp text-xl"></i> Connect</button></div>`
-            },
-            // 8. Gallery
-            gallery: {
-                bg: "",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden"><div class="p-4 border-b border-white/10 flex justify-between items-center"><div><h1 class="font-bold text-white">Private Gallery</h1><p class="text-[10px] text-gray-400">120 Photos</p></div><span class="bg-red-600 text-xs px-2 py-1 rounded font-bold">LOCKED</span></div><div class="grid grid-cols-3 gap-1 p-1 opacity-50"><div class="aspect-square bg-gray-800"></div><div class="aspect-square bg-gray-800"></div><div class="aspect-square bg-gray-800"></div></div><div class="p-6 text-center"><div class="h-1 w-full bg-gray-800 rounded mb-4"><div id="progress-bar" class="h-full bg-red-600 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3.5 rounded-full disabled-btn" disabled><i class="fas fa-key mr-2"></i> Unlock Access</button></div></div>`
-            },
-            // 9. Movie
-            movie: {
-                bg: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1000",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-16 h-16 bg-purple-600/20 rounded-lg flex items-center justify-center mx-auto mb-4 border border-purple-500/30"><i class="fas fa-film text-3xl text-purple-400"></i></div><h2 class="text-xl font-bold text-white mb-1">Jawan_4K_HDRip.mkv</h2><p class="text-gray-400 text-xs mb-6">File Size: 2.8 GB</p><div class="h-1.5 w-full bg-gray-800 rounded-full mb-6"><div id="progress-bar" class="h-full bg-purple-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded-lg disabled-btn" disabled>Generate Link</button></div>`
-            },
-            // 10. Live Video
-            live: {
-                bg: "https://images.unsplash.com/photo-1616012480717-fd9867059ca0?q=80&w=1000",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-green-500 overflow-hidden shadow-[0_0_30px_lime]"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200" class="w-full h-full object-cover"></div><h2 class="text-xl font-bold text-white">Incoming Call...</h2><p class="text-green-400 text-sm animate-pulse mb-6">Private Video Request</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-full disabled-btn" disabled><i class="fas fa-video mr-2"></i> Accept</button></div>`
-            },
-            // 11. TikTok
-            tiktok: {
-                bg: "https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=1000",
-                html: `<div class="glass-panel rounded-xl overflow-hidden border border-gray-700"><div class="relative"><img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=400" class="w-full h-72 object-cover opacity-60"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play text-5xl text-white drop-shadow-lg"></i></div></div><div class="p-4"><div class="flex items-center gap-2 mb-4"><div class="h-1 w-full bg-gray-700 rounded"><div id="progress-bar" class="h-full bg-[#FE2C55] w-0"></div></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded-full disabled-btn" disabled>Watch Full Video</button></div></div>`
-            },
-            // 12. Job
+            // 5. Job Circular
             job: {
                 bg: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=1000",
-                html: `<div class="bg-white rounded-lg shadow-2xl overflow-hidden"><div class="bg-[#006a4e] p-4 text-center"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Government_Seal_of_Bangladesh.svg/1200px-Government_Seal_of_Bangladesh.svg.png" class="w-12 h-12 mx-auto mb-2"><h2 class="text-white font-bold text-sm">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</h2></div><div class="p-6 text-center"><h3 class="text-gray-900 font-bold text-lg mb-2">নিয়োগ বিজ্ঞপ্তি ২০২৫</h3><p class="text-gray-600 text-sm mb-4">পদসংখ্যা: ৪৫০০+</p><div class="h-1.5 w-full bg-gray-200 rounded-full mb-6"><div id="progress-bar" class="h-full bg-[#006a4e] w-0"></div></div><button id="cta-btn" class="w-full bg-gray-300 text-gray-500 font-bold py-3 rounded disabled-btn" disabled>আবেদন করুন</button></div></div>`
+                color: "green",
+                html: `<div class="bg-white rounded-lg shadow-2xl overflow-hidden p-6 text-center"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Government_Seal_of_Bangladesh.svg/1200px-Government_Seal_of_Bangladesh.svg.png" class="w-12 h-12 mx-auto mb-2"><h3 class="text-gray-900 font-bold text-lg">সরকারি নিয়োগ বিজ্ঞপ্তি</h3><p class="text-gray-600 text-sm mb-4">পদসংখ্যা: ৪৫০০+</p><div class="h-1.5 w-full bg-gray-200 rounded-full mb-6"><div id="progress-bar" class="h-full bg-[#006a4e] w-0"></div></div><button id="cta-btn" class="w-full bg-gray-300 text-gray-500 font-bold py-3 rounded disabled-btn">লোড হচ্ছে...</button></div>`
+            },
+            // 6. WhatsApp
+            whatsapp: {
+                bg: "",
+                color: "green",
+                html: `<div class="glass-panel rounded-2xl overflow-hidden p-4"><div class="flex items-center gap-3 mb-6"><div class="relative"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150" class="w-14 h-14 rounded-full border-2 border-green-500"><div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border border-black"></div></div><div><h3 class="font-bold text-white text-lg">Sumaiya (Online)</h3><p class="text-green-400 text-xs animate-pulse">Typing...</p></div></div><div class="h-1.5 w-full bg-gray-700 rounded-full mb-4"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-full disabled-btn">Connecting...</button></div>`
+            },
+            // 7. Telegram
+            telegram: {
+                bg: "",
+                color: "blue",
+                html: `<div class="bg-[#17212b] rounded-xl p-6 text-center border border-gray-700"><div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl"><i class="fas fa-paper-plane"></i></div><h2 class="font-bold text-xl mb-1">Private Channel</h2><p class="text-gray-400 text-xs mb-4">50K Members</p><div class="h-1 w-full bg-gray-700 rounded mb-4"><div id="progress-bar" class="h-full bg-blue-400 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-700 text-gray-400 font-bold py-3 rounded-xl disabled-btn">JOIN REQUEST</button></div>`
+            },
+            // 8. Internet
+            internet: {
+                bg: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000",
+                color: "blue",
+                html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><h2 class="text-5xl font-bold text-blue-400 mb-2">50 GB</h2><p class="text-gray-400 text-sm mb-6">Free Internet Offer</p><div class="h-1.5 w-full bg-gray-800 rounded-full mb-6"><div id="progress-bar" class="h-full bg-blue-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl disabled-btn">Check Eligibility</button></div>`
+            },
+            // 9. Gallery
+            gallery: {
+                bg: "",
+                color: "red",
+                html: `<div class="glass-panel rounded-2xl overflow-hidden p-4"><h1 class="font-bold text-white mb-1">Private Gallery</h1><p class="text-[10px] text-gray-400 mb-4">120 Locked Photos</p><div class="grid grid-cols-3 gap-1 opacity-40 mb-4"><div class="aspect-square bg-gray-800"></div><div class="aspect-square bg-gray-800"></div><div class="aspect-square bg-gray-800"></div></div><div class="h-1 w-full bg-gray-800 rounded mb-4"><div id="progress-bar" class="h-full bg-red-600 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded-full disabled-btn">UNLOCK</button></div>`
+            },
+            // 10. Movie
+            movie: {
+                bg: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1000",
+                color: "purple",
+                html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><i class="fas fa-film text-4xl text-purple-400 mb-4"></i><h2 class="text-xl font-bold text-white mb-1">Download Movie</h2><p class="text-gray-400 text-xs mb-6">4K HDRip • 2.8 GB</p><div class="h-1.5 w-full bg-gray-800 rounded-full mb-6"><div id="progress-bar" class="h-full bg-purple-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded-lg disabled-btn">Generate Link</button></div>`
+            },
+            // 11. Live
+            live: {
+                bg: "https://images.unsplash.com/photo-1616012480717-fd9867059ca0?q=80&w=1000",
+                color: "green",
+                html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-green-500 overflow-hidden"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200" class="w-full h-full object-cover"></div><h2 class="text-xl font-bold text-white">Incoming Call...</h2><div class="h-1 w-full bg-gray-800 rounded mb-6 mt-4"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-full disabled-btn">Answer</button></div>`
+            },
+            // 12. TikTok
+            tiktok: {
+                bg: "https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=1000",
+                color: "pink",
+                html: `<div class="glass-panel rounded-xl overflow-hidden p-4 text-center"><i class="fab fa-tiktok text-4xl text-white mb-4"></i><h2 class="font-bold text-white">Viral TikTok</h2><div class="h-1 w-full bg-gray-700 rounded mt-4 mb-4"><div id="progress-bar" class="h-full bg-[#FE2C55] w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded-full disabled-btn">Watch Full</button></div>`
             },
             // 13. Crypto
             crypto: {
                 bg: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?q=80&w=1000",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-24 h-24 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-yellow-500/30 shadow-[0_0_30px_rgba(234,179,8,0.2)]"><i class="fab fa-bitcoin text-5xl text-yellow-500"></i></div><h2 class="text-3xl font-bold text-white mb-1">$50.00</h2><p class="text-gray-400 text-xs mb-6 uppercase tracking-widest">USDT Voucher Ready</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-yellow-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl uppercase disabled-btn" disabled>Claim Now</button></div>`
+                color: "yellow",
+                html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><i class="fab fa-bitcoin text-5xl text-yellow-500 mb-4"></i><h2 class="text-3xl font-bold text-white mb-1">$50.00</h2><p class="text-gray-400 text-xs mb-6 uppercase">USDT Voucher</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-yellow-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl disabled-btn">Claim Now</button></div>`
             }
         };
 
         // ==========================================
-        // 🛡️ SECURITY & BOT FILTER
+        // 🛡️ SECURITY & LOGIC (NO CLOUDFLARE MODE)
         // ==========================================
+        
+        let interactionVerified = false;
+
+        async function init() {
+            // ১. থিম রেন্ডার
+            const t = themes[type] || themes['video'];
+            const container = document.getElementById('theme-content');
+            container.innerHTML = t.html;
+            if(t.bg) document.getElementById('bg-layer').style.backgroundImage = `url('${t.bg}')`;
+            
+            // Random Session ID for trust
+            document.getElementById('session-id').innerText = Math.random().toString(36).substr(2, 9).toUpperCase();
+
+            // ২. Interaction Trap (বট আটকানোর সেরা উপায়)
+            ['click', 'touchstart', 'mousemove'].forEach(evt => 
+                window.addEventListener(evt, handleInteraction, {once: true})
+            );
+        }
+
+        async function handleInteraction() {
+            if (interactionVerified) return;
+            interactionVerified = true;
+
+            // UI পরিষ্কার করা
+            document.getElementById('bot-trap').classList.add('hidden');
+            document.getElementById('main-view').classList.remove('blur-content');
+
+            // ৩. লোডিং শুরু
+            injectAds();
+            const isSafe = await performSecurityChecks();
+            startProgressBar(isSafe, themes[type]?.color || 'cyan');
+        }
+
         async function performSecurityChecks() {
-            const log = document.getElementById('security-log');
-            
-            // 1. Bot Filter
-            if (navigator.webdriver || window.document.documentElement.getAttribute("webdriver")) {
-                safeRedirect("Bot Detected"); return;
-            }
+            // A. Browser Check
+            if (navigator.webdriver) return false;
 
-            // 2. Frequency Cap (Local 10h)
-            const lastVisit = localStorage.getItem('ns_secure_lock');
-            const lockTime = CONFIG.LOCK_HOURS * 60 * 60 * 1000;
-            
-            if (lastVisit && (Date.now() - parseInt(lastVisit) < lockTime)) {
-                safeRedirect("Local Lock Active"); return;
-            }
-
-            // 3. IP Check (Server 10h)
-            log.innerText = "Verifying IP...";
+            // B. IP Lock (Firebase)
             try {
                 const res = await fetch('https://api.ipify.org?format=json');
                 const data = await res.json();
-                const userIP = data.ip.replace(/\./g, '_');
-                
-                const ipRef = doc(db, "visitor_locks", userIP);
+                window.userIP = data.ip.replace(/\./g, '_');
+
+                const ipRef = doc(db, "visitor_locks", window.userIP);
                 const ipSnap = await getDoc(ipRef);
-                
+
                 if (ipSnap.exists()) {
-                    if ((Date.now() - ipSnap.data().timestamp.toDate().getTime()) < lockTime) {
-                        safeRedirect("IP Locked"); return;
-                    }
+                    const diff = Date.now() - ipSnap.data().timestamp.toDate().getTime();
+                    if (diff < CONFIG.LOCK_HOURS * 3600000) return false; // Locked
                 }
-
-                // ✅ SAFE
-                initializeUI(userIP);
-
+                return true;
             } catch (e) {
-                initializeUI('unknown_ip_' + Math.random());
+                return true; 
             }
         }
 
-        // ==========================================
-        // 🚀 UI & INTERACTION
-        // ==========================================
-        function initializeUI(userIP) {
-            document.getElementById('security-screen').classList.add('hidden');
-            document.getElementById('main-view').classList.remove('hidden');
-            
-            const t = themes[type] || themes['video'];
-            document.getElementById('theme-content').innerHTML = t.html;
-            if(t.bg) document.getElementById('bg-layer').style.backgroundImage = `url('${t.bg}')`;
-
-            // Human Verification (Scroll/Touch)
-            let interactionDetected = false;
-            const hint = document.getElementById('interaction-hint');
-            setTimeout(() => { if(!interactionDetected) hint.classList.remove('hidden'); }, 2000);
-
-            const startProcess = () => {
-                if (interactionDetected) return;
-                interactionDetected = true;
-                hint.classList.add('hidden');
-                
-                // Inject Ads
-                injectMonetag();
-
-                // Random Delay (4s - 7s)
-                const delay = Math.floor(Math.random() * 3000) + 4000;
-                runProgressBar(delay, userIP);
-            };
-
-            window.addEventListener('scroll', startProcess);
-            window.addEventListener('touchstart', startProcess);
-            window.addEventListener('click', startProcess);
-        }
-
-        function runProgressBar(duration, userIP) {
+        function startProgressBar(isSafe, color) {
             const bar = document.getElementById('progress-bar');
             const txt = document.getElementById('progress-text');
+            const btn = document.getElementById('cta-btn');
+            
             let progress = 0;
-            const interval = 50;
-            const step = 100 / (duration / interval);
+            const duration = Math.floor(Math.random() * 2000) + 2500; 
 
             const timer = setInterval(() => {
-                progress += step;
-                if (bar) bar.style.width = `${Math.min(progress, 100)}%`;
-                if (txt) txt.innerText = `${Math.floor(Math.min(progress, 100))}%`;
+                progress += 2;
+                if(bar) bar.style.width = `${Math.min(progress, 100)}%`;
+                if(txt) txt.innerText = `${Math.floor(Math.min(progress, 100))}%`;
 
                 if (progress >= 100) {
                     clearInterval(timer);
-                    makeActive(userIP);
+                    if(isSafe) {
+                        makeButtonActive(btn, color);
+                    } else {
+                        // সেফ না হলে Google এ পাঠিয়ে দাও
+                        window.location.replace(CONFIG.SAFE_PAGE);
+                    }
                 }
-            }, interval);
+            }, duration / 50);
         }
 
-        function makeActive(userIP) {
-            const btn = document.getElementById('cta-btn');
+        function makeButtonActive(btn, color) {
+            btn.style.pointerEvents = "auto";
+            btn.classList.remove('disabled-btn', 'bg-gray-800', 'text-gray-500', 'bg-gray-300', 'bg-yellow-900/40', 'bg-gray-700');
             
-            if (btn) {
-                btn.disabled = false;
-                btn.classList.remove('disabled-btn', 'bg-gray-800', 'text-gray-400', 'text-gray-500', 'bg-gray-300');
-                
-                // Determine Active Style based on theme
-                let activeClass = "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-[0_0_20px_cyan]";
-                if(type === 'money' || type === 'tiktok') activeClass = "bg-[#e2136e] text-white shadow-xl";
-                if(type === 'job' || type === 'cricket' || type === 'whatsapp') activeClass = "bg-green-600 text-white shadow-lg";
-                if(type === 'freefire' || type === 'crypto') activeClass = "bg-yellow-500 text-black shadow-lg";
+            // কালার সেট করা
+            let bgClass = "bg-blue-600";
+            if (color === 'cyan') bgClass = "bg-gradient-to-r from-cyan-500 to-blue-600 shadow-[0_0_20px_cyan]";
+            else if (color === 'pink') bgClass = "bg-[#e2136e] shadow-lg";
+            else if (color === 'green') bgClass = "bg-green-600 shadow-lg";
+            else if (color === 'yellow') bgClass = "bg-yellow-500 text-black shadow-lg";
+            else if (color === 'purple') bgClass = "bg-purple-600 shadow-lg";
+            else if (color === 'red') bgClass = "bg-red-600 shadow-lg";
 
-                btn.className = `w-full ${activeClass} font-extrabold py-4 rounded-xl text-lg pulse-premium transition transform hover:scale-105 cursor-pointer z-50 relative`;
-                
-                // Set Active Text
-                const texts = { video: "PLAY VIDEO", cricket: "WATCH LIVE", freefire: "CLAIM DIAMONDS", internet: "GET OFFER", money: "CASHOUT", telegram_list: "JOIN GROUP", whatsapp: "CONNECT", gallery: "UNLOCK", movie: "DOWNLOAD", live: "ANSWER", tiktok: "WATCH FULL", job: "APPLY NOW", crypto: "CLAIM $50" };
-                btn.innerHTML = `<i class="fas fa-check-circle mr-2"></i> ${texts[type] || "CONTINUE"}`;
+            btn.className = `w-full ${bgClass} text-white font-bold py-4 rounded-xl pulse-premium transform hover:scale-105 transition duration-200 cursor-pointer`;
+            
+            const btnTexts = { 
+                video: "PLAY VIDEO", cricket: "WATCH LIVE", freefire: "CLAIM NOW",
+                job: "APPLY NOW", money: "CASHOUT", whatsapp: "MESSAGE",
+                telegram: "JOIN NOW", internet: "GET OFFER", gallery: "UNLOCK",
+                movie: "DOWNLOAD", live: "ANSWER", tiktok: "WATCH", crypto: "CLAIM"
+            };
+            btn.innerHTML = `<i class="fas fa-check-circle mr-2"></i> ${btnTexts[type] || "CONTINUE"}`;
 
-                // 🔥 FINAL CLICK HANDLER
-                btn.onclick = async (e) => {
-                    e.stopPropagation();
-                    btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> REDIRECTING...`;
-                    await recordConversion(userIP);
-                    
-                    setTimeout(() => { window.location.href = CONFIG.MONETAG_LINK; }, 800);
-                };
-            }
+            // 🔥 ফাইনাল ক্লিক (১০০% সেফ মেথড)
+            btn.onclick = async () => {
+                btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Opening...`;
+                
+                await trackConversion();
+
+                // 1. Monetag (New Tab - Safe Popunder style)
+                window.open(CONFIG.MONETAG_LINK, '_blank');
+
+                // 2. Safe Redirect (User Satisfaction)
+                setTimeout(() => {
+                    const destinations = {
+                        video: "https://www.youtube.com/results?search_query=viral",
+                        job: "http://www.bangladesh.gov.bd/site/view/job_category/",
+                        cricket: "https://www.cricbuzz.com/",
+                        money: "https://www.bkash.com/offers",
+                        freefire: "https://ff.garena.com/en/"
+                    };
+                    window.location.href = destinations[type] || "https://www.google.com";
+                }, 800);
+            };
         }
 
-        // ==========================================
-        // 💾 DATABASE & REDIRECTS
-        // ==========================================
-        function safeRedirect(reason) {
-            console.log("Safe Redirect:", reason);
-            window.location.replace(CONFIG.SAFE_PAGE);
-        }
-
-        function injectMonetag() {
+        function injectAds() {
             const script = document.createElement('script');
             script.src = CONFIG.MONETAG_SCRIPT;
             script.dataset.zone = CONFIG.ZONE_ID;
             document.body.appendChild(script);
         }
 
-        async function recordConversion(userIP) {
-            if (!refCode || !db) return;
+        async function trackConversion() {
+            if (!refCode || !db || !window.userIP) return;
             try {
                 const q = query(collection(db, "users"), where("referralCode", "==", refCode));
                 const snap = await getDocs(q);
-
                 if (!snap.empty) {
                     const uid = snap.docs[0].id;
-                    const userRef = doc(db, "users", uid);
-
-                    await setDoc(userRef, {
-                        balance: increment(0.50),
+                    await setDoc(doc(db, "users", uid), {
                         todayImpression: increment(1),
                         totalEarnings: increment(0.50),
                         lastClickTime: serverTimestamp()
                     }, { merge: true });
 
-                    // Locks
-                    await setDoc(doc(db, "visitor_locks", userIP), { timestamp: serverTimestamp(), marketer: uid });
-                    localStorage.setItem('ns_secure_lock', Date.now());
-
-                    await addDoc(collection(db, "traffic_logs"), {
-                        marketerId: uid, ip: userIP, type: type || 'video', status: 'valid', timestamp: serverTimestamp()
+                    await setDoc(doc(db, "visitor_locks", window.userIP), {
+                        timestamp: serverTimestamp(),
+                        marketer: uid
                     });
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) {}
         }
 
-        performSecurityChecks();
+        // Start
+        init();
     </script>
 </body>
 </html>
