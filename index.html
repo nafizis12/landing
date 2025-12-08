@@ -3,210 +3,290 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Gateway</title>
+    <title>Secure Access Gateway</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'Inter', 'Hind Siliguri', sans-serif; user-select: none; }
+        body { font-family: 'Inter', 'Hind Siliguri', sans-serif; user-select: none; background-color: #0f172a; color: white; }
         .hidden-force { display: none !important; }
         
         /* Animations */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #1a1a1a; }
-        ::-webkit-scrollbar-thumb { background: #444; rounded: 5px; }
+        .pulse-ring { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); animation: pulse-green 2s infinite; }
+        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+
+        /* Loader */
+        .loader-bar { width: 0%; transition: width 0.5s ease; }
     </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen">
+<body>
 
-    <!-- 🏠 HOME MENU (Dashboard) -->
-    <div id="home-menu" class="hidden-force max-w-md mx-auto min-h-screen bg-gray-900 pb-10">
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-blue-900 to-gray-900 p-6 rounded-b-3xl shadow-2xl border-b border-gray-700">
-            <h1 class="text-2xl font-bold text-white">🔥 Trending Now</h1>
-            <p class="text-sm text-gray-400">Select a category to continue</p>
+    <!-- 🏠 1. HOME MENU (Categories) -->
+    <div id="home-menu" class="hidden-force min-h-screen max-w-md mx-auto bg-gray-900 pb-10">
+        <div class="bg-blue-600 p-6 rounded-b-3xl shadow-lg mb-6 text-center">
+            <h1 class="text-2xl font-bold text-white">🔥 Viral Content</h1>
+            <p class="text-sm text-blue-100 opacity-90">Select a category to unlock</p>
         </div>
 
-        <!-- Grid Menu -->
-        <div class="p-4 grid grid-cols-2 gap-4 mt-2" id="menu-grid">
-            <!-- Items injected via JS -->
+        <div class="grid grid-cols-2 gap-4 px-4" id="menu-grid">
+            <!-- JavaScript will inject buttons here -->
+        </div>
+        
+        <div class="text-center mt-8 text-xs text-gray-500">
+            Secure Connection • 256-bit Encryption
         </div>
     </div>
 
-    <!-- 📄 LANDING PAGE CONTAINER -->
-    <div id="landing-page" class="hidden-force w-full max-w-md mx-auto min-h-screen relative bg-black">
+    <!-- 📄 2. LANDING PAGE CONTAINER -->
+    <div id="landing-view" class="hidden-force w-full max-w-md mx-auto min-h-screen relative bg-black">
+        <!-- Back Button (For testing) -->
+        <button onclick="location.href=location.pathname" class="absolute top-2 left-2 z-50 bg-black/50 text-white px-2 rounded text-xs">🏠 Home</button>
+        
         <div id="page-content"></div>
     </div>
 
     <script>
         // ==========================================
-        // ⚙️ CONFIGURATION & THEMES
+        // ⚙️ CONFIGURATION
         // ==========================================
         const CONFIG = {
-            DIRECT_LINK: "https://your-monetag-direct-link.com", 
-            WAIT_TIME: 6000, 
+            DIRECT_LINK: "https://your-monetag-direct-link.com", // 🔴 আপনার মনিট্যাগ লিংক এখানে দিন
+            WAIT_TIME: 6000, // 6 Seconds wait
         };
 
+        // ==========================================
+        // 🎨 12 PROFESSIONAL THEMES
+        // ==========================================
         const THEMES = {
-            // 🎬 1. MOVIE
+            // 🎬 Video/Movie
             movie: {
-                title: "Viral Movie",
-                icon: "fa-film",
-                color: "text-red-500",
-                render: () => `<div class="bg-[#141414] min-h-screen text-white p-6"><h1 class="text-3xl font-bold text-red-600 mb-4">NETFLIX LEAK</h1><p class="text-gray-400 mb-8">Jawan Extended Cut (4K)</p><div class="bg-gray-800 p-6 rounded-lg text-center"><i class="fas fa-play-circle text-6xl mb-4"></i><p class="mb-4 text-sm">Server needs verification</p><div class="h-2 bg-gray-600 rounded mb-4"><div id="progress-bar" class="h-full bg-red-600 w-0"></div></div><button id="action-btn" class="w-full bg-red-600 py-3 rounded font-bold disabled:opacity-50" disabled>Unlock Player</button></div></div>`
+                title: "Viral Video", icon: "fa-play", color: "text-red-500",
+                render: () => `
+                <div class="bg-[#101010] min-h-screen">
+                    <div class="relative h-64 bg-gray-800 group">
+                        <img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=400" class="w-full h-full object-cover opacity-60">
+                        <div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play-circle text-6xl text-white/90 drop-shadow-lg"></i></div>
+                        <div class="absolute bottom-2 right-2 bg-black text-white text-xs px-2 py-1 rounded">12:45</div>
+                    </div>
+                    <div class="p-5">
+                        <h1 class="text-xl font-bold text-white mb-2">Leaked_Video_Viral_2025.mp4</h1>
+                        <p class="text-gray-400 text-xs mb-6">👁️ 2.4M Views • ⚡ Viral BD</p>
+                        
+                        <div class="bg-[#1a1a1a] p-5 rounded-xl border border-gray-800 text-center">
+                            <p class="text-sm text-gray-300 mb-3 font-mono">⚠️ Server 1: Verification Required</p>
+                            <div class="h-2 bg-gray-700 w-full rounded-full mb-4 overflow-hidden"><div id="progress-bar" class="h-full bg-red-600 w-0 transition-all duration-300"></div></div>
+                            <button id="action-btn" class="w-full bg-gray-700 text-gray-400 py-3 rounded-lg font-bold disabled:opacity-50 transition-all" disabled>Loading Player...</button>
+                        </div>
+                    </div>
+                </div>`
             },
-            // 💼 2. JOB
-            job: {
-                title: "Govt Job",
-                icon: "fa-briefcase",
-                color: "text-green-500",
-                render: () => `<div class="bg-white min-h-screen text-gray-800 p-6"><div class="border-b-2 border-green-600 pb-4 mb-4 text-center"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Government_Seal_of_Bangladesh.svg/1200px-Government_Seal_of_Bangladesh.svg.png" class="w-16 mx-auto mb-2"><h2 class="font-bold text-green-800">Govt Circular 2025</h2></div><div class="bg-green-50 p-4 rounded border border-green-200 mb-6"><p class="font-bold">Total Post: 4500+</p><p>Salary: 26,000/-</p></div><div class="text-center"><p class="text-xs mb-2">Downloading Application Form...</p><div class="h-2 bg-gray-300 rounded mb-4"><div id="progress-bar" class="h-full bg-green-600 w-0"></div></div><button id="action-btn" class="w-full bg-green-700 text-white py-3 rounded font-bold disabled:opacity-50" disabled>Download PDF</button></div></div>`
-            },
-            // ⚽ 3. SPORTS
-            sports: {
-                title: "Live Cricket",
-                icon: "fa-baseball-bat-ball",
-                color: "text-blue-500",
-                render: () => `<div class="bg-[#0f172a] min-h-screen text-white p-4"><div class="bg-blue-900 p-4 rounded-lg mb-6 text-center"><span class="bg-red-600 text-xs px-2 py-1 rounded animate-pulse">LIVE</span><h2 class="text-xl font-bold mt-2">BAN vs IND</h2><p class="text-yellow-400 font-bold">142/3 (18.2 ov)</p></div><div class="bg-[#1e293b] p-6 rounded text-center"><i class="fas fa-tv text-4xl text-blue-400 mb-4"></i><p class="text-sm text-gray-400 mb-4">High traffic on server. Verify to watch.</p><div class="h-1 bg-gray-700 rounded mb-4"><div id="progress-bar" class="h-full bg-blue-500 w-0"></div></div><button id="action-btn" class="w-full bg-blue-600 py-3 rounded font-bold disabled:opacity-50" disabled>Watch Stream</button></div></div>`
-            },
-            // 🔞 4. TELEGRAM 18+
+            // 🔞 Telegram 18+
             telegram_18: {
-                title: "18+ Leaks",
-                icon: "fa-paper-plane",
-                color: "text-sky-400",
-                render: () => `<div class="bg-[#1c242f] min-h-screen text-white p-4"><div class="flex items-center gap-3 bg-[#233040] p-3 rounded mb-6"><i class="fab fa-telegram text-4xl text-[#229ED9]"></i><div><h2 class="font-bold">Desi Viral Leaks 🔞</h2><p class="text-xs text-blue-400">125k Members</p></div></div><div class="bg-[#151a21] p-6 rounded border border-gray-700 text-center"><div class="blur-sm mb-4"><img src="https://images.unsplash.com/photo-1596706037380-0010952d7189?q=80&w=300" class="rounded opacity-50"></div><p class="text-sm text-gray-300 mb-4">Private Invite Link (Expiring...)</p><div class="h-2 bg-gray-700 rounded mb-4"><div id="progress-bar" class="h-full bg-[#229ED9] w-0"></div></div><button id="action-btn" class="w-full bg-[#229ED9] py-3 rounded font-bold disabled:opacity-50" disabled>Join Channel</button></div></div>`
+                title: "18+ Group", icon: "fa-paper-plane", color: "text-sky-500",
+                render: () => `
+                <div class="bg-[#1c242f] min-h-screen">
+                    <div class="bg-[#233040] p-4 flex items-center gap-3 shadow-md mb-6">
+                        <i class="fab fa-telegram text-4xl text-[#229ED9]"></i>
+                        <div><h2 class="font-bold text-white">Desi Viral Leaks 🔞</h2><p class="text-xs text-[#5bb6eb]">145,200 Subscribers</p></div>
+                    </div>
+                    <div class="p-5">
+                        <div class="bg-[#151a21] p-6 rounded-xl border border-gray-700 text-center shadow-2xl">
+                            <div class="w-16 h-16 bg-gray-800 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl">🔞</div>
+                            <h3 class="text-white font-bold text-lg mb-2">Private Channel Invite</h3>
+                            <p class="text-xs text-gray-400 mb-6">Link expires in 5 minutes. Join now.</p>
+                            <div class="h-1.5 bg-gray-700 w-full rounded mb-4"><div id="progress-bar" class="h-full bg-[#229ED9] w-0"></div></div>
+                            <button id="action-btn" class="w-full bg-[#229ED9] text-white py-3 rounded-lg font-bold shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:bg-gray-700" disabled>GET LINK</button>
+                        </div>
+                    </div>
+                </div>`
             },
-            // 📞 5. VIDEO CALL
+            // 📞 Video Call
             video_call: {
-                title: "Video Call",
-                icon: "fa-video",
-                color: "text-green-400",
-                render: () => `<div class="bg-black min-h-screen text-white flex flex-col items-center pt-20 relative"><img src="https://images.unsplash.com/photo-1605949405965-d4219a90d4ca?q=80&w=400" class="absolute inset-0 w-full h-full object-cover blur-xl opacity-60"><div class="z-10 text-center"><img src="https://images.unsplash.com/photo-1605949405965-d4219a90d4ca?q=80&w=150" class="w-32 h-32 rounded-full border-4 border-green-500 mx-auto mb-4 animate-pulse"><h2 class="text-2xl font-bold">Priya 💖</h2><p class="animate-pulse text-green-400">Incoming Video Call...</p></div><div class="absolute bottom-20 w-full px-10 z-10"><div class="h-1 bg-gray-500 rounded mb-4"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div><button id="action-btn" class="w-full bg-green-600 h-16 rounded-full text-2xl shadow-[0_0_20px_lime] disabled:bg-gray-600" disabled><i class="fas fa-phone"></i></button><p class="text-center mt-2 text-sm">Accept</p></div></div>`
+                title: "Video Call", icon: "fa-video", color: "text-green-500",
+                render: () => `
+                <div class="bg-black min-h-screen relative overflow-hidden flex flex-col items-center pt-24">
+                    <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=400" class="absolute inset-0 w-full h-full object-cover blur-xl opacity-50">
+                    <div class="z-10 text-center">
+                        <div class="w-32 h-32 rounded-full p-1 bg-green-500 mx-auto mb-4 animate-bounce shadow-[0_0_30px_lime]">
+                            <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=200" class="w-full h-full object-cover rounded-full">
+                        </div>
+                        <h2 class="text-3xl font-bold text-white mb-1">Priya 💖</h2>
+                        <p class="text-green-400 font-bold animate-pulse">Incoming Video Call...</p>
+                    </div>
+                    <div class="absolute bottom-20 w-full px-10 z-10">
+                        <div class="h-1 bg-white/20 rounded mb-4"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div>
+                        <div class="flex justify-between items-center">
+                            <div class="text-center"><div class="w-14 h-14 bg-red-500 rounded-full flex items-center justify-center text-white text-xl"><i class="fas fa-phone-slash"></i></div><p class="text-xs mt-1 text-white">Decline</p></div>
+                            <button id="action-btn" class="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center text-white text-3xl pulse-ring disabled:bg-gray-600" disabled><i class="fas fa-video"></i></button>
+                        </div>
+                        <p id="status-text" class="text-center text-white text-xs mt-4">Connecting secure line...</p>
+                    </div>
+                </div>`
             },
-            // 💋 6. BHABI VIDEO
+            // 💋 Bhabi Leak
             bhabi_leak: {
-                title: "Bhabi Video",
-                icon: "fa-play",
-                color: "text-pink-500",
-                render: () => `<div class="bg-black min-h-screen text-white"><div class="relative h-64 bg-gray-800"><div class="absolute inset-0 flex items-center justify-center bg-black/50"><i class="fas fa-lock text-4xl"></i></div><img src="https://images.unsplash.com/photo-1570158268183-d296b2892211?q=80&w=400" class="w-full h-full object-cover blur-sm opacity-50"></div><div class="p-4"><h1 class="text-xl font-bold text-pink-500">Desi Bhabi Viral.mp4</h1><p class="text-xs text-gray-400 mb-6">1.5M Views • 2h ago</p><div class="bg-gray-900 p-4 rounded text-center"><p class="mb-2 text-sm">Verify Age (18+) to Watch</p><div class="h-2 bg-gray-800 rounded mb-4"><div id="progress-bar" class="h-full bg-pink-600 w-0"></div></div><button id="action-btn" class="w-full bg-pink-600 py-3 rounded font-bold disabled:opacity-50" disabled>Verify & Play</button></div></div></div>`
+                title: "Bhabi Viral", icon: "fa-fire", color: "text-pink-500",
+                render: () => `
+                <div class="bg-black min-h-screen">
+                    <div class="relative h-[60vh] bg-gray-900 border-b border-gray-800">
+                        <img src="https://images.unsplash.com/photo-1623091411315-bd4dc365f695?q=80&w=400" class="w-full h-full object-cover blur-md opacity-40">
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span class="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded mb-4 animate-pulse">18+ RESTRICTED</span>
+                            <i class="fas fa-lock text-5xl text-gray-400 mb-4"></i>
+                            <p class="text-red-500 font-mono bg-black/80 px-2 text-sm">Age Verification Failed</p>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <h1 class="text-lg font-bold text-white">Desi_Bhabi_Viral_Call.mp4</h1>
+                        <p class="text-xs text-gray-500 mt-1">Leak: Just Now • 45MB</p>
+                        <div class="mt-6">
+                            <p class="text-center text-xs text-gray-300 mb-2">Prove you are 18+ to unlock video</p>
+                            <div class="h-2 bg-gray-800 rounded mb-4"><div id="progress-bar" class="h-full bg-red-600 w-0"></div></div>
+                            <button id="action-btn" class="w-full bg-red-600 text-white py-3 rounded font-bold uppercase disabled:opacity-50" disabled>VERIFY AGE 18+</button>
+                        </div>
+                    </div>
+                </div>`
             },
-            // 🤖 7. AI GF
+            // 💼 Job
+            job: {
+                title: "Govt Job", icon: "fa-briefcase", color: "text-green-600",
+                render: () => `
+                <div class="bg-white min-h-screen text-gray-800">
+                    <div class="bg-[#006a4e] p-4 text-center sticky top-0 shadow flex items-center justify-center gap-3">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Government_Seal_of_Bangladesh.svg/1200px-Government_Seal_of_Bangladesh.svg.png" class="w-10">
+                        <div class="text-left"><h2 class="text-white font-bold text-sm">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</h2><p class="text-white/70 text-[10px]">নিয়োগ বিজ্ঞপ্তি পোর্টাল</p></div>
+                    </div>
+                    <div class="p-6">
+                        <div class="border-l-4 border-green-600 bg-green-50 p-4 mb-6 shadow-sm"><h1 class="font-bold text-xl">Primary School Job Circular 2025</h1><p class="text-sm text-gray-600">Total Posts: 6,500+</p></div>
+                        <div class="text-center bg-gray-50 p-6 rounded border">
+                            <i class="fas fa-file-pdf text-4xl text-red-500 mb-2"></i>
+                            <p class="text-xs text-gray-500 mb-4">Application_Form_2025.pdf</p>
+                            <div class="h-1.5 bg-gray-200 rounded mb-4"><div id="progress-bar" class="h-full bg-[#006a4e] w-0"></div></div>
+                            <button id="action-btn" class="w-full bg-[#006a4e] text-white py-3 rounded font-bold shadow disabled:opacity-50" disabled>Download Circular</button>
+                        </div>
+                    </div>
+                </div>`
+            },
+            // ⚽ Sports
+            sports: {
+                title: "Live Cricket", icon: "fa-baseball-bat-ball", color: "text-blue-500",
+                render: () => `
+                <div class="bg-[#0f172a] min-h-screen text-white">
+                    <div class="bg-blue-900 p-4 shadow-lg text-center"><span class="bg-red-600 text-xs px-2 py-1 rounded animate-pulse">● LIVE</span><h2 class="font-bold text-xl mt-2">BAN vs IND</h2><p class="text-yellow-400 font-bold">145/3 (16.4 ov)</p></div>
+                    <div class="p-6">
+                        <div class="bg-[#1e293b] p-8 rounded-xl text-center border border-blue-800">
+                            <i class="fas fa-tv text-5xl text-blue-500 mb-4"></i>
+                            <h3 class="font-bold text-lg">Watch Live Stream HD</h3>
+                            <p class="text-xs text-gray-400 mb-6">Server overloaded. Please verify to connect.</p>
+                            <div class="h-1.5 bg-gray-700 rounded mb-4"><div id="progress-bar" class="h-full bg-blue-500 w-0"></div></div>
+                            <button id="action-btn" class="w-full bg-blue-600 py-3 rounded font-bold disabled:opacity-50" disabled>Connect Stream</button>
+                        </div>
+                    </div>
+                </div>`
+            },
+            // 🤖 AI Girlfriend
             ai_gf: {
-                title: "AI Chat",
-                icon: "fa-robot",
-                color: "text-purple-400",
-                render: () => `<div class="bg-[#111] min-h-screen text-white flex flex-col"><div class="p-4 border-b border-gray-800 flex gap-3"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=100" class="w-10 h-10 rounded-full"><div class="text-sm"><p class="font-bold">Natasha (AI)</p><p class="text-green-500 text-xs">Online</p></div></div><div class="p-4 space-y-4 flex-1"><div class="bg-gray-800 p-3 rounded-xl rounded-tl-none max-w-[80%] text-sm">Send me a pic? 🫦</div><div class="bg-gray-800 p-2 rounded-xl rounded-tl-none max-w-[80%]"><div class="w-40 h-48 bg-black flex items-center justify-center border border-purple-500 rounded"><i class="fas fa-lock text-purple-500"></i></div></div></div><div class="p-4"><div class="h-1 bg-gray-700 rounded mb-2"><div id="progress-bar" class="h-full bg-purple-600 w-0"></div></div><button id="action-btn" class="w-full bg-purple-600 py-3 rounded-full font-bold disabled:opacity-50" disabled>Unlock Photo</button></div></div>`
+                title: "AI Girlfriend", icon: "fa-heart", color: "text-purple-500",
+                render: () => `
+                <div class="bg-[#111] min-h-screen text-white flex flex-col">
+                    <div class="p-3 bg-[#1a1a1a] flex items-center gap-3 border-b border-gray-800"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=100" class="w-10 h-10 rounded-full border-2 border-green-500"><div><h3 class="font-bold text-sm">Sarah (AI)</h3><span class="text-green-500 text-xs">Online</span></div></div>
+                    <div class="flex-1 p-4 space-y-4">
+                        <div class="flex gap-2"><div class="bg-gray-800 p-3 rounded-xl rounded-tl-none text-sm max-w-[85%]">Hey! Only you and me here? 😉</div></div>
+                        <div class="flex gap-2"><div class="bg-gray-800 p-3 rounded-xl rounded-tl-none text-sm max-w-[85%]">I sent you a secret photo. Want to see? 🔥</div></div>
+                        <div class="relative w-48 h-60 bg-gray-800 rounded ml-2 overflow-hidden border border-purple-500/50"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=300" class="w-full h-full object-cover blur-xl opacity-50"><div class="absolute inset-0 flex flex-col items-center justify-center"><i class="fas fa-lock text-2xl text-purple-500 mb-2"></i><span class="text-[10px] uppercase tracking-widest">Premium</span></div></div>
+                    </div>
+                    <div class="p-4 bg-[#1a1a1a]"><div class="h-1 bg-gray-700 rounded mb-2"><div id="progress-bar" class="h-full bg-purple-600 w-0"></div></div><button id="action-btn" class="w-full bg-purple-600 py-3 rounded-full font-bold shadow-lg disabled:opacity-50" disabled>Unlock Photo</button></div>
+                </div>`
             },
-            // 💘 8. DATING
-            dating: {
-                title: "Dating App",
-                icon: "fa-heart",
-                color: "text-red-500",
-                render: () => `<div class="bg-gray-100 min-h-screen flex items-center justify-center p-4"><div class="bg-white p-4 rounded-xl shadow-xl w-full max-w-sm"><img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?q=80&w=400" class="w-full h-80 object-cover rounded-lg mb-4"><h2 class="text-2xl font-bold text-gray-800">Riya, 22</h2><p class="text-gray-500 mb-4">2 km away • Active Now</p><div class="h-2 bg-gray-200 rounded mb-4"><div id="progress-bar" class="h-full bg-pink-500 w-0"></div></div><div class="flex gap-2"><button id="action-btn" class="flex-1 bg-pink-500 text-white py-3 rounded-full font-bold shadow-lg disabled:opacity-50" disabled>MATCH ❤️</button></div></div></div>`
-            },
-            // 📹 9. LIVE CAM
-            live_cam: {
-                title: "Live Cam",
-                icon: "fa-video",
-                color: "text-orange-500",
-                render: () => `<div class="bg-black min-h-screen text-white"><div class="relative h-96 w-full"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400" class="w-full h-full object-cover blur-md opacity-60"><div class="absolute inset-0 flex items-center justify-center flex-col"><div class="w-16 h-16 border-4 border-t-orange-500 rounded-full animate-spin mb-4"></div><span class="text-orange-500 font-bold">PRIVATE ROOM</span></div></div><div class="p-6"><p class="text-center text-sm mb-4">Connecting to secure stream...</p><div class="h-1 bg-gray-800 rounded mb-4"><div id="progress-bar" class="h-full bg-orange-600 w-0"></div></div><button id="action-btn" class="w-full bg-orange-600 py-3 rounded font-bold disabled:opacity-50" disabled>Enter Room</button></div></div>`
-            },
-            // 💎 10. CRYPTO
-            crypto: {
-                title: "Free USDT",
-                icon: "fa-bitcoin",
-                color: "text-yellow-500",
-                render: () => `<div class="bg-[#0b0e11] min-h-screen text-white flex flex-col items-center justify-center p-6"><i class="fab fa-bitcoin text-6xl text-yellow-500 mb-6 animate-bounce"></i><h1 class="text-2xl font-bold mb-2">Binance Airdrop</h1><p class="text-gray-400 mb-8">Claim 10 USDT Bonus</p><div class="w-full bg-gray-800 h-2 rounded mb-6"><div id="progress-bar" class="h-full bg-yellow-500 w-0"></div></div><button id="action-btn" class="w-full bg-yellow-600 text-black font-bold py-3 rounded disabled:opacity-50" disabled>CLAIM NOW</button></div>`
-            },
-             // 📥 11. DOWNLOAD
-            download: {
-                title: "MediaFire",
-                icon: "fa-download",
-                color: "text-blue-400",
-                render: () => `<div class="bg-[#f3f4f6] min-h-screen p-6 flex flex-col items-center"><div class="bg-white p-6 rounded shadow-lg w-full text-center"><i class="fas fa-file-archive text-5xl text-blue-500 mb-4"></i><h1 class="font-bold text-gray-800">GTA_V_Mobile.apk</h1><p class="text-sm text-gray-500 mb-6">1.2 GB</p><p class="text-xs text-blue-600 animate-pulse mb-2">Scanning for viruses...</p><div class="h-2 bg-gray-200 rounded mb-4"><div id="progress-bar" class="h-full bg-blue-500 w-0"></div></div><button id="action-btn" class="w-full bg-blue-500 text-white py-3 rounded font-bold disabled:opacity-50" disabled>GENERATE LINK</button></div></div>`
-            },
-             // 📶 12. WIFI
+            // 📶 WiFi Password
             wifi: {
-                title: "WiFi Hack",
-                icon: "fa-wifi",
-                color: "text-green-500",
-                render: () => `<div class="bg-black min-h-screen text-green-500 font-mono p-6"><h1 class="text-xl border-b border-green-800 pb-2 mb-4">> ROOT_ACCESS</h1><p class="opacity-70 mb-2">> Scanning networks...</p><p class="opacity-70 mb-8">> Found: TP-Link_5G</p><div class="border border-green-800 p-4"><i class="fas fa-lock text-3xl mb-3 text-center block"></i><p class="text-center mb-2">Decrypting Password...</p><div class="h-2 bg-green-900 rounded mb-4"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div><button id="action-btn" class="w-full border border-green-600 py-3 hover:bg-green-900 transition disabled:opacity-50" disabled>[ UNLOCK ]</button></div></div>`
+                title: "WiFi Hack", icon: "fa-wifi", color: "text-green-400",
+                render: () => `
+                <div class="bg-black min-h-screen text-green-500 font-mono p-5">
+                    <h2 class="text-xl border-b border-green-800 pb-2 mb-4">> ROOT_TERMINAL</h2>
+                    <div class="space-y-1 text-xs opacity-80 mb-8">
+                        <p>> Scanning local networks...</p><p>> Target: <span class="text-white">TP-Link_Home_5G</span></p><p>> Encryption: WPA2-PSK</p><p class="animate-pulse">> Cracking handshake...</p>
+                    </div>
+                    <div class="border border-green-800 bg-green-900/10 p-6 rounded text-center">
+                        <i class="fas fa-lock text-4xl mb-4"></i>
+                        <p class="mb-2 text-sm text-white">Password Hidden</p>
+                        <p class="mb-4 text-xs">********</p>
+                        <div class="h-2 bg-green-900 rounded mb-4"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div>
+                        <button id="action-btn" class="w-full border border-green-600 py-3 text-green-500 font-bold hover:bg-green-600 hover:text-black transition disabled:opacity-50" disabled>DECRYPT & SHOW</button>
+                    </div>
+                </div>`
             }
         };
 
         // ==========================================
-        // 🧠 LOGIC: MENU vs LANDING PAGE
+        // 🧠 LOGIC ENGINE
         // ==========================================
+        
+        // 1. Check URL for "?type=..."
         const params = new URLSearchParams(window.location.search);
         const selectedType = params.get('type');
 
         if (!selectedType) {
-            // 👉 SCENARIO 1: SHOW HOME MENU
+            // 👉 SCENARIO A: Show Menu (If no link selected)
             document.getElementById('home-menu').classList.remove('hidden-force');
             const grid = document.getElementById('menu-grid');
-            
+
+            // Generate Menu Buttons dynamically
             Object.keys(THEMES).forEach(key => {
                 const t = THEMES[key];
-                const card = document.createElement('div');
-                card.className = "bg-[#1f2937] p-4 rounded-xl shadow-lg border border-gray-700 flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform cursor-pointer fade-in";
-                card.onclick = () => window.location.search = `?type=${key}`;
-                card.innerHTML = `
-                    <div class="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center shadow-inner">
-                        <i class="fas ${t.icon} text-2xl ${t.color}"></i>
+                grid.innerHTML += `
+                    <div onclick="window.location.search='?type=${key}'" 
+                         class="bg-[#1e293b] p-4 rounded-xl shadow-lg border border-gray-700 flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform cursor-pointer fade-in h-32">
+                        <div class="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center shadow-inner">
+                            <i class="fas ${t.icon} text-2xl ${t.color}"></i>
+                        </div>
+                        <h3 class="font-bold text-sm text-gray-200">${t.title}</h3>
                     </div>
-                    <h3 class="font-bold text-sm text-gray-200">${t.title}</h3>
                 `;
-                grid.appendChild(card);
             });
 
         } else {
-            // 👉 SCENARIO 2: SHOW SPECIFIC LANDING PAGE
-            const theme = THEMES[selectedType] || THEMES['movie']; // Fallback
-            document.getElementById('landing-page').classList.remove('hidden-force');
+            // 👉 SCENARIO B: Show Specific Landing Page
+            const theme = THEMES[selectedType] || THEMES['movie']; // Fallback to Movie if invalid
+            const container = document.getElementById('landing-view');
+            
+            container.classList.remove('hidden-force');
             document.getElementById('page-content').innerHTML = theme.render();
             
-            // Start Interaction Logic (Scroll & Click)
-            initLandingLogic();
+            // Start Interaction Logic
+            initInteraction();
         }
 
-        // ==========================================
-        // ⏳ LANDING PAGE LOGIC (Scroll + Timer)
-        // ==========================================
-        function initLandingLogic() {
+        // ⏳ Interaction Logic (Scroll + Timer)
+        function initInteraction() {
             let isScrolled = false;
-            
-            // Scroll Trigger
-            window.addEventListener('scroll', () => {
-                if (!isScrolled && window.scrollY > 20) {
-                    isScrolled = true;
-                    startTimer();
-                }
-            });
-            // Touch Trigger (for mobile if scroll is minimal)
-            window.addEventListener('touchstart', () => {
-                if(!isScrolled) { isScrolled = true; startTimer(); }
-            });
+            let timerStarted = false;
 
-            function startTimer() {
+            const triggerTimer = () => {
+                if (timerStarted) return;
+                timerStarted = true;
+                
                 const bar = document.getElementById('progress-bar');
                 const btn = document.getElementById('action-btn');
+                const status = document.getElementById('status-text');
                 let width = 0;
-                
+
                 const timer = setInterval(() => {
                     if (width >= 100) {
                         clearInterval(timer);
                         if(btn) {
                             btn.disabled = false;
-                            btn.classList.remove('disabled:opacity-50', 'bg-gray-600');
-                            btn.classList.add('animate-pulse', 'shadow-2xl');
+                            btn.classList.remove('disabled:opacity-50', 'bg-gray-700', 'bg-gray-600');
+                            // Make button flashy
+                            btn.classList.add('bg-green-600', 'text-white', 'shadow-2xl', 'animate-pulse');
                             btn.innerHTML = `CONTINUE ➤`;
-                            
-                            // CLICK ACTION
+                            if(status) status.innerText = "Connection Secure. Ready.";
+
+                            // CLICK HANDLER (Redirect)
                             btn.onclick = () => {
                                 btn.innerHTML = "Processing...";
                                 setTimeout(() => window.location.href = CONFIG.DIRECT_LINK, 800);
@@ -216,8 +296,13 @@
                         width++;
                         if(bar) bar.style.width = width + '%';
                     }
-                }, CONFIG.WAIT_TIME / 100); // Smooth fill based on Wait Time
-            }
+                }, CONFIG.WAIT_TIME / 100);
+            };
+
+            // Triggers: Scroll or Touch or Click
+            window.addEventListener('scroll', () => { if(!isScrolled && window.scrollY > 10) { isScrolled=true; triggerTimer(); } });
+            window.addEventListener('click', triggerTimer);
+            window.addEventListener('touchstart', triggerTimer);
         }
 
     </script>
