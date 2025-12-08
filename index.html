@@ -1,64 +1,59 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Secure Access</title>
+    <meta name="robots" content="noindex, nofollow">
+    <title>Link Gateway</title>
     
     <!-- ✅ Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&family=Hind+Siliguri:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Hind Siliguri', 'Roboto', sans-serif; background-color: #050505; overflow-x: hidden; user-select: none; }
+        body { font-family: 'Inter', sans-serif; background-color: #050505; overflow-x: hidden; user-select: none; }
         
-        /* 🛡️ UI Styles */
+        /* 🛡️ Clean Glass UI (No Misleading Elements) */
         .glass-panel {
-            background: rgba(20, 20, 25, 0.95);
+            background: rgba(15, 15, 20, 0.95);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
         }
         
-        .pulse-premium { animation: pulseGlow 2s infinite; }
-        @keyframes pulseGlow {
-            0% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(0, 243, 255, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 243, 255, 0); }
-        }
+        /* 🛡️ Ad Overlap Protection (Spacing) */
+        .safe-spacing { margin-top: 20px; margin-bottom: 20px; }
 
-        /* 🔒 Interaction Trap Blur */
-        .blur-content { filter: blur(8px); pointer-events: none; transition: all 0.5s; opacity: 0.5; }
         .hidden { display: none !important; }
+        .disabled-btn { opacity: 0.5; cursor: not-allowed; filter: grayscale(100%); pointer-events: none; }
         
-        /* Disabled Button */
-        .disabled-btn { opacity: 0.6; cursor: not-allowed; filter: grayscale(100%); pointer-events: none; }
+        /* Loading Animation */
+        .loader-bar { height: 4px; background: #222; border-radius: 2px; overflow: hidden; width: 100%; margin: 15px 0; }
+        .loader-fill { height: 100%; background: #3b82f6; width: 0%; transition: width 0.5s linear; }
     </style>
 </head>
 <body class="text-white min-h-screen flex flex-col relative bg-gray-950">
 
-    <!-- 🌌 Dynamic Background -->
-    <div id="bg-layer" class="absolute inset-0 bg-cover bg-center opacity-30 blur-md transition-all duration-1000"></div>
-    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/90 to-transparent"></div>
+    <!-- 🌌 Background (Clean, Abstract) -->
+    <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-900 z-0"></div>
 
-    <!-- 🛡️ LAYER 1: BOT TRAP (Invisible Shield) -->
-    <div id="bot-trap" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm">
-        <div class="w-16 h-16 border-4 border-gray-700 border-t-cyan-500 rounded-full animate-spin mb-6"></div>
-        <div class="text-center animate-pulse">
-            <h2 class="text-xl font-bold text-white mb-2">Security Check</h2>
-            <p class="text-sm text-gray-400">Touch screen to verify you are human</p>
+    <!-- 🛡️ LAYER 1: BOT PROTECTION (Interaction Check) -->
+    <div id="bot-trap" class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/95">
+        <div class="p-6 text-center">
+            <i class="fas fa-shield-halved text-4xl text-gray-600 mb-4"></i>
+            <p class="text-sm text-gray-400 mb-2">Security Check</p>
+            <p class="text-xs text-gray-600 animate-pulse">Click anywhere to verify connection</p>
         </div>
-        <i class="fas fa-fingerprint text-6xl text-gray-700 mt-8 opacity-50"></i>
     </div>
 
     <!-- 📦 Main Content -->
-    <div id="main-view" class="relative z-10 w-full min-h-screen flex flex-col items-center justify-center p-4 blur-content">
-        <div id="theme-content" class="w-full max-w-md transition-all duration-500"></div>
+    <div id="main-view" class="relative z-10 w-full min-h-screen flex flex-col items-center justify-center p-4 opacity-0 transition-opacity duration-700">
+        <div id="theme-content" class="w-full max-w-md"></div>
         
-        <!-- Footer -->
-        <div class="mt-8 opacity-30 text-[10px] text-center font-mono">
-            <p>Protected by SmartGuard • ID: <span id="session-id">...</span></p>
+        <!-- Disclaimer (Safety Requirement) -->
+        <div class="mt-8 opacity-30 text-[10px] text-center max-w-xs mx-auto">
+            <p>This page may contain sponsored links. You will be redirected to your destination after verification.</p>
         </div>
     </div>
 
@@ -68,14 +63,15 @@
         import { getFirestore, doc, getDoc, setDoc, increment, serverTimestamp, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
         // ==========================================
-        // ⚙️ CONFIGURATION
+        // ⚙️ SAFE CONFIGURATION
         // ==========================================
         const CONFIG = {
             MONETAG_LINK: "https://otieu.com/4/10277714", 
             SAFE_PAGE: "https://www.google.com", 
             MONETAG_SCRIPT: "https://quge5.com/88/tag.min.js",
             ZONE_ID: "190384",
-            LOCK_HOURS: 24,
+            MAX_DAILY_VIEWS: 5, // প্রতি IP ৫ বারের বেশি হলে ব্লক
+            MIN_SESSION_TIME: 5000, // ৫ সেকেন্ড অপেক্ষা (ন্যাচারাল টাইম)
             FIREBASE: { 
                 apiKey: "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE", 
                 projectId: "ns-prime-d7ca5" 
@@ -89,224 +85,265 @@
         const type = params.get('type') || 'video';
 
         // ==========================================
-        // 🎨 ALL 13 THEMES
+        // 🎨 SAFE THEMES (No Fake Players/Buttons)
         // ==========================================
+        // আমরা "Play" বাটন সরিয়ে "Continue" বাটন দিয়েছি এবং লেআউট ক্লিন করেছি।
         const themes = {
-            // 1. Viral Video
             video: {
-                bg: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=1000",
-                color: "cyan",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden"><div class="relative h-60 bg-gray-900"><img src="https://images.unsplash.com/photo-1596700813959-1e3093222d4f?q=80&w=600" class="w-full h-full object-cover opacity-60"><div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-lock text-4xl text-white/50"></i></div><div class="absolute top-3 left-3 bg-red-600 text-white text-[10px] px-3 py-1 rounded-full font-bold animate-pulse">● LIVE</div></div><div class="p-5"><h2 class="text-lg font-bold text-gray-100 mb-2">Viral_Video_Leaked_2025.mp4</h2><div class="h-1.5 w-full bg-gray-700 rounded-full mb-2"><div class="h-full bg-cyan-500 w-[0%]" id="progress-bar"></div></div><p class="text-[10px] text-cyan-400" id="progress-text">Waiting...</p><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl mt-4 disabled-btn">Loading...</button></div></div>`
+                icon: "fas fa-video",
+                title: "Video Content",
+                desc: "Viral_Video_2025.mp4",
+                dest: "https://www.youtube.com/results?search_query=viral+video",
+                color: "blue"
             },
-            // 2. Cricket
-            cricket: {
-                bg: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=1000",
-                color: "green",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><h2 class="text-xl font-bold text-white mb-2">BAN vs IND (Live)</h2><div class="bg-black/40 p-2 rounded mb-4 text-xs text-green-400">● Live Streaming Available</div><div class="h-1 w-full bg-gray-800 rounded mb-4"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl disabled-btn">Connecting...</button></div>`
-            },
-            // 3. FreeFire
-            freefire: {
-                bg: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000",
-                color: "yellow",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-20 h-20 bg-gray-900 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-yellow-500"><i class="fas fa-gem text-yellow-400 text-3xl"></i></div><h2 class="text-2xl font-bold text-white mb-1">5000 DIAMONDS</h2><p class="text-gray-400 text-xs mb-6">Redeem Code Found</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-yellow-500 w-0"></div></div><button id="cta-btn" class="w-full bg-yellow-900/40 text-yellow-500 font-bold py-4 rounded-xl disabled-btn">Verifying...</button></div>`
-            },
-            // 4. Money/Bkash
-            money: {
-                bg: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=1000",
-                color: "pink",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><h2 class="text-5xl font-bold text-pink-500 mb-2">৳ ৫০০.০০</h2><p class="text-white text-xs mb-6">Cashback Offer</p><div class="h-1 bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-pink-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-full disabled-btn">Processing...</button></div>`
-            },
-            // 5. Job Circular
             job: {
-                bg: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=1000",
-                color: "green",
-                html: `<div class="bg-white rounded-lg shadow-2xl overflow-hidden p-6 text-center"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Government_Seal_of_Bangladesh.svg/1200px-Government_Seal_of_Bangladesh.svg.png" class="w-12 h-12 mx-auto mb-2"><h3 class="text-gray-900 font-bold text-lg">সরকারি নিয়োগ বিজ্ঞপ্তি</h3><p class="text-gray-600 text-sm mb-4">পদসংখ্যা: ৪৫০০+</p><div class="h-1.5 w-full bg-gray-200 rounded-full mb-6"><div id="progress-bar" class="h-full bg-[#006a4e] w-0"></div></div><button id="cta-btn" class="w-full bg-gray-300 text-gray-500 font-bold py-3 rounded disabled-btn">লোড হচ্ছে...</button></div>`
+                icon: "fas fa-briefcase",
+                title: "Job Circular",
+                desc: "Official Recruitment 2025",
+                dest: "http://www.bangladesh.gov.bd/site/view/job_category/",
+                color: "green"
             },
-            // 6. WhatsApp
+            cricket: {
+                icon: "fas fa-baseball-bat-ball",
+                title: "Live Score",
+                desc: "BAN vs IND Match Update",
+                dest: "https://www.cricbuzz.com/",
+                color: "green"
+            },
+            money: {
+                icon: "fas fa-wallet",
+                title: "Cashback Offer",
+                desc: "Exclusive Deal Pending",
+                dest: "https://www.bkash.com/offers",
+                color: "pink"
+            },
+            freefire: {
+                icon: "fas fa-gamepad",
+                title: "Game Rewards",
+                desc: "Diamond Bundle Pack",
+                dest: "https://ff.garena.com/en/",
+                color: "yellow"
+            },
             whatsapp: {
-                bg: "",
-                color: "green",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden p-4"><div class="flex items-center gap-3 mb-6"><div class="relative"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150" class="w-14 h-14 rounded-full border-2 border-green-500"><div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border border-black"></div></div><div><h3 class="font-bold text-white text-lg">Sumaiya (Online)</h3><p class="text-green-400 text-xs animate-pulse">Typing...</p></div></div><div class="h-1.5 w-full bg-gray-700 rounded-full mb-4"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-full disabled-btn">Connecting...</button></div>`
+                icon: "fab fa-whatsapp",
+                title: "Chat Request",
+                desc: "Connect via WhatsApp",
+                dest: "https://web.whatsapp.com/",
+                color: "green"
             },
-            // 7. Telegram
             telegram: {
-                bg: "",
-                color: "blue",
-                html: `<div class="bg-[#17212b] rounded-xl p-6 text-center border border-gray-700"><div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl"><i class="fas fa-paper-plane"></i></div><h2 class="font-bold text-xl mb-1">Private Channel</h2><p class="text-gray-400 text-xs mb-4">50K Members</p><div class="h-1 w-full bg-gray-700 rounded mb-4"><div id="progress-bar" class="h-full bg-blue-400 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-700 text-gray-400 font-bold py-3 rounded-xl disabled-btn">JOIN REQUEST</button></div>`
+                icon: "fab fa-telegram",
+                title: "Channel Invite",
+                desc: "Join Private Group",
+                dest: "https://telegram.org/",
+                color: "blue"
             },
-            // 8. Internet
             internet: {
-                bg: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000",
-                color: "blue",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><h2 class="text-5xl font-bold text-blue-400 mb-2">50 GB</h2><p class="text-gray-400 text-sm mb-6">Free Internet Offer</p><div class="h-1.5 w-full bg-gray-800 rounded-full mb-6"><div id="progress-bar" class="h-full bg-blue-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl disabled-btn">Check Eligibility</button></div>`
+                icon: "fas fa-wifi",
+                title: "Data Pack",
+                desc: "Internet Offer Details",
+                dest: "https://www.google.com/search?q=internet+offer",
+                color: "blue"
             },
-            // 9. Gallery
             gallery: {
-                bg: "",
-                color: "red",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden p-4"><h1 class="font-bold text-white mb-1">Private Gallery</h1><p class="text-[10px] text-gray-400 mb-4">120 Locked Photos</p><div class="grid grid-cols-3 gap-1 opacity-40 mb-4"><div class="aspect-square bg-gray-800"></div><div class="aspect-square bg-gray-800"></div><div class="aspect-square bg-gray-800"></div></div><div class="h-1 w-full bg-gray-800 rounded mb-4"><div id="progress-bar" class="h-full bg-red-600 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded-full disabled-btn">UNLOCK</button></div>`
+                icon: "fas fa-images",
+                title: "Private Album",
+                desc: "Secure Photo Gallery",
+                dest: "https://photos.google.com/",
+                color: "red"
             },
-            // 10. Movie
             movie: {
-                bg: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1000",
-                color: "purple",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><i class="fas fa-film text-4xl text-purple-400 mb-4"></i><h2 class="text-xl font-bold text-white mb-1">Download Movie</h2><p class="text-gray-400 text-xs mb-6">4K HDRip • 2.8 GB</p><div class="h-1.5 w-full bg-gray-800 rounded-full mb-6"><div id="progress-bar" class="h-full bg-purple-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded-lg disabled-btn">Generate Link</button></div>`
+                icon: "fas fa-film",
+                title: "Movie Info",
+                desc: "HD Quality Details",
+                dest: "https://www.imdb.com/",
+                color: "purple"
             },
-            // 11. Live
             live: {
-                bg: "https://images.unsplash.com/photo-1616012480717-fd9867059ca0?q=80&w=1000",
-                color: "green",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><div class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-green-500 overflow-hidden"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200" class="w-full h-full object-cover"></div><h2 class="text-xl font-bold text-white">Incoming Call...</h2><div class="h-1 w-full bg-gray-800 rounded mb-6 mt-4"><div id="progress-bar" class="h-full bg-green-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-full disabled-btn">Answer</button></div>`
+                icon: "fas fa-headset",
+                title: "Live Support",
+                desc: "Video Call Request",
+                dest: "https://zoom.us/",
+                color: "blue"
             },
-            // 12. TikTok
             tiktok: {
-                bg: "https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=1000",
-                color: "pink",
-                html: `<div class="glass-panel rounded-xl overflow-hidden p-4 text-center"><i class="fab fa-tiktok text-4xl text-white mb-4"></i><h2 class="font-bold text-white">Viral TikTok</h2><div class="h-1 w-full bg-gray-700 rounded mt-4 mb-4"><div id="progress-bar" class="h-full bg-[#FE2C55] w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded-full disabled-btn">Watch Full</button></div>`
+                icon: "fab fa-tiktok",
+                title: "Viral Clip",
+                desc: "Trending on TikTok",
+                dest: "https://www.tiktok.com/",
+                color: "pink"
             },
-            // 13. Crypto
             crypto: {
-                bg: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?q=80&w=1000",
-                color: "yellow",
-                html: `<div class="glass-panel rounded-2xl overflow-hidden p-6 text-center"><i class="fab fa-bitcoin text-5xl text-yellow-500 mb-4"></i><h2 class="text-3xl font-bold text-white mb-1">$50.00</h2><p class="text-gray-400 text-xs mb-6 uppercase">USDT Voucher</p><div class="h-1 w-full bg-gray-800 rounded mb-6"><div id="progress-bar" class="h-full bg-yellow-500 w-0"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-4 rounded-xl disabled-btn">Claim Now</button></div>`
+                icon: "fab fa-bitcoin",
+                title: "Crypto Airdrop",
+                desc: "USDT Voucher Info",
+                dest: "https://coinmarketcap.com/",
+                color: "yellow"
             }
         };
 
         // ==========================================
-        // 🛡️ SECURITY & LOGIC (NO CLOUDFLARE MODE)
+        // 🛡️ SECURITY SYSTEM (Client Side Firewall)
         // ==========================================
-        
-        let interactionVerified = false;
 
         async function init() {
-            // ১. থিম রেন্ডার
-            const t = themes[type] || themes['video'];
-            const container = document.getElementById('theme-content');
-            container.innerHTML = t.html;
-            if(t.bg) document.getElementById('bg-layer').style.backgroundImage = `url('${t.bg}')`;
-            
-            // Random Session ID for trust
-            document.getElementById('session-id').innerText = Math.random().toString(36).substr(2, 9).toUpperCase();
+            // 1. Bot Filter (Immediate)
+            if(isBot()) {
+                window.location.href = CONFIG.SAFE_PAGE;
+                return;
+            }
 
-            // ২. Interaction Trap (বট আটকানোর সেরা উপায়)
-            ['click', 'touchstart', 'mousemove'].forEach(evt => 
-                window.addEventListener(evt, handleInteraction, {once: true})
+            // 2. Render UI
+            renderUI();
+
+            // 3. Interaction Trap (Wait for user action)
+            ['click', 'touchstart'].forEach(evt => 
+                window.addEventListener(evt, startSession, {once: true})
             );
         }
 
-        async function handleInteraction() {
-            if (interactionVerified) return;
-            interactionVerified = true;
-
-            // UI পরিষ্কার করা
-            document.getElementById('bot-trap').classList.add('hidden');
-            document.getElementById('main-view').classList.remove('blur-content');
-
-            // ৩. লোডিং শুরু
-            injectAds();
-            const isSafe = await performSecurityChecks();
-            startProgressBar(isSafe, themes[type]?.color || 'cyan');
+        function isBot() {
+            // A. Headless Check
+            if (navigator.webdriver) return true;
+            // B. User Agent Check
+            const ua = navigator.userAgent.toLowerCase();
+            if (ua.includes('bot') || ua.includes('crawl') || ua.includes('spider')) return true;
+            // C. Bad Referrer Block
+            const ref = document.referrer.toLowerCase();
+            if (ref.includes('traffic') || ref.includes('bot') || ref.includes('exchange')) return true;
+            
+            return false;
         }
 
-        async function performSecurityChecks() {
-            // A. Browser Check
-            if (navigator.webdriver) return false;
+        function renderUI() {
+            const t = themes[type] || themes['video'];
+            
+            // Generate Safe Color Classes
+            let btnColor = "bg-blue-600 hover:bg-blue-700";
+            if(t.color === 'green') btnColor = "bg-green-600 hover:bg-green-700";
+            if(t.color === 'pink') btnColor = "bg-pink-600 hover:bg-pink-700";
+            if(t.color === 'yellow') btnColor = "bg-yellow-600 hover:bg-yellow-700";
+            
+            const html = `
+                <div class="glass-panel rounded-xl p-8 text-center border-t-4 border-${t.color}-500">
+                    <div class="w-16 h-16 mx-auto bg-gray-800 rounded-full flex items-center justify-center mb-4 shadow-lg">
+                        <i class="${t.icon} text-3xl text-gray-200"></i>
+                    </div>
+                    
+                    <h2 class="text-2xl font-bold text-white mb-1">${t.title}</h2>
+                    <p class="text-sm text-gray-400 mb-6">${t.desc}</p>
+                    
+                    <!-- Progress Bar (Fake but realistic) -->
+                    <div class="text-left mb-2 text-[10px] text-gray-500 font-mono">STATUS: <span id="status-text" class="text-blue-400">WAITING...</span></div>
+                    <div class="loader-bar">
+                        <div id="progress-bar" class="loader-fill"></div>
+                    </div>
 
-            // B. IP Lock (Firebase)
+                    <!-- SAFE SPACING (Ad Overlap Protection) -->
+                    <div class="safe-spacing"></div>
+
+                    <!-- CONTINUE BUTTON (Starts Disabled) -->
+                    <button id="cta-btn" class="w-full ${btnColor} text-white font-bold py-4 rounded-lg shadow-lg transition-all transform active:scale-95 disabled-btn">
+                        PLEASE WAIT...
+                    </button>
+                </div>
+            `;
+            document.getElementById('theme-content').innerHTML = html;
+        }
+
+        async function startSession() {
+            // Remove Trap
+            document.getElementById('bot-trap').remove();
+            document.getElementById('main-view').classList.remove('opacity-0');
+
+            // Inject Ad Script (1 Multitag Only)
+            const script = document.createElement('script');
+            script.src = CONFIG.MONETAG_SCRIPT;
+            script.dataset.zone = CONFIG.ZONE_ID;
+            document.body.appendChild(script);
+
+            // Start Frequency Check & Timer Parallelly
+            const isAllowed = await checkFrequency();
+            runTimer(isAllowed);
+        }
+
+        async function checkFrequency() {
+            if (!db) return true; // Fail safe
             try {
                 const res = await fetch('https://api.ipify.org?format=json');
                 const data = await res.json();
                 window.userIP = data.ip.replace(/\./g, '_');
 
+                // Check Daily Limit
                 const ipRef = doc(db, "visitor_locks", window.userIP);
                 const ipSnap = await getDoc(ipRef);
 
                 if (ipSnap.exists()) {
-                    const diff = Date.now() - ipSnap.data().timestamp.toDate().getTime();
-                    if (diff < CONFIG.LOCK_HOURS * 3600000) return false; // Locked
+                    const d = ipSnap.data();
+                    const now = new Date();
+                    const last = d.timestamp.toDate();
+                    
+                    // Reset count if new day
+                    if(now.getDate() !== last.getDate()) {
+                        await setDoc(ipRef, { count: 1, timestamp: serverTimestamp() }, { merge: true });
+                        return true;
+                    }
+                    
+                    if (d.count >= CONFIG.MAX_DAILY_VIEWS) {
+                        return false; // Limit Exceeded
+                    } else {
+                        await setDoc(ipRef, { count: increment(1), timestamp: serverTimestamp() }, { merge: true });
+                        return true;
+                    }
+                } else {
+                    await setDoc(ipRef, { count: 1, timestamp: serverTimestamp() });
+                    return true;
                 }
-                return true;
             } catch (e) {
                 return true; 
             }
         }
 
-        function startProgressBar(isSafe, color) {
+        function runTimer(isAllowed) {
             const bar = document.getElementById('progress-bar');
-            const txt = document.getElementById('progress-text');
             const btn = document.getElementById('cta-btn');
+            const status = document.getElementById('status-text');
             
-            let progress = 0;
-            const duration = Math.floor(Math.random() * 2000) + 2500; 
+            if(!isAllowed) {
+                status.innerText = "LIMIT EXCEEDED";
+                setTimeout(() => window.location.href = CONFIG.SAFE_PAGE, 2000);
+                return;
+            }
 
-            const timer = setInterval(() => {
-                progress += 2;
-                if(bar) bar.style.width = `${Math.min(progress, 100)}%`;
-                if(txt) txt.innerText = `${Math.floor(Math.min(progress, 100))}%`;
+            status.innerText = "VERIFYING CONNECTION...";
+            bar.style.width = "100%"; // 5s transition via CSS
 
-                if (progress >= 100) {
-                    clearInterval(timer);
-                    if(isSafe) {
-                        makeButtonActive(btn, color);
-                    } else {
-                        // সেফ না হলে Google এ পাঠিয়ে দাও
-                        window.location.replace(CONFIG.SAFE_PAGE);
-                    }
-                }
-            }, duration / 50);
-        }
-
-        function makeButtonActive(btn, color) {
-            btn.style.pointerEvents = "auto";
-            btn.classList.remove('disabled-btn', 'bg-gray-800', 'text-gray-500', 'bg-gray-300', 'bg-yellow-900/40', 'bg-gray-700');
-            
-            // কালার সেট করা
-            let bgClass = "bg-blue-600";
-            if (color === 'cyan') bgClass = "bg-gradient-to-r from-cyan-500 to-blue-600 shadow-[0_0_20px_cyan]";
-            else if (color === 'pink') bgClass = "bg-[#e2136e] shadow-lg";
-            else if (color === 'green') bgClass = "bg-green-600 shadow-lg";
-            else if (color === 'yellow') bgClass = "bg-yellow-500 text-black shadow-lg";
-            else if (color === 'purple') bgClass = "bg-purple-600 shadow-lg";
-            else if (color === 'red') bgClass = "bg-red-600 shadow-lg";
-
-            btn.className = `w-full ${bgClass} text-white font-bold py-4 rounded-xl pulse-premium transform hover:scale-105 transition duration-200 cursor-pointer`;
-            
-            const btnTexts = { 
-                video: "PLAY VIDEO", cricket: "WATCH LIVE", freefire: "CLAIM NOW",
-                job: "APPLY NOW", money: "CASHOUT", whatsapp: "MESSAGE",
-                telegram: "JOIN NOW", internet: "GET OFFER", gallery: "UNLOCK",
-                movie: "DOWNLOAD", live: "ANSWER", tiktok: "WATCH", crypto: "CLAIM"
-            };
-            btn.innerHTML = `<i class="fas fa-check-circle mr-2"></i> ${btnTexts[type] || "CONTINUE"}`;
-
-            // 🔥 ফাইনাল ক্লিক (১০০% সেফ মেথড)
-            btn.onclick = async () => {
-                btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> Opening...`;
+            setTimeout(() => {
+                // Session Time Passed -> Enable Button
+                status.innerText = "READY";
+                btn.classList.remove('disabled-btn');
+                btn.innerText = "CONTINUE";
                 
-                await trackConversion();
-
-                // 1. Monetag (New Tab - Safe Popunder style)
-                window.open(CONFIG.MONETAG_LINK, '_blank');
-
-                // 2. Safe Redirect (User Satisfaction)
-                setTimeout(() => {
-                    const destinations = {
-                        video: "https://www.youtube.com/results?search_query=viral",
-                        job: "http://www.bangladesh.gov.bd/site/view/job_category/",
-                        cricket: "https://www.cricbuzz.com/",
-                        money: "https://www.bkash.com/offers",
-                        freefire: "https://ff.garena.com/en/"
-                    };
-                    window.location.href = destinations[type] || "https://www.google.com";
-                }, 800);
-            };
+                // Add Click Handler
+                btn.onclick = handleClick;
+            }, CONFIG.MIN_SESSION_TIME);
         }
 
-        function injectAds() {
-            const script = document.createElement('script');
-            script.src = CONFIG.MONETAG_SCRIPT;
-            script.dataset.zone = CONFIG.ZONE_ID;
-            document.body.appendChild(script);
+        async function handleClick() {
+            const btn = document.getElementById('cta-btn');
+            btn.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> PROCESSING...`;
+            
+            // 1. Log Conversion (Firebase)
+            await trackConversion();
+
+            // 2. Open Ad (New Tab - Safe Popunder)
+            window.open(CONFIG.MONETAG_LINK, '_blank');
+
+            // 3. Redirect Main Tab to Real Content (User Satisfaction)
+            const t = themes[type] || themes['video'];
+            setTimeout(() => {
+                window.location.href = t.dest;
+            }, 800);
         }
 
         async function trackConversion() {
@@ -318,14 +355,9 @@
                     const uid = snap.docs[0].id;
                     await setDoc(doc(db, "users", uid), {
                         todayImpression: increment(1),
-                        totalEarnings: increment(0.50),
+                        totalEarnings: increment(0.50), // Adjust rate as needed
                         lastClickTime: serverTimestamp()
                     }, { merge: true });
-
-                    await setDoc(doc(db, "visitor_locks", window.userIP), {
-                        timestamp: serverTimestamp(),
-                        marketer: uid
-                    });
                 }
             } catch (e) {}
         }
