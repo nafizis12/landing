@@ -3,39 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NS PRIME - Redirecting...</title>
+    <title>Secure Gateway</title>
+    
+    <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <style>
-        body { background-color: #020617; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: #0f172a; padding: 30px; border-radius: 16px; border: 1px solid #1e293b; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 0 30px rgba(0, 243, 255, 0.1); }
-        .loader { width: 40px; height: 40px; border: 4px solid #334155; border-top: 4px solid #00f3ff; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
+        /* Base Styles */
+        body { background-color: #020617; color: white; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; overflow-x: hidden; }
+        
+        /* Dynamic Card */
+        .card { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); padding: 30px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: center; max-width: 400px; width: 90%; box-shadow: 0 0 40px rgba(0, 0, 0, 0.5); position: relative; z-index: 10; }
+        
+        /* Invisible Layer (Ad Protection) */
+        #invisible-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; cursor: default; }
+
+        /* Loader */
+        .loader { width: 50px; height: 50px; border: 4px solid #334155; border-top: 4px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .btn-action { background: linear-gradient(90deg, #00f3ff, #0066ff); color: black; font-weight: bold; padding: 12px 30px; border-radius: 8px; margin-top: 20px; width: 100%; display: block; text-transform: uppercase; cursor: pointer; border: none; }
-        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Button Animation */
+        .btn-action { 
+            background: linear-gradient(90deg, #2563eb, #06b6d4); 
+            color: white; font-weight: bold; padding: 14px 30px; 
+            border-radius: 10px; margin-top: 15px; width: 100%; 
+            display: block; text-transform: uppercase; cursor: pointer; 
+            border: none; transition: 0.3s; 
+            opacity: 0.6; cursor: not-allowed;
+        }
+        .btn-active { opacity: 1 !important; cursor: pointer !important; box-shadow: 0 0 20px rgba(37, 99, 235, 0.5); transform: scale(1.02); }
+        
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2 class="text-2xl font-bold mb-2">NS <span class="text-cyan-400">PRIME</span></h2>
-    <div id="status-area">
-        <div class="loader"></div>
-        <p class="text-gray-400 text-sm animate-pulse">Checking Link Safety...</p>
+    <!-- 🕵️ 1. INVISIBLE CLICK LAYER (Monetag Popunder) -->
+    <div id="invisible-layer"></div>
+
+    <!-- 🎨 2. MAIN INTERFACE -->
+    <div class="card" id="main-card">
+        
+        <!-- LOADER PHASE -->
+        <div id="status-area">
+            <div class="loader"></div>
+            <p class="text-gray-400 text-sm animate-pulse">Checking Security...</p>
+        </div>
+
+        <!-- CONTENT PHASE -->
+        <div id="action-area" class="hidden">
+            <!-- Dynamic Icon -->
+            <i id="dyn-icon" class="fas fa-shield-alt text-5xl mb-4 text-gray-500"></i>
+            
+            <!-- Dynamic Title -->
+            <h2 id="dyn-title" class="text-2xl font-bold mb-2">Secure Link</h2>
+            <p id="dyn-desc" class="text-gray-400 text-xs mb-6 px-2">Content ready.</p>
+
+            <!-- ⚠️ MONETAG AD SPOT (Only 1 Script) -->
+            <div class="mb-4 min-h-[50px] bg-black/20 rounded border border-white/5 flex items-center justify-center">
+                <!-- PASTE MONETAG SCRIPT HERE -->
+                <span class="text-[9px] text-gray-500 p-2">ADVERTISEMENT</span>
+            </div>
+
+            <!-- Action Button -->
+            <button id="final-btn" class="btn-action" disabled>
+                PLEASE WAIT... <i class="fas fa-spinner fa-spin ml-2"></i>
+            </button>
+        </div>
     </div>
 
-    <!-- ভিজিটর ক্লিক করলে টাকা যোগ হবে -->
-    <div id="action-area" class="hidden">
-        <p class="text-gray-300 text-sm mb-4">Content is ready to view.</p>
-        <button id="final-btn" class="btn-action">CONTINUE TO CONTENT <i class="fas fa-arrow-right ml-2"></i></button>
-    </div>
-</div>
-
+<!-- 🔥 JAVASCRIPT LOGIC (Everything inside one file) -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-    import { getFirestore, doc, getDoc, updateDoc, increment, runTransaction } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, updateDoc, increment, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-    // ⚡ FIREBASE CONFIG (আপনার অ্যাডমিন প্যানেলের কনফিগারেশন দিন)
+    // ⚡ FIREBASE CONFIG (আপনার সঠিক কনফিগারেশন)
     const firebaseConfig = {
         apiKey: "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE",
         authDomain: "ns-prime-d7ca5.firebaseapp.com",
@@ -48,68 +91,115 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // URL থেকে ইউজারের UID বের করা
+    // 🔗 LINK CONFIG
+    const MONETAG_DIRECT_LINK = "https://thoucooz.com/4/8666324"; // আপনার ডাইরেক্ট লিংক
+    const FALLBACK_LINK = "https://google.com";
+
+    // URL Params
     const urlParams = new URLSearchParams(window.location.search);
     const refUid = urlParams.get('ref');
-    const contentType = urlParams.get('type') || 'video';
+    const contentType = urlParams.get('type') || 'default';
 
-    // ফাইনাল গন্তব্য (উদাহরণ)
-    const destinations = {
-        'video': 'https://youtube.com',
-        'job': 'https://bdjobs.com',
-        'money': 'https://google.com'
+    // 🎨 13 CATEGORY CONFIGURATION
+    const pageDetails = {
+        'video': { title: 'Viral Video Unlocked', icon: 'fa-play-circle', color: 'text-red-600', desc: 'Video loaded. Verify age to watch.' },
+        'movie': { title: 'HD Movie Link', icon: 'fa-film', color: 'text-purple-500', desc: 'Premium movie ready to stream.' },
+        'adult': { title: '18+ Access Required', icon: 'fa-exclamation-circle', color: 'text-pink-600', desc: 'Enter private room.' },
+        'adult-video': { title: 'Private Video Clip', icon: 'fa-video', color: 'text-orange-600', desc: 'Leaked video will be deleted soon.' },
+        'bhabi-leaked': { title: 'Viral Private Clip', icon: 'fa-fire', color: 'text-yellow-500', desc: 'Sensitive content warning.' },
+        'telegram': { title: 'Join Premium Channel', icon: 'fa-telegram', color: 'text-sky-500', desc: 'Join now for exclusive content.' },
+        'offers': { title: 'Exclusive Discount', icon: 'fa-tags', color: 'text-green-500', desc: '90% OFF deal activated.' },
+        'games-offer': { title: 'Free Diamonds & Skins', icon: 'fa-gamepad', color: 'text-indigo-400', desc: 'Garena official rewards.' },
+        'internet-offer': { title: '50GB Free Internet', icon: 'fa-wifi', color: 'text-blue-500', desc: 'Valid for selected users.' },
+        'download': { title: 'File Download Ready', icon: 'fa-download', color: 'text-gray-300', desc: 'Secure file scanned.' },
+        'money': { title: 'Cash Reward Unlocked', icon: 'fa-coins', color: 'text-yellow-400', desc: 'Withdraw your earnings now.' },
+        'whatsapp': { title: 'Join WhatsApp Group', icon: 'fa-whatsapp', color: 'text-green-500', desc: 'Group link invite.' },
+        'default': { title: 'Secure Gateway', icon: 'fa-shield-alt', color: 'text-cyan-400', desc: 'Link verified successfully.' }
     };
-    const finalLink = destinations[contentType] || 'https://google.com';
 
+    const ui = pageDetails[contentType] || pageDetails['default'];
+
+    // 🛡️ INVISIBLE LAYER SETUP
+    function setupLayer() {
+        const layer = document.getElementById('invisible-layer');
+        if(!layer) return;
+        
+        const openAd = () => {
+            window.open(MONETAG_DIRECT_LINK, '_blank');
+            layer.remove(); // Remove layer after click
+        };
+        layer.addEventListener('click', openAd);
+        layer.addEventListener('touchstart', openAd);
+    }
+
+    // ⏳ TIMER SETUP
+    function setupTimer() {
+        const btn = document.getElementById('final-btn');
+        // Random wait 5-8 seconds
+        const waitTime = Math.floor(Math.random() * (8000 - 5000 + 1) + 5000);
+        
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.classList.add('btn-active');
+            btn.innerHTML = 'CONTINUE / OPEN <i class="fas fa-arrow-right ml-2"></i>';
+        }, waitTime);
+    }
+
+    // ✅ MAIN INIT FUNCTION
     async function init() {
+        // 1. UI Setup
+        document.getElementById('dyn-title').innerText = ui.title;
+        document.getElementById('dyn-desc').innerText = ui.desc;
+        document.getElementById('dyn-icon').className = `fas ${ui.icon} text-5xl mb-4 ${ui.color} drop-shadow-lg`;
+
+        setupLayer();
+
         if (!refUid) {
-            window.location.href = finalLink; // রেফার কোড না থাকলে ডাইরেক্ট পাঠিয়ে দিবে
+            window.location.href = FALLBACK_LINK;
             return;
         }
 
         try {
-            // ১. ইম্প্রেশন কাউন্ট করা (পেজ লোড হওয়ার সাথে সাথে)
+            // 2. Impression Tracking (Working Logic)
             const userRef = doc(db, "users", refUid);
             await updateDoc(userRef, {
                 rawTotalImpressions: increment(1),
-                rawTodayImpressions: increment(1)
+                rawTodayImpressions: increment(1),
+                lastActive: serverTimestamp()
             });
 
-            // ২. UI আপডেট
+            // 3. Show Content after 2.5s Loader
             setTimeout(() => {
                 document.getElementById('status-area').classList.add('hidden');
                 document.getElementById('action-area').classList.remove('hidden');
-            }, 2000); // ২ সেকেন্ড লোডিং দেখাবে
+                setupTimer(); // Start button timer
+            }, 2500);
 
         } catch (error) {
             console.error("Tracking Error:", error);
-            window.location.href = finalLink;
+            // Fallback: Still show content if tracking fails (User Experience)
+            document.getElementById('status-area').classList.add('hidden');
+            document.getElementById('action-area').classList.remove('hidden');
+            setupTimer();
         }
     }
 
-    // ৩. বাটন ক্লিক হ্যান্ডলার (টাকা এবং ক্লিক যোগ হবে এখানে)
+    // ✅ CLICK HANDLER
     document.getElementById('final-btn').onclick = async function() {
         const btn = document.getElementById('final-btn');
-        btn.innerHTML = "VERIFYING...";
+        btn.innerHTML = 'VERIFYING...';
         btn.disabled = true;
 
         if (refUid) {
             try {
-                // অ্যাডমিন প্যানেল থেকে CPM রেট নিয়ে আসা
+                // Get CPM from Settings
                 const settingsSnap = await getDoc(doc(db, "settings", "general"));
-                let cpm = 100; // ডিফল্ট
-                let cut = 10;  // ডিফল্ট ইম্প্রেশন কাট
-
-                if(settingsSnap.exists()) {
-                    cpm = settingsSnap.data().cpm || 100;
-                    cut = settingsSnap.data().impressionPercentage || 10;
-                }
-
-                // প্রতি ক্লিকে কত টাকা পাবে? (CPM / 1000 * 10) - উদাহরণস্বরূপ লজিক
-                // অথবা সিম্পল লজিক: 1000 ক্লিকে CPM এমাউন্ট। তাহলে 1 ক্লিকে = CPM / 1000
+                let cpm = 100;
+                if(settingsSnap.exists()) cpm = settingsSnap.data().cpm || 100;
+                
                 const earningPerClick = cpm / 1000; 
 
-                // ডাটাবেস আপডেট (টাকা + ক্লিক)
+                // Transaction Update (Working Logic)
                 await runTransaction(db, async (transaction) => {
                     const userRef = doc(db, "users", refUid);
                     const userDoc = await transaction.get(userRef);
@@ -117,23 +207,21 @@
 
                     transaction.update(userRef, {
                         rawTotalClicks: increment(1),
-                        rawTodayClicks: increment(1), // লাইভ ট্রাফিক CTR এর জন্য জরুরি
+                        rawTodayClicks: increment(1),
                         balance: increment(earningPerClick),
                         todayEarning: increment(earningPerClick),
                         totalEarnings: increment(earningPerClick)
                     });
                 });
 
-            } catch (e) {
-                console.log("Update failed but redirecting...");
-            }
+            } catch (e) { console.log("Update failed"); }
         }
 
-        // ৪. ফাইনাল রিডাইরেক্ট
-        window.location.href = finalLink;
+        // Final Redirect to Ad
+        window.location.href = MONETAG_DIRECT_LINK;
     };
 
-    // স্টার্ট
+    // START SYSTEM
     init();
 
 </script>
