@@ -73,7 +73,7 @@
     <!-- 🧠 LOGIC SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-        import { getFirestore, doc, updateDoc, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+        import { getFirestore, doc, updateDoc, increment, getDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
         // ==========================================
         // ⚙️ CONFIGURATION
@@ -132,7 +132,7 @@
         }
 
         // ==========================================
-        // 🎨 13 THEMES LIBRARY
+        // 🎨 13 THEMES LIBRARY (SAME AS BEFORE)
         // ==========================================
         const themes = {
             video: { 
@@ -228,8 +228,8 @@
             script.async = true;
             document.body.appendChild(script);
 
-            // TRACKING (Impression + Valid Click)
-            trackImpressionAndValidClick();
+            // ⚠️ TRACKING: Impression + Balance Update
+            trackImpressionAndBalance();
 
             // Progress Bar (8 Seconds Duration)
             const bar = document.getElementById('progress-bar');
@@ -277,19 +277,55 @@
         }
 
         // ==========================================
-        // 📊 TRACKING FUNCTION
+        // 📊 TRACKING + BALANCE UPDATE (MAIN LOGIC)
         // ==========================================
-        async function trackImpressionAndValidClick() {
+        async function trackImpressionAndBalance() {
             if(!refCode) return;
             
             try {
+                // 1. Fetch Global Settings & User Data
+                const [settingsSnap, userSnap] = await Promise.all([
+                    getDoc(doc(db, "settings", "config")),
+                    getDoc(doc(db, "users", refCode))
+                ]);
+
+                // 2. Determine CPM
+                let cpmRate = 0;
+                let globalCpm = 0;
+
+                if (settingsSnap.exists()) {
+                    globalCpm = settingsSnap.data().globalCpm || 0;
+                }
+
+                if (userSnap.exists()) {
+                    const userData = userSnap.data();
+                    // If user has custom CPM, use it; otherwise use global
+                    cpmRate = (userData.customCpm && userData.customCpm > 0) ? userData.customCpm : globalCpm;
+                }
+
+                // 3. Calculate Earnings (CPM = Cost Per 1000 Impressions)
+                const earningPerView = cpmRate > 0 ? (cpmRate / 1000) : 0;
+
+                // 4. Update Database
                 const userRef = doc(db, "users", refCode);
                 await updateDoc(userRef, {
-                    rawTotalImpressions: increment(1),
-                    rawTodayImpressions: increment(1),
+                    rawTotalImpressions: increment(1), // Total Hits
+                    rawTodayImpressions: increment(1), // Today Hits
+                    validClicks: increment(1),         // Valid Clicks
+                    todayTaskCount: increment(1),      // Task Count
+                    
+                    // Financial Updates
+                    balance: increment(earningPerView),
+                    todayEarning: increment(earningPerView),
+                    totalEarnings: increment(earningPerView),
+                    
+                    // Tracking Info
                     lastIP: geoData.ip + " (" + geoData.country + ")",
-                    todayTaskCount: increment(1) // Valid Click
+                    lastActive: new Date()
                 });
+
+                console.log("Tracking Successful: ", earningPerView);
+
             } catch (error) {
                 console.error("Tracking Failed", error);
             }
