@@ -6,16 +6,9 @@
     <meta name="robots" content="noindex, nofollow">
     <title>Secure Gateway</title>
     
-    <!-- ⚡ SPEED BOOSTER: Preload Ad Script (অ্যাড ফাস্ট শো করার জন্য) -->
-    <link rel="preconnect" href="https://quge5.com">
-    <link rel="dns-prefetch" href="https://quge5.com">
-    <link rel="preload" href="https://quge5.com/88/tag.min.js" as="script">
-
     <!-- ✅ Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 🛡️ SECURITY: Fingerprint Library -->
     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
@@ -30,20 +23,16 @@
             box-shadow: 0 0 50px rgba(0,0,0,0.8);
         }
         
-        /* Stealth Blur Trap */
         .stealth-blur { filter: blur(15px); opacity: 0.6; transition: all 0.8s ease; pointer-events: none; transform: scale(0.95); }
         .reveal { filter: blur(0px); opacity: 1; pointer-events: auto; transform: scale(1); }
         
-        /* Animations */
         .pulse-soft { animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(0.95); } 100% { transform: scale(1); } }
         
         .loading-bar { height: 6px; background: #222; overflow: hidden; border-radius: 10px; margin-top: 15px; }
         .loading-fill { height: 100%; width: 0%; transition: width 8s linear; border-radius: 10px; }
         
-        /* Security Overlay */
         #tap-layer { z-index: 999; backdrop-filter: blur(8px); background: rgba(0,0,0,0.6); }
-        
         * { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
     </style>
 </head>
@@ -53,24 +42,24 @@
     <div id="bg-layer" class="absolute inset-0 bg-cover bg-center opacity-40 blur-xl transition-opacity duration-1000"></div>
     <div class="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent"></div>
 
-    <!-- 🕵️ SECURITY CHECK OVERLAY -->
+    <!-- 🕵️ SECURITY CHECK VIEW -->
     <div id="security-check-view" class="absolute inset-0 z-[1000] bg-black flex flex-col items-center justify-center">
         <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p class="text-xs text-blue-400 font-mono animate-pulse">ANALYZING TRAFFIC QUALITY...</p>
+        <p class="text-xs text-blue-400 font-mono animate-pulse">VERIFYING TRAFFIC QUALITY...</p>
     </div>
 
-    <!-- 👆 INTERACTION LAYER (Security Layer 1) -->
+    <!-- 👆 INTERACTION LAYER (Security Layer) -->
     <div id="tap-layer" class="hidden absolute inset-0 flex flex-col items-center justify-center cursor-pointer z-50" onclick="breakSecurityLayer()">
         <div class="animate-bounce text-center">
             <div class="w-20 h-20 bg-cyan-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-cyan-500/50 shadow-[0_0_30px_cyan] pulse-soft">
                 <i class="fas fa-fingerprint text-4xl text-cyan-400"></i>
             </div>
             <p class="text-sm font-bold text-cyan-300 tracking-[0.2em] uppercase">Tap to Verify</p>
-            <p class="text-[10px] text-gray-400 mt-2">Click Here to Unlock Content</p>
+            <p class="text-[10px] text-gray-400 mt-2">Secure Connection Required</p>
         </div>
     </div>
 
-    <!-- 📦 MAIN CONTENT AREA -->
+    <!-- 📦 MAIN CONTENT -->
     <div id="main-view" class="relative z-10 w-full max-w-md p-4 stealth-blur transition-all duration-700 opacity-0">
         <div id="theme-content"></div>
         
@@ -108,66 +97,55 @@
 
         const app = initializeApp(CONFIG.FIREBASE);
         const db = getFirestore(app);
-        
         const params = new URLSearchParams(window.location.search);
         const refCode = params.get('ref') || params.get('u'); 
         const type = params.get('type') || 'video';
-
-        let geoData = { ip: "Scanning...", country: "..." };
+        let geoData = { ip: "...", country: "..." };
         let visitorId = null;
         let isVerified = false;
 
         // ==========================================
-        // 🛡️ SECURITY & BOT PREVENTION
+        // 🛡️ SECURITY SYSTEM (Tier 3)
         // ==========================================
-        document.addEventListener('contextmenu', event => event.preventDefault());
-        document.onkeydown = function(e) {
-            if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) || (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) return false;
-        }
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.onkeydown = e => { if(e.keyCode == 123 || (e.ctrlKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 85))) return false; }
 
         function isBot() {
             const ua = navigator.userAgent.toLowerCase();
             return (ua.includes('headless') || ua.includes('puppeteer') || ua.includes('selenium') || navigator.webdriver);
         }
 
-        async function checkTrafficQuality() {
+        async function checkTraffic() {
             try {
-                if(isBot()) throw new Error("Bot Detected");
+                if(isBot()) return false;
                 const res = await fetch('https://ipapi.co/json/');
-                if(!res.ok) throw new Error("API Limit");
+                if(!res.ok) return true; // Fail open
                 const data = await res.json();
                 geoData = { ip: data.ip, country: data.country_name };
                 
                 const org = (data.org || "").toUpperCase();
-                const badISPs = ['GOOGLE', 'AMAZON', 'MICROSOFT', 'DIGITALOCEAN', 'CLOUDFLARE', 'FACEBOOK', 'DATACAMP'];
-                if (badISPs.some(isp => org.includes(isp))) throw new Error("VPN/Proxy Detected");
+                const badISPs = ['GOOGLE', 'AMAZON', 'MICROSOFT', 'DIGITALOCEAN', 'CLOUDFLARE', 'FACEBOOK'];
+                if (badISPs.some(isp => org.includes(isp))) return false;
                 return true;
-            } catch (e) {
-                if(e.message.includes("Bot") || e.message.includes("VPN")) return false;
-                return true;
-            }
+            } catch(e) { return true; }
         }
 
-        async function checkDeviceLimit() {
-            const fpPromise = FingerprintJS.load();
-            const fp = await fpPromise;
-            const result = await fp.get();
-            visitorId = result.visitorId;
-            const storageKey = `ns_secure_v2_${visitorId}`;
+        async function checkDevice() {
+            const fp = await (await FingerprintJS.load()).get();
+            visitorId = fp.visitorId;
+            const key = `ns_sec_${visitorId}`;
             const now = Date.now();
-            
-            let data = JSON.parse(localStorage.getItem(storageKey) || '{"count": 0, "timestamp": 0}');
-            if (now - data.timestamp > 86400000) data = { count: 0, timestamp: now }; // 24 Hours
-            if (data.count >= 3) return false;
+            let data = JSON.parse(localStorage.getItem(key) || '{"c":0,"t":0}');
+            if (now - data.t > 86400000) data = { c: 0, t: now };
+            if (data.c >= 3) return false;
             return true;
         }
 
-        function incrementDeviceCount() {
-            const storageKey = `ns_secure_v2_${visitorId}`;
-            let data = JSON.parse(localStorage.getItem(storageKey) || '{"count": 0}');
-            data.count = (data.count || 0) + 1;
-            data.timestamp = Date.now();
-            localStorage.setItem(storageKey, JSON.stringify(data));
+        function countDevice() {
+            const key = `ns_sec_${visitorId}`;
+            let data = JSON.parse(localStorage.getItem(key) || '{"c":0}');
+            data.c++; data.t = Date.now();
+            localStorage.setItem(key, JSON.stringify(data));
         }
 
         // ==========================================
@@ -190,15 +168,26 @@
         };
 
         // ==========================================
-        // 🚀 INIT FLOW
+        // 🚀 PRE-LOAD STRATEGY (Instant Ads)
         // ==========================================
         async function init() {
-            const [isSafeDevice, isSafeIP] = await Promise.all([checkDeviceLimit(), checkTrafficQuality()]);
-            if (!isSafeDevice || !isSafeIP) {
-                document.body.innerHTML = '<h1 style="color:red; text-align:center; padding-top:50px;">ACCESS DENIED: Unusual Traffic Detected.</h1>';
+            const [isSafeDev, isSafeTraf] = await Promise.all([checkDevice(), checkTraffic()]);
+            
+            if (!isSafeDev || !isSafeTraf) {
+                document.body.innerHTML = '<h1 style="color:red; text-align:center; padding-top:50px;">ACCESS DENIED</h1>';
                 setTimeout(() => window.location.href = "https://www.google.com", 1500);
                 return;
             }
+
+            // ✅ SUCCESS: Load Content AND Inject Ad Script IMMEDIATELY
+            // এই স্ক্রিপ্ট এখন লোড হবে, কিন্তু "Tap" ইভেন্টের জন্য অপেক্ষা করবে
+            const script = document.createElement('script');
+            script.src = CONFIG.MONETAG_SCRIPT_URL;
+            script.dataset.zone = CONFIG.ZONE_ID;
+            script.async = true;
+            document.body.appendChild(script);
+
+            // Show Tap Layer
             document.getElementById('security-check-view').classList.add('hidden');
             document.getElementById('tap-layer').classList.remove('hidden');
             document.getElementById('main-view').classList.remove('opacity-0');
@@ -210,30 +199,24 @@
         }
 
         // ==========================================
-        // 🔥 STEP 1: BREAK SECURITY (TAP -> FAST ADS & IMPRESSION)
+        // 🔥 STEP 1: ON TAP (Instant Ad + Valid Click)
         // ==========================================
         window.breakSecurityLayer = async () => {
             if(isVerified) return;
             isVerified = true;
 
-            // 1. FASTEST AD INJECTION (Priority High)
-            const script = document.createElement('script');
-            script.src = CONFIG.MONETAG_SCRIPT_URL;
-            script.dataset.zone = CONFIG.ZONE_ID;
-            script.async = true;
-            document.body.appendChild(script);
-
-            // 2. UI Updates
+            // 1. UI Updates
             document.getElementById('tap-layer').remove();
             document.getElementById('main-view').classList.remove('stealth-blur');
             document.getElementById('main-view').classList.add('reveal');
             document.getElementById('connection-status').innerText = "VERIFYING TRAFFIC...";
             document.getElementById('connection-status').className = "text-[10px] text-yellow-400 font-bold font-mono tracking-widest";
 
-            // 3. TRACKING: Impression & Balance (User & Admin)
+            // 2. TRACKING: Valid Click (User) + Impression (Admin)
+            // অ্যাড যেহেতু আগেই লোড হয়েছে, ট্যাপ করলেই Monetag নিজে থেকে অ্যাড দেখাবে
             trackImpressionAndBalance();
 
-            // 4. Progress Bar
+            // 3. Start Timer
             const bar = document.getElementById('progress-bar');
             if(bar) bar.style.width = "100%";
 
@@ -253,19 +236,14 @@
         };
 
         // ==========================================
-        // 🔥 STEP 2: FINAL CLICK (ONLY ADMIN CLICK/CTR)
+        // 🔥 STEP 2: FINAL CLICK (Admin CTR Only)
         // ==========================================
         async function handleFinalClick() {
-            incrementDeviceCount();
-            
+            countDevice();
             if(refCode) {
-                try {
-                    const userRef = doc(db, "users", refCode);
-                    // ⚠️ ONLY CLICK COUNT (For Admin Panel CTR)
-                    await updateDoc(userRef, { rawTotalClicks: increment(1) });
-                } catch(e) {}
+                // Only counting CLICKS here for Admin CTR
+                try { await updateDoc(doc(db, "users", refCode), { rawTotalClicks: increment(1) }); } catch(e) {}
             }
-
             const btn = document.getElementById('cta-btn');
             btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> OPENING...`;
             setTimeout(() => window.location.href = CONFIG.MONETAG_DIRECT_LINK, 800);
@@ -288,12 +266,13 @@
 
                 const userRef = doc(db, "users", refCode);
                 await updateDoc(userRef, {
-                    // ⚠️ THESE ALL HAPPEN ON TAP (Security Layer Break)
-                    rawTotalImpressions: increment(1), // Admin: Impression
+                    // USER: Gets paid on TAP (Valid Click)
+                    // ADMIN: Gets Impression on TAP
+                    rawTotalImpressions: increment(1), 
                     rawTodayImpressions: increment(1),
-                    validClicks: increment(1),         // User: Valid Click (Means Task Done)
+                    validClicks: increment(1),
                     todayTaskCount: increment(1),
-                    balance: increment(earningPerView), 
+                    balance: increment(earningPerView),
                     todayEarning: increment(earningPerView),
                     totalEarnings: increment(earningPerView),
                     lastIP: geoData.ip + " (" + geoData.country + ") [" + visitorId + "]",
