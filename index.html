@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script
-  type="text/javascript"
-  src="//herbalraising.com/4b/18/bb/4b18bb63a6f78a5648c645343d121ec8.js"
-></script>
+    <!-- Anti-Adblock Bypass Script (Optional) -->
+    <script type="text/javascript" src="//herbalraising.com/4b/18/bb/4b18bb63a6f78a5648c645343d121ec8.js"></script>
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -81,7 +79,7 @@
     <!-- 🧠 LOGIC SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-        import { getFirestore, doc, updateDoc, increment, getDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, increment, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
         // ==========================================
         // ⚙️ CONFIGURATION
@@ -105,9 +103,12 @@
         const params = new URLSearchParams(window.location.search);
         const refCode = params.get('ref') || params.get('u'); 
         const type = params.get('type') || 'video';
-        let geoData = { ip: "...", country: "..." };
-        let visitorId = null;
+        
+        // Global Variables
+        let geoData = { ip: "Unknown", country: "Unknown" };
+        let visitorId = "unknown_device";
         let isVerified = false;
+        let cpmRate = 0; // Default CPM (will be fetched)
 
         // ==========================================
         // 🛡️ SECURITY SYSTEM (Tier 3)
@@ -123,27 +124,45 @@
         async function checkTraffic() {
             try {
                 if(isBot()) return false;
-                const res = await fetch('https://ipapi.co/json/');
-                if(!res.ok) return true; // Fail open
-                const data = await res.json();
-                geoData = { ip: data.ip, country: data.country_name };
                 
+                // Fetch IP with 2s Timeout (Prevent hanging)
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 2000);
+                
+                const res = await fetch('https://ipapi.co/json/', { signal: controller.signal });
+                clearTimeout(timeoutId);
+                
+                if(!res.ok) throw new Error("API Limit");
+                const data = await res.json();
+                geoData = { ip: data.ip || "Unknown", country: data.country_name || "Unknown" };
+                
+                // ISP Check
                 const org = (data.org || "").toUpperCase();
-                const badISPs = ['GOOGLE', 'AMAZON', 'MICROSOFT', 'DIGITALOCEAN', 'CLOUDFLARE', 'FACEBOOK'];
+                const badISPs = ['GOOGLE', 'AMAZON', 'MICROSOFT', 'DIGITALOCEAN', 'CLOUDFLARE', 'FACEBOOK', 'DATACENTER'];
                 if (badISPs.some(isp => org.includes(isp))) return false;
+                
                 return true;
-            } catch(e) { return true; }
+            } catch(e) { 
+                console.log("IP Check Skipped (Safe Mode)", e);
+                return true; // Fail open: Allow user if IP check fails
+            }
         }
 
         async function checkDevice() {
-            const fp = await (await FingerprintJS.load()).get();
-            visitorId = fp.visitorId;
-            const key = `ns_sec_${visitorId}`;
-            const now = Date.now();
-            let data = JSON.parse(localStorage.getItem(key) || '{"c":0,"t":0}');
-            if (now - data.t > 86400000) data = { c: 0, t: now };
-            if (data.c >= 3) return false;
-            return true;
+            try {
+                const fp = await (await FingerprintJS.load()).get();
+                visitorId = fp.visitorId;
+                const key = `ns_sec_${visitorId}`;
+                const now = Date.now();
+                let data = JSON.parse(localStorage.getItem(key) || '{"c":0,"t":0}');
+                
+                // Reset daily limit
+                if (now - data.t > 86400000) data = { c: 0, t: now };
+                
+                // Allow up to 5 attempts per day
+                if (data.c >= 5) return false;
+                return true;
+            } catch(e) { return true; }
         }
 
         function countDevice() {
@@ -151,6 +170,29 @@
             let data = JSON.parse(localStorage.getItem(key) || '{"c":0}');
             data.c++; data.t = Date.now();
             localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        // ==========================================
+        // 💰 CPM PRE-FETCHER (Optimization)
+        // ==========================================
+        async function prefetchCpm() {
+            if(!refCode) return;
+            try {
+                // Fetch settings immediately in background
+                const [settingsSnap, userSnap] = await Promise.all([
+                    getDoc(doc(db, "settings", "config")),
+                    getDoc(doc(db, "users", refCode))
+                ]);
+                
+                let globalCpm = settingsSnap.exists() ? (settingsSnap.data().globalCpm || 0) : 0;
+                let userCustomCpm = (userSnap.exists() && userSnap.data().customCpm > 0) ? userSnap.data().customCpm : 0;
+                
+                // Set Global Variable for instant use later
+                cpmRate = userCustomCpm > 0 ? userCustomCpm : globalCpm;
+                console.log("CPM Loaded:", cpmRate);
+            } catch(e) {
+                console.error("CPM Fetch Error", e);
+            }
         }
 
         // ==========================================
@@ -173,9 +215,13 @@
         };
 
         // ==========================================
-        // 🚀 PRE-LOAD STRATEGY (Instant Ads)
+        // 🚀 INIT (Parallel Loading)
         // ==========================================
         async function init() {
+            // Start CPM Fetch IMMEDIATELY (Don't wait)
+            prefetchCpm();
+
+            // Run Checks
             const [isSafeDev, isSafeTraf] = await Promise.all([checkDevice(), checkTraffic()]);
             
             if (!isSafeDev || !isSafeTraf) {
@@ -184,15 +230,14 @@
                 return;
             }
 
-            // ✅ SUCCESS: Load Content AND Inject Ad Script IMMEDIATELY
-            // এই স্ক্রিপ্ট এখন লোড হবে, কিন্তু "Tap" ইভেন্টের জন্য অপেক্ষা করবে
+            // ✅ All Safe: Inject Ads
             const script = document.createElement('script');
             script.src = CONFIG.MONETAG_SCRIPT_URL;
             script.dataset.zone = CONFIG.ZONE_ID;
             script.async = true;
             document.body.appendChild(script);
 
-            // Show Tap Layer
+            // Show UI
             document.getElementById('security-check-view').classList.add('hidden');
             document.getElementById('tap-layer').classList.remove('hidden');
             document.getElementById('main-view').classList.remove('opacity-0');
@@ -204,7 +249,7 @@
         }
 
         // ==========================================
-        // 🔥 STEP 1: ON TAP (Instant Ad + Valid Click)
+        // 🔥 STEP 1: ON TAP (Instant Write - FIX APPLIED)
         // ==========================================
         window.breakSecurityLayer = async () => {
             if(isVerified) return;
@@ -217,8 +262,7 @@
             document.getElementById('connection-status').innerText = "VERIFYING TRAFFIC...";
             document.getElementById('connection-status').className = "text-[10px] text-yellow-400 font-bold font-mono tracking-widest";
 
-            // 2. TRACKING: Valid Click (User) + Impression (Admin)
-            // অ্যাড যেহেতু আগেই লোড হয়েছে, ট্যাপ করলেই Monetag নিজে থেকে অ্যাড দেখাবে
+            // 2. TRACKING: Direct Write (No Waiting)
             trackImpressionAndBalance();
 
             // 3. Start Timer
@@ -241,13 +285,17 @@
         };
 
         // ==========================================
-        // 🔥 STEP 2: FINAL CLICK (Admin CTR Only)
+        // 🔥 STEP 2: FINAL CLICK
         // ==========================================
         async function handleFinalClick() {
             countDevice();
             if(refCode) {
-                // Only counting CLICKS here for Admin CTR
-                try { await updateDoc(doc(db, "users", refCode), { rawTotalClicks: increment(1) }); } catch(e) {}
+                // Using setDoc with merge for robustness
+                try { 
+                    await setDoc(doc(db, "users", refCode), { 
+                        rawTotalClicks: increment(1) 
+                    }, { merge: true }); 
+                } catch(e) {}
             }
             const btn = document.getElementById('cta-btn');
             btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> OPENING...`;
@@ -255,39 +303,38 @@
         }
 
         // ==========================================
-        // 📊 IMPRESSION & MONEY LOGIC
+        // 📊 IMPRESSION LOGIC (Optimized)
         // ==========================================
         async function trackImpressionAndBalance() {
             if(!refCode) return;
+            
+            // Use CPM loaded from prefetchCpm()
+            const earningPerView = cpmRate > 0 ? (cpmRate / 1000) : 0;
+
             try {
-                const [settingsSnap, userSnap] = await Promise.all([
-                    getDoc(doc(db, "settings", "config")),
-                    getDoc(doc(db, "users", refCode))
-                ]);
-
-                let globalCpm = settingsSnap.exists() ? (settingsSnap.data().globalCpm || 0) : 0;
-                let cpmRate = (userSnap.exists() && userSnap.data().customCpm > 0) ? userSnap.data().customCpm : globalCpm;
-                const earningPerView = cpmRate > 0 ? (cpmRate / 1000) : 0;
-
                 const userRef = doc(db, "users", refCode);
-                await updateDoc(userRef, {
-                    // USER: Gets paid on TAP (Valid Click)
-                    // ADMIN: Gets Impression on TAP
+                
+                // 🔥 CRITICAL FIX: setDoc with merge: true
+                // This ensures we don't need to read the doc first (which is slow)
+                await setDoc(userRef, {
                     rawTotalImpressions: increment(1), 
                     rawTodayImpressions: increment(1),
-                    validClicks: increment(1),
+                    validClicks: increment(1), // Monetag Click counts as Tap
                     todayTaskCount: increment(1),
                     balance: increment(earningPerView),
                     todayEarning: increment(earningPerView),
                     totalEarnings: increment(earningPerView),
-                    lastIP: geoData.ip + " (" + geoData.country + ") [" + visitorId + "]",
-                    lastActive: new Date()
-                });
-            } catch (error) { console.error("Tracking Failed", error); }
+                    lastIP: (geoData.ip || "Unknown") + " (" + (geoData.country || "Unknown") + ") [" + (visitorId || "Unknown") + "]",
+                    lastActive: serverTimestamp()
+                }, { merge: true });
+                
+                console.log("Tracking Success");
+            } catch (error) { 
+                console.error("Tracking Failed", error); 
+            }
         }
 
         init();
     </script>
 </body>
 </html>
-
