@@ -1,337 +1,354 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Anti-Adblock Bypass Script (Optional) -->
-    <script type="text/javascript" src="//herbalraising.com/4b/18/bb/4b18bb63a6f78a5648c645343d121ec8.js"></script>
-    
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <title>Secure Gateway</title>
     
     <!-- ✅ Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
+    <!-- ============================================== -->
+    <!-- 🔥 AD NETWORK SCRIPTS (AUTO LOAD) -->
+    <!-- ============================================== -->
+
+    <!-- 1. ADSTERRA SOCIAL BAR -->
+    <script type="text/javascript" src="https://herbalraising.com/4b/18/bb/4b18bb63a6f78a5648c645343d121ec8.js"></script>
+
+    <!-- 2. MONETAG VIGNETTE -->
+    <script>(function(s){s.dataset.zone='10334923',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #000; overflow: hidden; user-select: none; }
+        body { background-color: #000; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; position: relative; }
         
-        /* 🛡️ UI Styles */
-        .glass-box {
-            background: rgba(20, 20, 25, 0.9);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+        /* Dynamic Background */
+        #bg-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover; background-position: center;
+            filter: blur(12px) brightness(0.3);
+            z-index: -1; transform: scale(1.1); transition: background-image 0.5s ease;
         }
-        
-        .stealth-blur { filter: blur(15px); opacity: 0.6; transition: all 0.8s ease; pointer-events: none; transform: scale(0.95); }
-        .reveal { filter: blur(0px); opacity: 1; pointer-events: auto; transform: scale(1); }
-        
-        .pulse-soft { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(0.95); } 100% { transform: scale(1); } }
-        
-        .loading-bar { height: 6px; background: #222; overflow: hidden; border-radius: 10px; margin-top: 15px; }
-        .loading-fill { height: 100%; width: 0%; transition: width 8s linear; border-radius: 10px; }
-        
-        #tap-layer { z-index: 999; backdrop-filter: blur(8px); background: rgba(0,0,0,0.6); }
-        * { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+
+        /* Animations */
+        .step-section { display: none; opacity: 0; animation: fadeIn 0.6s ease-in-out forwards; }
+        .step-active { display: block; opacity: 1; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* UI Elements */
+        .instruction-box { background: rgba(220, 38, 38, 0.2); border: 1px solid #ef4444; color: #fca5a5; font-size: 11px; padding: 12px; border-radius: 8px; margin-bottom: 15px; animation: pulseRed 2s infinite; }
+        @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+
+        .loader-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-top: 10px; }
+        .loader-fill { height: 100%; background: linear-gradient(90deg, #f59e0b, #ef4444); width: 0%; transition: width linear; }
+        .comment-item { background: rgba(30, 41, 59, 0.8); border-left: 3px solid #3b82f6; padding: 10px; margin-bottom: 8px; border-radius: 6px; }
     </style>
 </head>
-<body class="text-white h-screen flex flex-col items-center justify-center relative">
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <!-- 🌌 Background -->
-    <div id="bg-layer" class="absolute inset-0 bg-cover bg-center opacity-40 blur-xl transition-opacity duration-1000"></div>
-    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent"></div>
+    <div id="bg-layer"></div>
 
-    <!-- 🕵️ SECURITY CHECK VIEW -->
-    <div id="security-check-view" class="absolute inset-0 z-[1000] bg-black flex flex-col items-center justify-center">
-        <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p class="text-xs text-blue-400 font-mono animate-pulse">VERIFYING TRAFFIC QUALITY...</p>
+    <!-- Top Progress Bar -->
+    <div class="fixed top-0 left-0 w-full h-1 bg-gray-800 z-50">
+        <div id="top-progress" class="h-full bg-orange-500 w-[33%] transition-all duration-500"></div>
     </div>
 
-    <!-- 👆 INTERACTION LAYER (Security Layer) -->
-    <div id="tap-layer" class="hidden absolute inset-0 flex flex-col items-center justify-center cursor-pointer z-50" onclick="breakSecurityLayer()">
-        <div class="animate-bounce text-center">
-            <div class="w-20 h-20 bg-cyan-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-cyan-500/50 shadow-[0_0_30px_cyan] pulse-soft">
-                <i class="fas fa-fingerprint text-4xl text-cyan-400"></i>
+    <!-- ========================================== -->
+    <!-- 📄 STEP 1: DYNAMIC HOOK -->
+    <!-- ========================================== -->
+    <div id="step-1" class="step-section step-active w-full max-w-md">
+        
+        <div class="flex justify-between items-center mb-3">
+            <span class="text-[10px] font-bold text-gray-400">STEP 1/3</span>
+            <span id="badge-text" class="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded font-bold animate-pulse">PREMIUM</span>
+        </div>
+
+        <!-- DYNAMIC IMAGE -->
+        <div class="relative w-full aspect-[4/3] bg-black rounded-xl overflow-hidden border border-gray-600 mb-4 shadow-2xl group">
+            <img id="theme-img" src="" class="w-full h-full object-cover opacity-90 group-hover:opacity-60 transition duration-300">
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 animate-pulse">
+                    <i id="theme-icon" class="fas fa-play text-3xl text-white ml-2"></i>
+                </div>
             </div>
-            <p class="text-sm font-bold text-cyan-300 tracking-[0.2em] uppercase">Tap to Verify</p>
-            <p class="text-[10px] text-gray-400 mt-2">Secure Connection Required</p>
+            <div class="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] px-2 py-1 rounded font-mono">HD/HQ</div>
+        </div>
+
+        <h1 id="theme-title" class="text-lg font-bold mb-2 text-white">Loading Title...</h1>
+        
+        <div class="instruction-box">
+            <i class="fas fa-exclamation-circle mr-1"></i> 
+            <b>যাচাইকরণ প্রক্রিয়া:</b>
+            <ul class="list-disc ml-5 mt-1 space-y-1 text-gray-200">
+                <li>নিচের বাটনে ক্লিক করুন।</li>
+                <li>যদি কোনো <b>AD (নতুন পেজ)</b> ওপেন হয়, তবে সেটি কেটে দিয়ে আবার <b>এই পেজে ফিরে আসুন</b>।</li>
+                <li>ধৈর্য ধরলে লিংক ১০০% কাজ করবে।</li>
+            </ul>
+        </div>
+
+        <div class="mt-4">
+            <div class="loader-bg"><div id="bar-1" class="loader-fill"></div></div>
+            <p id="text-1" class="text-center text-xs text-orange-400 mt-2 font-mono">Checking Server... 7s</p>
+            <button id="btn-1" class="w-full mt-3 bg-gray-800 text-gray-500 font-bold py-3.5 rounded-lg cursor-not-allowed border border-gray-700">
+                <i class="fas fa-spinner fa-spin mr-2"></i> PLEASE WAIT...
+            </button>
         </div>
     </div>
 
-    <!-- 📦 MAIN CONTENT -->
-    <div id="main-view" class="relative z-10 w-full max-w-md p-4 stealth-blur transition-all duration-700 opacity-0">
-        <div id="theme-content"></div>
+
+    <!-- ========================================== -->
+    <!-- 📄 STEP 2: DYNAMIC RETENTION -->
+    <!-- ========================================== -->
+    <div id="step-2" class="step-section w-full max-w-md">
         
-        <!-- Status Bar -->
-        <div class="mt-6 flex justify-between items-center px-4 py-2 bg-black/40 rounded-full border border-white/5">
-            <div class="flex items-center gap-2">
-                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span class="text-[10px] text-gray-400 font-mono" id="connection-status">WAITING FOR INPUT...</span>
+        <div class="flex items-center gap-3 mb-4 bg-gray-800/80 p-3 rounded-lg border border-gray-600">
+            <img id="thumb-img" src="" class="w-12 h-12 rounded object-cover border border-white/20">
+            <div>
+                <h2 class="text-sm font-bold text-white">Establishing Connection</h2>
+                <p class="text-[10px] text-green-400 animate-pulse">● Source Found (Ready)</p>
             </div>
-            <span class="text-[10px] text-gray-500 font-mono" id="ip-display">---</span>
+        </div>
+
+        <p class="text-xs text-center text-gray-400 mb-2">👇 Scroll & Read User Logs 👇</p>
+
+        <!-- DYNAMIC COMMENTS -->
+        <div id="comment-box" class="h-60 overflow-y-auto bg-black/50 rounded-xl p-3 border border-gray-700 mb-4 relative">
+            <!-- Comments will be injected here -->
+        </div>
+
+        <div>
+            <div class="loader-bg"><div id="bar-2" class="loader-fill"></div></div>
+            <p id="text-2" class="text-center text-xs text-yellow-500 mt-2 font-mono">Finalizing Link... 15s</p>
+            <button id="btn-2" class="w-full mt-2 bg-gray-800 text-gray-500 font-bold py-3.5 rounded-lg cursor-not-allowed">
+                READ LOGS & WAIT...
+            </button>
         </div>
     </div>
 
-    <!-- 🧠 LOGIC SCRIPT -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, increment, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-        // ==========================================
-        // ⚙️ CONFIGURATION
-        // ==========================================
-        const CONFIG = {
-            MONETAG_DIRECT_LINK: "https://otieu.com/4/10277714", 
-            MONETAG_SCRIPT_URL: "https://quge5.com/88/tag.min.js", 
-            ZONE_ID: "190384",
-            FIREBASE: { 
-                apiKey: "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE", 
-                authDomain: "ns-prime-d7ca5.firebaseapp.com",
-                projectId: "ns-prime-d7ca5",
-                storageBucket: "ns-prime-d7ca5.firebasestorage.app",
-                messagingSenderId: "172231719671",
-                appId: "1:172231719671:web:3dafc0ace7b44fbe0071f2"
-            }
-        };
-
-        const app = initializeApp(CONFIG.FIREBASE);
-        const db = getFirestore(app);
-        const params = new URLSearchParams(window.location.search);
-        const refCode = params.get('ref') || params.get('u'); 
-        const type = params.get('type') || 'video';
+    <!-- ========================================== -->
+    <!-- 📄 STEP 3: CONVERSION -->
+    <!-- ========================================== -->
+    <div id="step-3" class="step-section w-full max-w-md text-center">
         
-        // Global Variables
-        let geoData = { ip: "Unknown", country: "Unknown" };
-        let visitorId = "unknown_device";
-        let isVerified = false;
-        let cpmRate = 0; // Default CPM (will be fetched)
+        <div class="mb-5">
+            <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-[0_0_20px_lime]">
+                <i class="fas fa-check text-3xl text-white"></i>
+            </div>
+            <h2 class="text-xl font-bold text-white">Access Granted!</h2>
+        </div>
 
+        <div class="space-y-3">
+            <button onclick="handleFinal('adsterra')" class="w-full bg-gray-800 hover:bg-gray-700 p-3 rounded-xl border border-gray-600 flex items-center justify-between group transition">
+                <div class="flex items-center gap-3"><div class="bg-yellow-500/20 p-2 rounded-full"><i class="fas fa-bolt text-yellow-500"></i></div><div class="text-left"><h3 class="font-bold text-sm text-gray-200">Server 1 (Fast)</h3><p class="text-[9px] text-gray-500">Recommended</p></div></div><i class="fas fa-chevron-right text-gray-500 group-hover:text-white"></i>
+            </button>
+
+            <button onclick="handleFinal('real')" class="w-full bg-green-900/40 hover:bg-green-800/60 p-3 rounded-xl border border-green-700/50 flex items-center justify-between group transition">
+                <div class="flex items-center gap-3"><div class="bg-green-500/20 p-2 rounded-full"><i id="final-icon" class="fas fa-download text-green-500"></i></div><div class="text-left"><h3 id="final-btn-text" class="font-bold text-sm text-gray-200">Server 2 (Original)</h3><p class="text-[9px] text-gray-400">No Ads • Secure</p></div></div><i class="fas fa-check text-gray-500 group-hover:text-white"></i>
+            </button>
+
+            <button onclick="handleFinal('monetag')" class="w-full bg-gray-800 hover:bg-gray-700 p-3 rounded-xl border border-gray-600 flex items-center justify-between group transition">
+                <div class="flex items-center gap-3"><div class="bg-blue-500/20 p-2 rounded-full"><i class="fas fa-cloud text-blue-500"></i></div><div class="text-left"><h3 class="font-bold text-sm text-gray-200">Backup Server</h3><p class="text-[9px] text-gray-500">Alternative Link</p></div></div><i class="fas fa-chevron-right text-gray-500 group-hover:text-white"></i>
+            </button>
+        </div>
+        
+        <p class="text-[10px] text-red-400 mt-6 animate-pulse">⚠️ If Server 1 fails, please try Server 2.</p>
+    </div>
+
+    <!-- 🧠 MASTER SCRIPT -->
+    <script>
         // ==========================================
-        // 🛡️ SECURITY SYSTEM (Tier 3)
+        // 1. DATA (13 THEMES)
         // ==========================================
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.onkeydown = e => { if(e.keyCode == 123 || (e.ctrlKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 85))) return false; }
-
-        function isBot() {
-            const ua = navigator.userAgent.toLowerCase();
-            return (ua.includes('headless') || ua.includes('puppeteer') || ua.includes('selenium') || navigator.webdriver);
-        }
-
-        async function checkTraffic() {
-            try {
-                if(isBot()) return false;
-                
-                // Fetch IP with 2s Timeout (Prevent hanging)
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 2000);
-                
-                const res = await fetch('https://ipapi.co/json/', { signal: controller.signal });
-                clearTimeout(timeoutId);
-                
-                if(!res.ok) throw new Error("API Limit");
-                const data = await res.json();
-                geoData = { ip: data.ip || "Unknown", country: data.country_name || "Unknown" };
-                
-                // ISP Check
-                const org = (data.org || "").toUpperCase();
-                const badISPs = ['GOOGLE', 'AMAZON', 'MICROSOFT', 'DIGITALOCEAN', 'CLOUDFLARE', 'FACEBOOK', 'DATACENTER'];
-                if (badISPs.some(isp => org.includes(isp))) return false;
-                
-                return true;
-            } catch(e) { 
-                console.log("IP Check Skipped (Safe Mode)", e);
-                return true; // Fail open: Allow user if IP check fails
+        const DATA = {
+            video: { 
+                title: "Private Video Leaked_Full.mp4", 
+                img: "https://i.postimg.cc/Yq59W5DR/ecc275af-8d5c-42bb-8169-d41694925e44.jpg", // Updated with your image
+                icon: "fa-play", badge: "VIRAL", btn: "VERIFY & WATCH",
+                comments: ["Video play hoise thanks!", "Wait kora lage but kaj kore.", "HD Quality confirmed."]
+            },
+            job: { 
+                title: "Govt. Job Circular 2025.pdf", 
+                img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800", 
+                icon: "fa-file-pdf", badge: "GOVT", btn: "DOWNLOAD PDF",
+                comments: ["PDF ta download hoise.", "Applying now thanks.", "Authentic circular."]
+            },
+            cricket: { 
+                title: "Live Match: BAN vs IND (HD)", 
+                img: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=800", 
+                icon: "fa-tv", badge: "LIVE", btn: "WATCH STREAM",
+                comments: ["No buffering finally!", "HD quality te choltese.", "Thanks for link."]
+            },
+            money: { 
+                title: "Cashback Bonus: ৳500.00", 
+                img: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800", 
+                icon: "fa-gift", badge: "CASH", btn: "CLAIM BONUS",
+                comments: ["Taka paisi bhai.", "Late hoise but dise.", "Legit offer."]
+            },
+            freefire: { 
+                title: "5000 Diamonds Redeem Code", 
+                img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800", 
+                icon: "fa-gem", badge: "GARENA", btn: "GET CODE",
+                comments: ["Code worked! 500 dias paisi.", "Top up charai pelam.", "Thanks admin."]
+            },
+            whatsapp: { 
+                title: "Join Private WhatsApp Group", 
+                img: "https://images.unsplash.com/photo-1614680376593-902f74cf0d41?w=800", 
+                icon: "fa-whatsapp", badge: "CHAT", btn: "JOIN GROUP",
+                comments: ["Link added me.", "Group active ase.", "Joined successfully."]
+            },
+            telegram: { 
+                title: "Premium Leaks Channel (18+)", 
+                img: "https://images.unsplash.com/photo-1616499370260-485b3e5ed653?w=800", 
+                icon: "fa-telegram-plane", badge: "PRIVATE", btn: "JOIN CHANNEL",
+                comments: ["Content gula joss.", "Joined the channel.", "Best leaks here."]
+            },
+            internet: { 
+                title: "50 GB Free Internet Offer", 
+                img: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800", 
+                icon: "fa-wifi", badge: "DATA", btn: "ACTIVATE NOW",
+                comments: ["BL sim a paisi.", "GP teo kaj korse.", "30 days validity confirm."]
+            },
+            movie: { 
+                title: "Jawan_4K_HDRip.mkv (2.8 GB)", 
+                img: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800", 
+                icon: "fa-film", badge: "MOVIE", btn: "DOWNLOAD MOVIE",
+                comments: ["Dual audio ase.", "Print quality valo.", "Downloading speed fast."]
+            },
+            live: { 
+                title: "Incoming Video Call...", 
+                img: "https://images.unsplash.com/photo-1616012480717-fd9867059ca0?w=800", 
+                icon: "fa-video", badge: "CALLING", btn: "ANSWER CALL",
+                comments: ["Connected.", "She is online.", "Talking now."]
+            },
+            tiktok: { 
+                title: "Viral TikTok Video Leaked", 
+                img: "https://images.unsplash.com/photo-1611605698335-8b1569810432?w=800", 
+                icon: "fa-tiktok", badge: "VIRAL", btn: "WATCH VIDEO",
+                comments: ["Full video ta ekhane.", "TikTok a delete koresilo.", "Got it thanks."]
+            },
+            crypto: { 
+                title: "$50.00 USDT Airdrop", 
+                img: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800", 
+                icon: "fa-bitcoin", badge: "CRYPTO", btn: "CLAIM USDT",
+                comments: ["Wallet connected.", "Received 10 USDT.", "Good project."]
+            },
+            gallery: { 
+                title: "Unlock Private Gallery", 
+                img: "https://images.unsplash.com/photo-1554048612-387768052bf7?w=800", 
+                icon: "fa-images", badge: "LOCKED", btn: "UNLOCK ALBUM",
+                comments: ["Photos are real.", "Album unlocked.", "Hidden folder open hoise."]
             }
-        }
+        };
 
-        async function checkDevice() {
-            try {
-                const fp = await (await FingerprintJS.load()).get();
-                visitorId = fp.visitorId;
-                const key = `ns_sec_${visitorId}`;
-                const now = Date.now();
-                let data = JSON.parse(localStorage.getItem(key) || '{"c":0,"t":0}');
-                
-                // Reset daily limit
-                if (now - data.t > 86400000) data = { c: 0, t: now };
-                
-                // Allow up to 5 attempts per day
-                if (data.c >= 5) return false;
-                return true;
-            } catch(e) { return true; }
-        }
-
-        function countDevice() {
-            const key = `ns_sec_${visitorId}`;
-            let data = JSON.parse(localStorage.getItem(key) || '{"c":0}');
-            data.c++; data.t = Date.now();
-            localStorage.setItem(key, JSON.stringify(data));
-        }
-
-        // ==========================================
-        // 💰 CPM PRE-FETCHER (Optimization)
-        // ==========================================
-        async function prefetchCpm() {
-            if(!refCode) return;
-            try {
-                // Fetch settings immediately in background
-                const [settingsSnap, userSnap] = await Promise.all([
-                    getDoc(doc(db, "settings", "config")),
-                    getDoc(doc(db, "users", refCode))
-                ]);
-                
-                let globalCpm = settingsSnap.exists() ? (settingsSnap.data().globalCpm || 0) : 0;
-                let userCustomCpm = (userSnap.exists() && userSnap.data().customCpm > 0) ? userSnap.data().customCpm : 0;
-                
-                // Set Global Variable for instant use later
-                cpmRate = userCustomCpm > 0 ? userCustomCpm : globalCpm;
-                console.log("CPM Loaded:", cpmRate);
-            } catch(e) {
-                console.error("CPM Fetch Error", e);
-            }
-        }
-
-        // ==========================================
-        // 🎨 13 THEMES
-        // ==========================================
-        const themes = {
-            video: { bg: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=1000", html: `<div class="glass-box rounded-xl overflow-hidden shadow-2xl"><div class="relative h-60 bg-black"><img src="https://images.unsplash.com/photo-1596700813959-1e3093222d4f?w=600" class="w-full h-full object-cover opacity-60"><div class="absolute inset-0 flex items-center justify-center"><div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center pulse-soft"><i class="fas fa-play text-2xl ml-1"></i></div></div><div class="absolute bottom-2 right-2 bg-red-600 text-[10px] px-2 py-0.5 rounded font-bold">LIVE</div></div><div class="p-5"><h2 class="text-lg font-bold">Private Video Leaked_Full.mp4</h2><p class="text-xs text-gray-400 mb-4">1.5M Views • Just now</p><div class="loading-bar"><div id="progress-bar" class="loading-fill bg-blue-500"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3.5 rounded-lg mt-4 cursor-not-allowed transition-all">Buffering Video (0%)...</button></div></div>` },
-            job: { bg: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1000", html: `<div class="bg-white text-gray-900 rounded-xl overflow-hidden shadow-2xl"><div class="bg-[#006a4e] p-4 flex gap-3 items-center"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Government_Seal_of_Bangladesh.svg/1200px-Government_Seal_of_Bangladesh.svg.png" class="w-12"><div class="text-white"><h2 class="font-bold">Govt. Job Circular</h2><p class="text-xs">Ministry of Public Administration</p></div></div><div class="p-6 text-center"><i class="fas fa-file-pdf text-red-600 text-5xl mb-3"></i><h3 class="font-bold text-lg">Official_Notice_2025.pdf</h3><p class="text-xs text-gray-500 mb-4">Size: 2.4 MB</p><div class="loading-bar bg-gray-200"><div id="progress-bar" class="loading-fill bg-[#006a4e]"></div></div><button id="cta-btn" class="w-full bg-gray-300 text-gray-500 font-bold py-3 rounded mt-4 cursor-not-allowed transition-all">Generating PDF Link...</button></div></div>` },
-            cricket: { bg: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=1000", html: `<div class="glass-box rounded-xl overflow-hidden p-5 text-center"><div class="flex justify-between items-center mb-6 px-4"><div class="text-center"><img src="https://flagcdn.com/w80/bd.png" class="w-12 rounded shadow-md mx-auto mb-2"><span class="font-bold block text-white">BAN</span></div><span class="text-red-500 font-bold text-2xl animate-pulse">VS</span><div class="text-center"><img src="https://flagcdn.com/w80/in.png" class="w-12 rounded shadow-md mx-auto mb-2"><span class="font-bold block text-white">IND</span></div></div><div class="bg-black/40 p-2 rounded mb-4"><p class="text-green-400 text-xs font-bold">● LIVE STREAMING (HD)</p></div><div class="loading-bar"><div id="progress-bar" class="loading-fill bg-green-500"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded-lg mt-4 cursor-not-allowed transition-all">Connecting Server...</button></div>` },
-            money: { bg: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=1000", html: `<div class="glass-box rounded-xl p-6 text-center"><div class="w-20 h-20 bg-pink-600/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-pink-500 shadow-[0_0_20px_deeppink]"><i class="fas fa-gift text-4xl text-pink-500"></i></div><h2 class="text-4xl font-bold text-white mb-1">৳500.00</h2><p class="text-xs text-gray-400 mb-6">Cashback Bonus Pending</p><div class="loading-bar"><div id="progress-bar" class="loading-fill bg-pink-500"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded-full mt-4 cursor-not-allowed transition-all">Verifying Number...</button></div>` },
-            freefire: { bg: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000", html: `<div class="glass-box rounded-xl p-6 text-center border border-yellow-500/30"><div class="mb-4 animate-bounce"><i class="fas fa-gem text-5xl text-yellow-400 drop-shadow-[0_0_15px_yellow]"></i></div><h2 class="text-3xl font-bold text-white">5000 💎</h2><p class="text-xs text-yellow-200 mb-4 uppercase tracking-widest">Garena Redeem Code</p><div class="loading-bar"><div id="progress-bar" class="loading-fill bg-yellow-500"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded mt-4 cursor-not-allowed transition-all">Fetching Code...</button></div>` },
-            whatsapp: { bg: "https://images.unsplash.com/photo-1614680376593-902f74cf0d41?q=80&w=1000", html: `<div class="glass-box rounded-xl p-5"><div class="flex items-center gap-4 mb-6"><div class="relative"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" class="w-14"><div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border border-black animate-ping"></div></div><div><h3 class="font-bold text-lg text-white">Sumaiya (Online)</h3><p class="text-xs text-green-400 font-bold">Typing...</p></div></div><div class="loading-bar"><div id="progress-bar" class="loading-fill bg-green-500"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded-full mt-4 cursor-not-allowed transition-all">Connecting...</button></div>` },
-            telegram: { bg: "https://images.unsplash.com/photo-1616499370260-485b3e5ed653?q=80&w=1000", html: `<div class="bg-[#17212b] rounded-xl p-6 border border-gray-700 shadow-2xl text-center"><div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl text-white"><i class="fab fa-telegram-plane"></i></div><h2 class="text-xl font-bold text-white">Premium Leaks 18+</h2><p class="text-xs text-gray-400 mb-4">50K Members • Private Channel</p><div class="loading-bar"><div id="progress-bar" class="loading-fill bg-blue-500"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded-full mt-4 border border-blue-500/30 cursor-not-allowed transition-all">JOIN REQUEST...</button></div>` },
-            internet: { bg: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000", html: `<div class="glass-box rounded-xl p-6 text-center"><h2 class="text-6xl font-bold text-blue-500 mb-2">50 GB</h2><p class="text-sm text-gray-300 mb-4">Free Internet (30 Days Validity)</p><div class="loading-bar"><div id="progress-bar" class="loading-fill bg-blue-500"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded-lg mt-4 cursor-not-allowed transition-all">Check Eligibility...</button></div>` },
-            movie: { bg: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1000", html: `<div class="glass-box rounded-xl p-6 text-center"><i class="fas fa-cloud-download-alt text-5xl text-purple-500 mb-4"></i><h2 class="text-xl font-bold text-white">Jawan_4K_HDRip.mkv</h2><p class="text-xs text-gray-400 mb-4">Server: Singapore • 2.8 GB</p><div class="loading-bar"><div id="progress-bar" class="loading-fill bg-purple-500"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded mt-4 cursor-not-allowed transition-all">Generate Link...</button></div>` },
-            live: { bg: "https://images.unsplash.com/photo-1616012480717-fd9867059ca0?q=80&w=1000", html: `<div class="glass-box rounded-xl p-6 text-center"><div class="w-24 h-24 mx-auto mb-4 rounded-full border-4 border-green-500 overflow-hidden relative shadow-[0_0_20px_lime]"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200" class="w-full h-full object-cover"><div class="absolute inset-0 bg-green-500/20 animate-pulse"></div></div><h2 class="text-xl font-bold text-white">Incoming Video Call...</h2><div class="loading-bar mt-4"><div id="progress-bar" class="loading-fill bg-green-500"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded-full mt-4 cursor-not-allowed transition-all"><i class="fas fa-video mr-2"></i> CONNECTING...</button></div>` },
-            tiktok: { bg: "https://images.unsplash.com/photo-1611605698335-8b1569810432?q=80&w=1000", html: `<div class="glass-box rounded-xl p-6 text-center"><i class="fab fa-tiktok text-5xl text-white mb-4 drop-shadow-[0_0_15px_pink]"></i><h2 class="font-bold mb-2 text-white text-xl">Viral TikTok Leaked</h2><div class="loading-bar"><div id="progress-bar" class="loading-fill bg-pink-500"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded-full mt-4 cursor-not-allowed transition-all">Unlock Video...</button></div>` },
-            crypto: { bg: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?q=80&w=1000", html: `<div class="glass-box rounded-xl p-6 text-center"><i class="fab fa-bitcoin text-6xl text-yellow-500 mb-4"></i><h2 class="text-3xl font-bold text-white">$50.00 USDT</h2><p class="text-xs text-gray-400 mb-4 uppercase">Wallet Connected</p><div class="loading-bar"><div id="progress-bar" class="loading-fill bg-yellow-500"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded mt-4 cursor-not-allowed transition-all">CLAIM AIRDROP...</button></div>` },
-            gallery: { bg: "https://images.unsplash.com/photo-1554048612-387768052bf7?q=80&w=1000", html: `<div class="glass-box rounded-xl p-4"><div class="flex justify-between items-center border-b border-white/10 pb-2 mb-4"><h3 class="font-bold text-white">Private Gallery</h3><i class="fas fa-lock text-red-500"></i></div><div class="grid grid-cols-3 gap-2 opacity-50 mb-4"><div class="h-16 bg-gray-700 rounded"></div><div class="h-16 bg-gray-700 rounded"></div><div class="h-16 bg-gray-700 rounded"></div></div><div class="loading-bar"><div id="progress-bar" class="loading-fill bg-red-500"></div></div><button id="cta-btn" class="w-full bg-gray-800 text-gray-500 font-bold py-3 rounded mt-4 cursor-not-allowed transition-all">UNLOCK ALBUM...</button></div>` }
+        // ✅ LINKS
+        const LINKS = {
+            adsterra: "https://herbalraising.com/u8ebsjsp?key=6ac6420460f095f1cdfcb1459b3b25bb", 
+            monetag: "https://otieu.com/4/10277714",
+            content: "https://tinyurl.com/video-platfrom" 
         };
 
         // ==========================================
-        // 🚀 INIT (Parallel Loading)
+        // 2. INIT LOGIC
         // ==========================================
-        async function init() {
-            // Start CPM Fetch IMMEDIATELY (Don't wait)
-            prefetchCpm();
+        function init() {
+            // Get Type from URL
+            const params = new URLSearchParams(window.location.search);
+            const type = params.get('type') || 'video'; // Default to video
+            const t = DATA[type] || DATA['video'];
 
-            // Run Checks
-            const [isSafeDev, isSafeTraf] = await Promise.all([checkDevice(), checkTraffic()]);
+            // Update UI
+            document.getElementById('bg-layer').style.backgroundImage = `url('${t.img}')`;
+            document.getElementById('theme-img').src = t.img;
+            document.getElementById('thumb-img').src = t.img;
+            document.getElementById('theme-title').innerText = t.title;
+            document.getElementById('theme-icon').className = `fas ${t.icon} text-3xl text-white ml-2`;
+            document.getElementById('badge-text').innerText = t.badge;
             
-            if (!isSafeDev || !isSafeTraf) {
-                document.body.innerHTML = '<h1 style="color:red; text-align:center; padding-top:50px;">ACCESS DENIED</h1>';
-                setTimeout(() => window.location.href = "https://www.google.com", 1500);
-                return;
+            if(type === 'job' || type === 'movie' || type === 'gallery') {
+                document.getElementById('final-icon').className = "fas fa-download text-green-500";
+            } else {
+                document.getElementById('final-icon').className = "fas fa-play text-green-500";
             }
 
-            // ✅ All Safe: Inject Ads
-            const script = document.createElement('script');
-            script.src = CONFIG.MONETAG_SCRIPT_URL;
-            script.dataset.zone = CONFIG.ZONE_ID;
-            script.async = true;
-            document.body.appendChild(script);
+            // Inject Comments
+            const commentBox = document.getElementById('comment-box');
+            let html = `<div class="comment-item"><span class="block font-bold text-[10px] text-green-400">> System</span><p class="text-[10px] font-mono text-green-500">Checking compatibility... OK</p></div>`;
+            t.comments.forEach(c => {
+                html += `<div class="comment-item"><span class="block font-bold text-[10px] text-blue-400">User_${Math.floor(Math.random()*999)}</span><p class="text-xs text-gray-300">${c}</p></div>`;
+            });
+            commentBox.innerHTML = html;
 
-            // Show UI
-            document.getElementById('security-check-view').classList.add('hidden');
-            document.getElementById('tap-layer').classList.remove('hidden');
-            document.getElementById('main-view').classList.remove('opacity-0');
-            
-            const t = themes[type] || themes['video'];
-            document.getElementById('theme-content').innerHTML = t.html;
-            if(t.bg) document.getElementById('bg-layer').style.backgroundImage = `url('${t.bg}')`;
-            document.getElementById('ip-display').innerText = geoData.ip;
+            runStep1(t.btn);
         }
 
         // ==========================================
-        // 🔥 STEP 1: ON TAP (Instant Write - FIX APPLIED)
+        // 3. FUNNEL LOGIC
         // ==========================================
-        window.breakSecurityLayer = async () => {
-            if(isVerified) return;
-            isVerified = true;
+        function runStep1(btnText) {
+            let t = 7;
+            const bar = document.getElementById('bar-1');
+            const txt = document.getElementById('text-1');
+            const btn = document.getElementById('btn-1');
 
-            // 1. UI Updates
-            document.getElementById('tap-layer').remove();
-            document.getElementById('main-view').classList.remove('stealth-blur');
-            document.getElementById('main-view').classList.add('reveal');
-            document.getElementById('connection-status').innerText = "VERIFYING TRAFFIC...";
-            document.getElementById('connection-status').className = "text-[10px] text-yellow-400 font-bold font-mono tracking-widest";
+            bar.style.transition = `width ${t}s linear`;
+            setTimeout(() => bar.style.width = "100%", 50);
 
-            // 2. TRACKING: Direct Write (No Waiting)
-            trackImpressionAndBalance();
-
-            // 3. Start Timer
-            const bar = document.getElementById('progress-bar');
-            if(bar) bar.style.width = "100%";
-
-            setTimeout(() => {
-                const btn = document.getElementById('cta-btn');
-                if(btn) {
-                    btn.innerText = "CLICK TO CONTINUE";
-                    btn.classList.remove('bg-gray-800', 'text-gray-500', 'cursor-not-allowed');
-                    if(type==='money'||type==='tiktok') btn.classList.add('bg-pink-600', 'text-white');
-                    else btn.classList.add('bg-blue-600', 'text-white');
-                    btn.classList.add('cursor-pointer', 'pulse-soft', 'hover:brightness-110');
-                    btn.onclick = handleFinalClick;
+            const timer = setInterval(() => {
+                t--;
+                txt.innerText = `Connecting... ${t}s`;
+                if(t <= 0) {
+                    clearInterval(timer);
+                    txt.innerText = "Ready to Verify!";
+                    txt.className = "text-center text-xs text-green-400 mt-2 font-bold";
+                    
+                    btn.innerHTML = `${btnText} <i class="fas fa-arrow-right ml-2"></i>`;
+                    btn.className = "w-full mt-3 bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-lg shadow-[0_0_15px_red] transition-all animate-pulse";
+                    
+                    btn.onclick = () => {
+                        window.open(LINKS.adsterra, '_blank');
+                        changeStep('step-1', 'step-2', '66%');
+                        runStep2();
+                    };
                 }
-                document.getElementById('connection-status').innerText = "ACCESS GRANTED";
-                document.getElementById('connection-status').className = "text-[10px] text-green-400 font-bold font-mono tracking-widest";
-            }, 8000); 
-        };
-
-        // ==========================================
-        // 🔥 STEP 2: FINAL CLICK
-        // ==========================================
-        async function handleFinalClick() {
-            countDevice();
-            if(refCode) {
-                // Using setDoc with merge for robustness
-                try { 
-                    await setDoc(doc(db, "users", refCode), { 
-                        rawTotalClicks: increment(1) 
-                    }, { merge: true }); 
-                } catch(e) {}
-            }
-            const btn = document.getElementById('cta-btn');
-            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> OPENING...`;
-            setTimeout(() => window.location.href = CONFIG.MONETAG_DIRECT_LINK, 800);
+            }, 1000);
         }
 
-        // ==========================================
-        // 📊 IMPRESSION LOGIC (Optimized)
-        // ==========================================
-        async function trackImpressionAndBalance() {
-            if(!refCode) return;
-            
-            // Use CPM loaded from prefetchCpm()
-            const earningPerView = cpmRate > 0 ? (cpmRate / 1000) : 0;
+        function runStep2() {
+            let t = 15;
+            const bar = document.getElementById('bar-2');
+            const txt = document.getElementById('text-2');
+            const btn = document.getElementById('btn-2');
 
-            try {
-                const userRef = doc(db, "users", refCode);
-                
-                // 🔥 CRITICAL FIX: setDoc with merge: true
-                // This ensures we don't need to read the doc first (which is slow)
-                await setDoc(userRef, {
-                    rawTotalImpressions: increment(1), 
-                    rawTodayImpressions: increment(1),
-                    validClicks: increment(1), // Monetag Click counts as Tap
-                    todayTaskCount: increment(1),
-                    balance: increment(earningPerView),
-                    todayEarning: increment(earningPerView),
-                    totalEarnings: increment(earningPerView),
-                    lastIP: (geoData.ip || "Unknown") + " (" + (geoData.country || "Unknown") + ") [" + (visitorId || "Unknown") + "]",
-                    lastActive: serverTimestamp()
-                }, { merge: true });
-                
-                console.log("Tracking Success");
-            } catch (error) { 
-                console.error("Tracking Failed", error); 
-            }
+            bar.style.transition = `width ${t}s linear`;
+            setTimeout(() => bar.style.width = "100%", 50);
+
+            const timer = setInterval(() => {
+                t--;
+                txt.innerText = `Finalizing... ${t}s`;
+                if(t <= 0) {
+                    clearInterval(timer);
+                    txt.innerText = "Complete!";
+                    txt.className = "text-center text-xs text-green-400 mt-2 font-bold";
+                    
+                    btn.innerHTML = `UNLOCK FINAL STEP <i class="fas fa-lock-open ml-2"></i>`;
+                    btn.className = "w-full mt-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-lg shadow-lg transition-all";
+                    
+                    btn.onclick = () => changeStep('step-2', 'step-3', '100%');
+                }
+            }, 1000);
+        }
+
+        window.handleFinal = (type) => {
+            if(type === 'real') window.location.href = LINKS.content;
+            else window.open(LINKS[type], '_blank');
+        };
+
+        function changeStep(h, s, p) {
+            document.getElementById(h).classList.remove('step-active');
+            setTimeout(() => document.getElementById(s).classList.add('step-active'), 100);
+            document.getElementById('top-progress').style.width = p;
         }
 
         init();
