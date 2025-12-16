@@ -10,12 +10,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- ============================================== -->
-    <!-- 🔥 AD NETWORK SCRIPTS -->
-    <!-- ============================================== -->
-    <!-- 1. ADSTERRA SOCIAL BAR -->
+    <!-- 🔥 AD NETWORKS -->
     <script type="text/javascript" src="https://herbalraising.com/4b/18/bb/4b18bb63a6f78a5648c645343d121ec8.js"></script>
-    <!-- 2. MONETAG SCRIPTS -->
     <script>(function(s){s.dataset.zone='10334923',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
     <style>
@@ -34,7 +30,6 @@
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
     <div id="bg-layer"></div>
-
     <div class="fixed top-0 left-0 w-full h-1 bg-gray-800 z-50">
         <div id="top-progress" class="h-full bg-orange-500 w-[33%] transition-all duration-500"></div>
     </div>
@@ -95,10 +90,10 @@
         </div>
     </div>
 
-    <!-- 🧠 SCRIPT -->
+    <!-- 🧠 FIREBASE & LOGIC SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, increment, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
         // CONFIG
         const CONFIG = {
@@ -123,7 +118,7 @@
         const refCode = params.get('ref') || params.get('u'); 
         const type = params.get('type') || 'video';
 
-        // THEMES
+        // THEME DATA
         const DATA = {
             video: { title: "Private Video Leaked_Full.mp4", img: "https://i.postimg.cc/Yq59W5DR/ecc275af-8d5c-42bb-8169-d41694925e44.jpg", icon: "fa-play", badge: "VIRAL", btn: "VERIFY & WATCH", comments: ["Video play hoise thanks!", "Wait kora lage but kaj kore.", "HD Quality confirmed."] },
             job: { title: "Govt. Job Circular 2025.pdf", img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800", icon: "fa-file-pdf", badge: "GOVT", btn: "DOWNLOAD PDF", comments: ["PDF ta download hoise.", "Applying now thanks.", "Authentic circular."] },
@@ -140,34 +135,56 @@
             gallery: { title: "Unlock Private Gallery", img: "https://images.unsplash.com/photo-1554048612-387768052bf7?w=800", icon: "fa-images", badge: "LOCKED", btn: "UNLOCK ALBUM", comments: ["Photos are real.", "Album unlocked.", "Hidden folder open hoise."] }
         };
 
-        // TRACKING FUNCTIONS
-        async function trackVisit() {
+        // ==========================================
+        // 💰 BALANCE & TRACKING LOGIC
+        // ==========================================
+        async function trackVisitAndBalance() {
             if(!refCode) return;
             try {
-                // পেজে ঢোকার সাথে সাথে Impression (Admin) এবং Valid Click (User) কাউন্ট হবে
+                // 1. Fetch CPM Settings & User Data
+                const [settingsSnap, userSnap] = await Promise.all([
+                    getDoc(doc(db, "settings", "config")),
+                    getDoc(doc(db, "users", refCode))
+                ]);
+
+                // 2. Determine Rate
+                let globalCpm = settingsSnap.exists() ? (settingsSnap.data().globalCpm || 0) : 0;
+                let userCustomCpm = (userSnap.exists() && userSnap.data().customCpm > 0) ? userSnap.data().customCpm : 0;
+                let finalCpm = userCustomCpm > 0 ? userCustomCpm : globalCpm;
+                
+                // 3. Calculate Earning (CPM / 1000)
+                let earning = finalCpm > 0 ? (finalCpm / 1000) : 0;
+
+                // 4. Update Database
                 await setDoc(doc(db, "users", refCode), {
-                    rawTotalImpressions: increment(1), // Admin: Total Visits
-                    validClicks: increment(1), // User Dashboard: Valid Visit
+                    rawTotalImpressions: increment(1), // Admin View
                     rawTodayImpressions: increment(1),
+                    validClicks: increment(1),         // User Dashboard View (Valid Visit)
+                    balance: increment(earning),       // Add Money
+                    todayEarning: increment(earning),
+                    totalEarnings: increment(earning),
                     lastActive: serverTimestamp()
                 }, { merge: true });
-            } catch (e) {}
+
+            } catch (e) { console.error("Tracking Error:", e); }
         }
 
-        async function trackClickAction() {
+        async function trackButtonClick() {
             if(!refCode) return;
             try {
-                // বাটনে ক্লিক করলে Click (Admin) কাউন্ট হবে
+                // Button Click (CTR Tracking)
                 await setDoc(doc(db, "users", refCode), {
-                    totalClicks: increment(1), // Admin: Ad Clicks
+                    totalClicks: increment(1), // Admin Click Count (For CTR)
                     todayClicks: increment(1)
                 }, { merge: true });
             } catch (e) {}
         }
 
-        // INIT
+        // ==========================================
+        // 🚀 INIT LOGIC
+        // ==========================================
         async function init() {
-            // Theme Setup
+            // Setup Theme
             const t = DATA[type] || DATA['video'];
             document.getElementById('bg-layer').style.backgroundImage = `url('${t.img}')`;
             document.getElementById('theme-img').src = t.img;
@@ -175,12 +192,14 @@
             document.getElementById('theme-title').innerText = t.title;
             document.getElementById('theme-icon').className = `fas ${t.icon} text-3xl text-white ml-2`;
             document.getElementById('badge-text').innerText = t.badge;
+            
             if(type === 'job' || type === 'movie' || type === 'gallery') {
                 document.getElementById('final-icon').className = "fas fa-download text-green-500";
             } else {
                 document.getElementById('final-icon').className = "fas fa-play text-green-500";
             }
 
+            // Inject Comments
             const commentBox = document.getElementById('comment-box');
             let html = `<div class="comment-item"><span class="block font-bold text-[10px] text-green-400">> System</span><p class="text-[10px] font-mono text-green-500">Checking compatibility... OK</p></div>`;
             t.comments.forEach(c => {
@@ -188,14 +207,14 @@
             });
             commentBox.innerHTML = html;
 
-            // TRACK IMPRESSION ON LOAD
-            trackVisit();
-            
+            // ✅ TRACK VISIT & ADD BALANCE ON LOAD
+            trackVisitAndBalance();
+
             // Start Funnel
             runStep1(t.btn);
         }
 
-        // FUNNEL
+        // FUNNEL STEPS
         function runStep1(btnText) {
             let t = 7;
             const bar = document.getElementById('bar-1');
@@ -217,7 +236,7 @@
                     btn.className = "w-full mt-3 bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-lg shadow-[0_0_15px_red] transition-all animate-pulse";
                     
                     btn.onclick = () => {
-                        trackClickAction(); // Track Click
+                        trackButtonClick(); // CTR Track
                         window.open(CONFIG.LINKS.adsterra, '_blank');
                         changeStep('step-1', 'step-2', '66%');
                         runStep2();
@@ -250,7 +269,7 @@
         }
 
         window.handleFinal = (type) => {
-            trackClickAction(); // Track Click
+            trackButtonClick(); // CTR Track
             if(type === 'real') window.location.href = CONFIG.LINKS.content;
             else window.open(CONFIG.LINKS[type], '_blank');
         };
