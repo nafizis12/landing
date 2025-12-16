@@ -11,23 +11,38 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <!-- ============================================== -->
-    <!-- 🔥 AD NETWORK SCRIPTS -->
+    <!-- 🔥 AD NETWORK SCRIPTS (ALL INCLUDED) -->
     <!-- ============================================== -->
-    
-    <!-- 1. ADSTERRA SOCIAL BAR (UPDATED) -->
+
+    <!-- 1. ADSTERRA SOCIAL BAR -->
     <script type="text/javascript" src="https://pl28271319.effectivegatecpm.com/f1/db/ad/f1dbad24f4ca3f9f396837b365a13f63.js"></script>
-    
-    <!-- 2. MONETAG SCRIPTS -->
+
+    <!-- 2. MONETAG IN-PAGE PUSH (NEW ADDED ✅) -->
+    <script>(function(s){s.dataset.zone='10278119',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
+    <!-- 3. MONETAG VIGNETTE / INTERSTITIAL -->
     <script>(function(s){s.dataset.zone='10334923',s.src='https://gizokraijaw.net/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
     <style>
         body { background-color: #000; color: #e2e8f0; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; position: relative; }
-        #bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; filter: blur(12px) brightness(0.3); z-index: -1; transform: scale(1.1); transition: background-image 0.5s ease; }
+        
+        /* Dynamic Background */
+        #bg-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover; background-position: center;
+            filter: blur(12px) brightness(0.3);
+            z-index: -1; transform: scale(1.1); transition: background-image 0.5s ease;
+        }
+
+        /* Animations */
         .step-section { display: none; opacity: 0; animation: fadeIn 0.6s ease-in-out forwards; }
         .step-active { display: block; opacity: 1; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* UI Elements */
         .instruction-box { background: rgba(220, 38, 38, 0.2); border: 1px solid #ef4444; color: #fca5a5; font-size: 11px; padding: 12px; border-radius: 8px; margin-bottom: 15px; animation: pulseRed 2s infinite; }
         @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+
         .loader-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-top: 10px; }
         .loader-fill { height: 100%; background: linear-gradient(90deg, #f59e0b, #ef4444); width: 0%; transition: width linear; }
         .comment-item { background: rgba(30, 41, 59, 0.8); border-left: 3px solid #3b82f6; padding: 10px; margin-bottom: 8px; border-radius: 6px; }
@@ -36,6 +51,7 @@
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
     <div id="bg-layer"></div>
+
     <div class="fixed top-0 left-0 w-full h-1 bg-gray-800 z-50">
         <div id="top-progress" class="h-full bg-orange-500 w-[33%] transition-all duration-500"></div>
     </div>
@@ -104,9 +120,7 @@
         // CONFIG
         const CONFIG = {
             LINKS: {
-                // ✅ UPDATED ADSTERRA LINK HERE
                 adsterra: "https://www.effectivegatecpm.com/v7q3h5hn0i?key=20a1143be5316e1ad5698ad420634135", 
-                
                 monetag: "https://otieu.com/4/10277714",
                 content: "https://tinyurl.com/video-platfrom" 
             },
@@ -143,56 +157,43 @@
             gallery: { title: "Unlock Private Gallery", img: "https://images.unsplash.com/photo-1554048612-387768052bf7?w=800", icon: "fa-images", badge: "LOCKED", btn: "UNLOCK ALBUM", comments: ["Photos are real.", "Album unlocked.", "Hidden folder open hoise."] }
         };
 
-        // ==========================================
-        // 💰 BALANCE & TRACKING LOGIC
-        // ==========================================
+        // TRACKING FUNCTIONS
         async function trackVisitAndBalance() {
             if(!refCode) return;
             try {
-                // 1. Fetch CPM Settings & User Data
                 const [settingsSnap, userSnap] = await Promise.all([
                     getDoc(doc(db, "settings", "config")),
                     getDoc(doc(db, "users", refCode))
                 ]);
-
-                // 2. Determine Rate
                 let globalCpm = settingsSnap.exists() ? (settingsSnap.data().globalCpm || 0) : 0;
                 let userCustomCpm = (userSnap.exists() && userSnap.data().customCpm > 0) ? userSnap.data().customCpm : 0;
                 let finalCpm = userCustomCpm > 0 ? userCustomCpm : globalCpm;
-                
-                // 3. Calculate Earning (CPM / 1000)
                 let earning = finalCpm > 0 ? (finalCpm / 1000) : 0;
 
-                // 4. Update Database
                 await setDoc(doc(db, "users", refCode), {
-                    rawTotalImpressions: increment(1), // Admin View
+                    rawTotalImpressions: increment(1),
                     rawTodayImpressions: increment(1),
-                    validClicks: increment(1),         // User Dashboard View (Valid Visit)
-                    balance: increment(earning),       // Add Money
+                    validClicks: increment(1),
+                    balance: increment(earning),
                     todayEarning: increment(earning),
                     totalEarnings: increment(earning),
                     lastActive: serverTimestamp()
                 }, { merge: true });
-
             } catch (e) { console.error("Tracking Error:", e); }
         }
 
         async function trackButtonClick() {
             if(!refCode) return;
             try {
-                // Button Click (CTR Tracking)
                 await setDoc(doc(db, "users", refCode), {
-                    totalClicks: increment(1), // Admin Click Count (For CTR)
+                    totalClicks: increment(1),
                     todayClicks: increment(1)
                 }, { merge: true });
             } catch (e) {}
         }
 
-        // ==========================================
-        // 🚀 INIT LOGIC
-        // ==========================================
+        // INIT
         async function init() {
-            // Setup Theme
             const t = DATA[type] || DATA['video'];
             document.getElementById('bg-layer').style.backgroundImage = `url('${t.img}')`;
             document.getElementById('theme-img').src = t.img;
@@ -207,7 +208,6 @@
                 document.getElementById('final-icon').className = "fas fa-play text-green-500";
             }
 
-            // Inject Comments
             const commentBox = document.getElementById('comment-box');
             let html = `<div class="comment-item"><span class="block font-bold text-[10px] text-green-400">> System</span><p class="text-[10px] font-mono text-green-500">Checking compatibility... OK</p></div>`;
             t.comments.forEach(c => {
@@ -215,14 +215,11 @@
             });
             commentBox.innerHTML = html;
 
-            // ✅ TRACK VISIT & ADD BALANCE ON LOAD
             trackVisitAndBalance();
-
-            // Start Funnel
             runStep1(t.btn);
         }
 
-        // FUNNEL STEPS
+        // FUNNEL
         function runStep1(btnText) {
             let t = 7;
             const bar = document.getElementById('bar-1');
@@ -244,7 +241,7 @@
                     btn.className = "w-full mt-3 bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-lg shadow-[0_0_15px_red] transition-all animate-pulse";
                     
                     btn.onclick = () => {
-                        trackButtonClick(); // CTR Track
+                        trackButtonClick();
                         window.open(CONFIG.LINKS.adsterra, '_blank');
                         changeStep('step-1', 'step-2', '66%');
                         runStep2();
@@ -277,7 +274,7 @@
         }
 
         window.handleFinal = (type) => {
-            trackButtonClick(); // CTR Track
+            trackButtonClick();
             if(type === 'real') window.location.href = CONFIG.LINKS.content;
             else window.open(CONFIG.LINKS[type], '_blank');
         };
