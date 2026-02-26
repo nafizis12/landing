@@ -31,7 +31,7 @@
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <!-- সিকিউরিটি চেক লোডার -->
+    <!-- Security Check Loader -->
     <div id="security-loader">
         <div class="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
         <p class="text-orange-500 mt-4 font-mono text-sm">Verifying Connection...</p>
@@ -59,10 +59,9 @@
         </div>
         <h1 id="theme-title" class="text-lg font-bold mb-2 text-white text-center">Loading...</h1>
         <div class="instruction-box">
-            <i class="fas fa-exclamation-circle mr-1"></i> <b>যাচাইকরণ প্রক্রিয়া:</b>
-            <ul class="list-disc ml-5 mt-1 space-y-1 text-gray-200">
-                <li>নিচের বাটনে ক্লিক করুন।</li>
-                <li>নতুন পেজ (AD) ওপেন হলে সেটি কেটে এই পেজে ফিরে আসুন।</li>
+            <i class="fas fa-shield-alt mr-1"></i> <b>Verification Process:</b>
+            <ul id="inst-list" class="list-disc ml-5 mt-1 space-y-1 text-gray-200">
+                <!-- Dynamically injected via JS based on category -->
             </ul>
         </div>
         <div class="mt-4">
@@ -82,19 +81,19 @@
         <div>
             <div class="loader-bg"><div id="bar-2" class="loader-fill"></div></div>
             <p id="text-2" class="text-center text-xs text-yellow-500 mt-2 font-mono">Finalizing Link... 15s</p>
-            <button id="btn-2" class="w-full mt-2 bg-gray-800 text-gray-500 font-bold py-3.5 rounded-lg cursor-not-allowed">READ LOGS & WAIT...</button>
+            <button id="btn-2" class="w-full mt-2 bg-gray-800 text-gray-500 font-bold py-3.5 rounded-lg cursor-not-allowed">READING LOGS...</button>
         </div>
     </div>
 
     <!-- STEP 3 -->
     <div id="step-3" class="step-section w-full max-w-md text-center">
-        <div class="mb-5"><div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-[0_0_20px_lime]"><i class="fas fa-check text-3xl text-white"></i></div><h2 class="text-xl font-bold text-white">Access Granted!</h2></div>
+        <div class="mb-5"><div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-[0_0_20px_lime]"><i class="fas fa-check text-3xl text-white"></i></div><h2 id="final-title" class="text-xl font-bold text-white">Access Granted!</h2></div>
         <div class="space-y-3">
             <button onclick="handleFinal('adsterra')" class="w-full bg-gray-800 hover:bg-gray-700 p-3 rounded-xl border border-gray-600 flex items-center justify-between group transition">
-                <div class="flex items-center gap-3"><div class="bg-yellow-500/20 p-2 rounded-full"><i class="fas fa-bolt text-yellow-500"></i></div><div class="text-left"><h3 class="font-bold text-sm text-gray-200">Server 1 (Fast)</h3><p class="text-[9px] text-gray-500">Recommended</p></div></div><i class="fas fa-chevron-right text-gray-500 group-hover:text-white"></i>
+                <div class="flex items-center gap-3"><div class="bg-yellow-500/20 p-2 rounded-full"><i class="fas fa-bolt text-yellow-500"></i></div><div class="text-left"><h3 id="final-btn-1-text" class="font-bold text-sm text-gray-200">Server 1 (Fast)</h3><p class="text-[9px] text-gray-500">Recommended</p></div></div><i class="fas fa-chevron-right text-gray-500 group-hover:text-white"></i>
             </button>
             <button onclick="handleFinal('real')" class="w-full bg-green-900/40 hover:bg-green-800/60 p-3 rounded-xl border border-green-700/50 flex items-center justify-between group transition">
-                <div class="flex items-center gap-3"><div class="bg-green-500/20 p-2 rounded-full"><i id="final-icon" class="fas fa-play text-green-500"></i></div><div class="text-left"><h3 id="final-btn-text" class="font-bold text-sm text-gray-200">Server 2 (Original)</h3><p class="text-[9px] text-gray-400">No Ads • Secure</p></div></div><i class="fas fa-check text-gray-500 group-hover:text-white"></i>
+                <div class="flex items-center gap-3"><div class="bg-green-500/20 p-2 rounded-full"><i id="final-icon" class="fas fa-play text-green-500"></i></div><div class="text-left"><h3 id="final-btn-2-text" class="font-bold text-sm text-gray-200">Server 2 (Original)</h3><p class="text-[9px] text-gray-400">No Ads • Secure</p></div></div><i class="fas fa-check text-gray-500 group-hover:text-white"></i>
             </button>
         </div>
     </div>
@@ -128,45 +127,28 @@
         const refCode = params.get('ref') || params.get('u'); 
         const type = params.get('type') || 'video';
 
-        // --- 🛡️ সিকিউরিটি ফাংশন (Modified for Testing) ---
+        // --- 🛡️ Security Bypass for Testing ---
         async function checkSecurity() {
-            // টেস্টিং এর জন্য আইপি এবং লিমিট চেক সাময়িকভাবে বন্ধ করা হলো
             return true; 
-
-            /* টেস্টিং শেষ হলে নিচের কমেন্ট করা অংশটুকু আবার আনকমেন্ট করে দিবেন:
+            /* Testing Bypass. Uncomment this to turn on security later.
             const today = new Date().toDateString();
-            
             let lCount = parseInt(localStorage.getItem('v_cnt')) || 0;
             let lDate = localStorage.getItem('v_date');
-
-            if (lDate === today && lCount >= CONFIG.MAX_ACCESS) {
-                window.location.replace(CONFIG.REDIRECT_URL);
-                return false;
-            }
-
+            if (lDate === today && lCount >= CONFIG.MAX_ACCESS) { window.location.replace(CONFIG.REDIRECT_URL); return false; }
             try {
                 const ipRes = await fetch('https://api.ipify.org?format=json');
                 const ipData = await ipRes.json();
                 const userIP = ipData.ip.replace(/\./g, '_'); 
-
                 const ipDocRef = doc(db, "ip_logs", userIP);
                 const ipSnap = await getDoc(ipDocRef);
-
                 if (ipSnap.exists()) {
                     const data = ipSnap.data();
-                    if (data.date === today && data.count >= CONFIG.MAX_ACCESS) {
-                        window.location.replace(CONFIG.REDIRECT_URL);
-                        return false;
-                    }
+                    if (data.date === today && data.count >= CONFIG.MAX_ACCESS) { window.location.replace(CONFIG.REDIRECT_URL); return false; }
                     await setDoc(ipDocRef, { count: data.date === today ? increment(1) : 1, date: today }, { merge: true });
-                } else {
-                    await setDoc(ipDocRef, { count: 1, date: today });
-                }
-
+                } else { await setDoc(ipDocRef, { count: 1, date: today }); }
                 localStorage.setItem('v_date', today);
                 localStorage.setItem('v_cnt', lDate === today ? lCount + 1 : 1);
                 return true;
-
             } catch (e) {
                 console.error("Sync Error:", e);
                 localStorage.setItem('v_date', today);
@@ -176,24 +158,21 @@
             */
         }
 
-        // --- 🎯 TOTAL 20 LANDING PAGE DATA (13 Original + 7 New) ---
+        // --- 🎯 DATA MAPPING (20 Niches) ---
         const DATA = {
-            // Your Original 13 Niches
-            video: { title: "Private Video Leaked_Full.mp4", img: "https://i.postimg.cc/Yq59W5DR/ecc275af-8d5c-42bb-8169-d41694925e44.jpg", icon: "fa-play", badge: "VIRAL", btn: "VERIFY & WATCH", comments: ["Video play hoise thanks!", "Wait kora lage but kaj kore.", "HD Quality confirmed."] },
-            job: { title: "Govt. Job Circular 2025.pdf", img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800", icon: "fa-file-pdf", badge: "GOVT", btn: "DOWNLOAD PDF", comments: ["PDF ta download hoise.", "Applying now thanks.", "Authentic circular."] },
-            cricket: { title: "Live Match: BAN vs IND (HD)", img: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=800", icon: "fa-tv", badge: "LIVE", btn: "WATCH STREAM", comments: ["No buffering finally!", "HD quality te choltese."] },
-            money: { title: "Cashback Bonus: ৳500.00", img: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800", icon: "fa-gift", badge: "CASH", btn: "CLAIM BONUS", comments: ["Taka paisi bhai.", "Legit offer."] },
-            freefire: { title: "5000 Diamonds Redeem Code", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800", icon: "fa-gem", badge: "GARENA", btn: "GET CODE", comments: ["Code worked! thanks."] },
+            video: { title: "Private Video Leaked_Full.mp4", img: "https://i.postimg.cc/Yq59W5DR/ecc275af-8d5c-42bb-8169-d41694925e44.jpg", icon: "fa-play", badge: "VIRAL", btn: "VERIFY & WATCH", comments: ["Video is playing fine, thanks!", "Have to wait a bit but works.", "HD Quality confirmed."] },
+            job: { title: "Govt. Job Circular 2025.pdf", img: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800", icon: "fa-file-pdf", badge: "GOVT", btn: "DOWNLOAD PDF", comments: ["PDF downloaded perfectly.", "Applying right now, thanks.", "Authentic circular file."] },
+            cricket: { title: "Live Match: BAN vs IND (HD)", img: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=800", icon: "fa-tv", badge: "LIVE", btn: "WATCH STREAM", comments: ["No buffering finally!", "Streaming in full HD."] },
+            money: { title: "Cashback Bonus: $500.00", img: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800", icon: "fa-gift", badge: "CASH", btn: "CLAIM BONUS", comments: ["Received the money!", "Legit offer indeed."] },
+            freefire: { title: "5000 Diamonds Redeem Code", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800", icon: "fa-gem", badge: "GARENA", btn: "GET CODE", comments: ["Code worked! Thanks bro."] },
             whatsapp: { title: "Join Private WhatsApp Group", img: "https://images.unsplash.com/photo-1614680376593-902f74cf0d41?w=800", icon: "fa-whatsapp", badge: "CHAT", btn: "JOIN GROUP", comments: ["Joined successfully."] },
-            telegram: { title: "Premium Leaks Channel (18+)", img: "https://images.unsplash.com/photo-1616499370260-485b3e5ed653?w=800", icon: "fa-telegram-plane", badge: "PRIVATE", btn: "JOIN CHANNEL", comments: ["Content gula joss."] },
-            internet: { title: "50 GB Free Internet Offer", img: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800", icon: "fa-wifi", badge: "DATA", btn: "ACTIVATE NOW", comments: ["BL sim a paisi.", "30 days validity confirm."] },
-            movie: { title: "Jawan_4K_HDRip.mkv (2.8 GB)", img: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800", icon: "fa-film", badge: "MOVIE", btn: "DOWNLOAD MOVIE", comments: ["Print quality valo."] },
-            live: { title: "Incoming Video Call...", img: "https://images.unsplash.com/photo-1616012480717-fd9867059ca0?w=800", icon: "fa-video", badge: "CALLING", btn: "ANSWER CALL", comments: ["Talking now."] },
-            tiktok: { title: "Viral TikTok Video Leaked", img: "https://images.unsplash.com/photo-1611605698335-8b1569810432?w=800", icon: "fa-tiktok", badge: "VIRAL", btn: "WATCH VIDEO", comments: ["Got it thanks."] },
-            crypto: { title: "$50.00 USDT Airdrop", img: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800", icon: "fa-bitcoin", badge: "CRYPTO", btn: "CLAIM USDT", comments: ["Received 10 USDT."] },
-            gallery: { title: "Unlock Private Gallery", img: "https://images.unsplash.com/photo-1554048612-387768052bf7?w=800", icon: "fa-images", badge: "LOCKED", btn: "UNLOCK ALBUM", comments: ["Album unlocked."] },
-            
-            // Your New 7 Gift Card & Generator Niches
+            telegram: { title: "Premium Leaks Channel (18+)", img: "https://images.unsplash.com/photo-1616499370260-485b3e5ed653?w=800", icon: "fa-telegram-plane", badge: "PRIVATE", btn: "JOIN CHANNEL", comments: ["Premium contents inside!"] },
+            internet: { title: "50 GB Free Internet Data", img: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800", icon: "fa-wifi", badge: "DATA", btn: "ACTIVATE NOW", comments: ["Received on my sim.", "30 days validity confirmed."] },
+            movie: { title: "Jawan_4K_HDRip.mkv (2.8 GB)", img: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800", icon: "fa-film", badge: "MOVIE", btn: "DOWNLOAD MOVIE", comments: ["Print quality is super HD."] },
+            live: { title: "Incoming Video Call...", img: "https://images.unsplash.com/photo-1616012480717-fd9867059ca0?w=800", icon: "fa-video", badge: "CALLING", btn: "ANSWER CALL", comments: ["Connected to the call."] },
+            tiktok: { title: "Viral TikTok Video Leaked", img: "https://images.unsplash.com/photo-1611605698335-8b1569810432?w=800", icon: "fa-tiktok", badge: "VIRAL", btn: "WATCH VIDEO", comments: ["Got the video thanks."] },
+            crypto: { title: "$50.00 USDT Airdrop", img: "https://images.unsplash.com/photo-1518546305927-5a555bb7020d?w=800", icon: "fa-bitcoin", badge: "CRYPTO", btn: "CLAIM USDT", comments: ["Received 10 USDT in wallet."] },
+            gallery: { title: "Unlock Private Gallery", img: "https://images.unsplash.com/photo-1554048612-387768052bf7?w=800", icon: "fa-images", badge: "LOCKED", btn: "UNLOCK ALBUM", comments: ["Album unlocked completely."] },
             amazon: { title: "$100 Amazon Gift Card Free", img: "https://images.unsplash.com/photo-1620714223084-8fcacc6dfd8d?w=800", icon: "fa-amazon", badge: "GIFT CARD", btn: "CLAIM $100 NOW", comments: ["Just got the code sent to my email!", "Wow, didn't think this would work.", "100% legit thanks!"] },
             apple: { title: "$50 Apple/iTunes Gift Card", img: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=800", icon: "fa-apple", badge: "APPLE CODE", btn: "REDEEM CODE", comments: ["Added $50 to my Apple ID.", "Working properly, thank you.", "Super fast delivery."] },
             xbox: { title: "Xbox Game Pass & $50 Card", img: "https://images.unsplash.com/photo-1605901309584-818e25960b8f?w=800", icon: "fa-xbox", badge: "XBOX LIVE", btn: "GENERATE CODE", comments: ["Game pass activated!", "Thanks bro, got the code.", "Using it for new games now."] },
@@ -231,6 +210,9 @@
             try { await setDoc(doc(db, "users", refCode), { totalClicks: increment(1), todayClicks: increment(1) }, { merge: true }); } catch (e) {}
         }
 
+        // Global Variable for Step 2 button text
+        window.currentActionWord = "Access";
+
         async function init() {
             const isSafe = await checkSecurity();
             if (!isSafe) return;
@@ -244,19 +226,54 @@
             document.getElementById('thumb-img').src = t.img;
             document.getElementById('theme-title').innerText = t.title;
             
-            // আইকনের স্টাইল ঠিকঠাক করার জন্য
+            // Icon fixing
             document.getElementById('theme-icon').className = `fas ${t.icon} text-3xl text-white ${['fa-play'].includes(t.icon) ? 'ml-2' : ''}`;
             document.getElementById('badge-text').innerText = t.badge;
             
-            // ফাইনাল আইকন ডাইনামিক
+            // Dynamic Logic based on category
+            let actionWord = "Access";
+            let fBtn1 = "Server 1 (Fast)";
+            let fBtn2 = "Server 2 (Secure)";
+
             if(['job','movie','gallery'].includes(type)) {
+                actionWord = "Download";
+                fBtn1 = "Download Server 1";
+                fBtn2 = "Direct Download (Secure)";
                 document.getElementById('final-icon').className = "fas fa-download text-green-500";
-            } else if(['amazon','apple','xbox','monopoly','roblox','vbucks','cashapp','money','crypto'].includes(type)) {
+            } else if(['amazon','apple','xbox','cashapp','money','crypto','internet'].includes(type)) {
+                actionWord = "Claim";
+                fBtn1 = "Sponsor Server (Fast)";
+                fBtn2 = "Claim Reward (Secure)";
                 document.getElementById('final-icon').className = "fas fa-unlock text-green-500";
+            } else if(['monopoly','roblox','vbucks','freefire'].includes(type)) {
+                actionWord = "Generate";
+                fBtn1 = "Fast Injection";
+                fBtn2 = "Direct Generator (Safe)";
+                document.getElementById('final-icon').className = "fas fa-cogs text-green-500";
+            } else if(['whatsapp','telegram'].includes(type)) {
+                actionWord = "Join";
+                fBtn1 = "Join via Server 1";
+                fBtn2 = "Direct Join Link";
+                document.getElementById('final-icon').className = "fas fa-user-plus text-green-500";
             } else {
+                actionWord = "Watch";
+                fBtn1 = "Stream Server 1";
+                fBtn2 = "Direct Play (No Ads)";
                 document.getElementById('final-icon').className = "fas fa-play text-green-500";
             }
 
+            window.currentActionWord = actionWord;
+
+            // Updating Dynamic Texts
+            document.getElementById('inst-list').innerHTML = `
+                <li>Click the verification button below to <b>${actionWord}</b>.</li>
+                <li>If a new page or ad opens, close it and return here.</li>
+            `;
+            document.getElementById('final-title').innerText = `${actionWord} Granted!`;
+            document.getElementById('final-btn-1-text').innerText = fBtn1;
+            document.getElementById('final-btn-2-text').innerText = fBtn2;
+
+            // Setup Comments
             const commentBox = document.getElementById('comment-box');
             let html = `<div class="comment-item"><span class="block font-bold text-[10px] text-green-400">> System Logs</span><p class="text-[10px] font-mono">Status... Verified OK</p></div>`;
             t.comments.forEach(c => {
@@ -298,11 +315,11 @@
             setTimeout(() => bar.style.width = "100%", 50);
             const timer = setInterval(() => {
                 t--;
-                txt.innerText = `Processing Request... ${t}s`;
+                txt.innerText = `Finalizing ${window.currentActionWord}... ${t}s`;
                 if(t <= 0) {
                     clearInterval(timer);
                     txt.innerText = "Success!";
-                    btn.innerHTML = `COMPLETE FINAL STEP <i class="fas fa-lock-open ml-2"></i>`;
+                    btn.innerHTML = `PROCEED TO ${window.currentActionWord.toUpperCase()} <i class="fas fa-lock-open ml-2"></i>`;
                     btn.className = "w-full mt-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-lg cursor-pointer";
                     btn.onclick = () => changeStep('step-2', 'step-3', '100%');
                 }
