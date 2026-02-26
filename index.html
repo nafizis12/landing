@@ -50,7 +50,7 @@
             <span id="badge-text" class="bg-red-600 text-white text-[10px] px-2 py-0.5 rounded font-bold animate-pulse">PREMIUM</span>
         </div>
         
-        <!-- Image Container: changed to aspect-video (16:9) for better uncropped image display -->
+        <!-- Image Container: aspect-video (16:9) for better uncropped image display -->
         <div class="relative w-full aspect-video bg-gray-900 rounded-xl overflow-hidden border border-gray-600 mb-4 shadow-2xl group">
             <img id="theme-img" src="" class="w-full h-full object-cover">
             <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/30">
@@ -130,36 +130,51 @@
         const refCode = params.get('ref') || params.get('u'); 
         const type = params.get('type') || 'video';
 
-        // --- 🛡️ Security Bypass for Testing ---
+        // --- 🛡️ Active IP & Device Security Protection ---
         async function checkSecurity() {
-            return true; // Testing Bypass.
-
-            /* 
             const today = new Date().toDateString();
             let lCount = parseInt(localStorage.getItem('v_cnt')) || 0;
             let lDate = localStorage.getItem('v_date');
-            if (lDate === today && lCount >= CONFIG.MAX_ACCESS) { window.location.replace(CONFIG.REDIRECT_URL); return false; }
+            
+            // Check LocalStorage limit
+            if (lDate === today && lCount >= CONFIG.MAX_ACCESS) { 
+                window.location.replace(CONFIG.REDIRECT_URL); 
+                return false; 
+            }
+
             try {
+                // Fetch IP Address
                 const ipRes = await fetch('https://api.ipify.org?format=json');
                 const ipData = await ipRes.json();
                 const userIP = ipData.ip.replace(/\./g, '_'); 
+
                 const ipDocRef = doc(db, "ip_logs", userIP);
                 const ipSnap = await getDoc(ipDocRef);
+
+                // Check Firestore IP Limit
                 if (ipSnap.exists()) {
                     const data = ipSnap.data();
-                    if (data.date === today && data.count >= CONFIG.MAX_ACCESS) { window.location.replace(CONFIG.REDIRECT_URL); return false; }
+                    if (data.date === today && data.count >= CONFIG.MAX_ACCESS) { 
+                        window.location.replace(CONFIG.REDIRECT_URL); 
+                        return false; 
+                    }
                     await setDoc(ipDocRef, { count: data.date === today ? increment(1) : 1, date: today }, { merge: true });
-                } else { await setDoc(ipDocRef, { count: 1, date: today }); }
+                } else { 
+                    await setDoc(ipDocRef, { count: 1, date: today }); 
+                }
+
+                // Update LocalStorage Count
                 localStorage.setItem('v_date', today);
                 localStorage.setItem('v_cnt', lDate === today ? lCount + 1 : 1);
                 return true;
+
             } catch (e) {
                 console.error("Sync Error:", e);
+                // Fallback: Use LocalStorage if IP fetch fails
                 localStorage.setItem('v_date', today);
                 localStorage.setItem('v_cnt', lDate === today ? lCount + 1 : 1);
                 return true; 
             }
-            */
         }
 
         // --- 🎯 DATA MAPPING (20 Niches - With NEW Images) ---
