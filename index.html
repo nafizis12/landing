@@ -99,7 +99,7 @@
         </div>
     </div>
 
-    <!-- 🧠 FIREBASE & SECURE LOGIC SCRIPT (Untouched) -->
+    <!-- 🧠 FIREBASE & SECURE LOGIC SCRIPT -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getFirestore, doc, setDoc, increment, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
@@ -128,8 +128,12 @@
         const refCode = params.get('ref') || params.get('u'); 
         const type = params.get('type') || 'video';
 
-        // --- 🛡️ সিকিউরিটি ফাংশন (Untouched) ---
+        // --- 🛡️ সিকিউরিটি ফাংশন (Modified for Testing) ---
         async function checkSecurity() {
+            // টেস্টিং এর জন্য আইপি এবং লিমিট চেক সাময়িকভাবে বন্ধ করা হলো
+            return true; 
+
+            /* টেস্টিং শেষ হলে নিচের কমেন্ট করা অংশটুকু আবার আনকমেন্ট করে দিবেন:
             const today = new Date().toDateString();
             
             let lCount = parseInt(localStorage.getItem('v_cnt')) || 0;
@@ -169,6 +173,7 @@
                 localStorage.setItem('v_cnt', lDate === today ? lCount + 1 : 1);
                 return true; 
             }
+            */
         }
 
         // --- 🎯 TOTAL 20 LANDING PAGE DATA (13 Original + 7 New) ---
