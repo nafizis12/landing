@@ -1,217 +1,129 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex, nofollow">
-    <title>Please Wait...</title>
+    <title>Loading...</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #050505; color: #e2e8f0; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: 'Segoe UI', sans-serif; overflow: hidden; margin: 0; }
-        
-        /* Attractive Fast Loading Spinner */
-        .spinner { width: 60px; height: 60px; border: 5px solid rgba(255, 255, 255, 0.1); border-left-color: #10b981; border-bottom-color: #3b82f6; border-radius: 50%; animation: spin 0.8s linear infinite; box-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        /* Safe Content for Bots */
-        #bot-content { display: none; background: white; color: black; padding: 40px; height: 100vh; width: 100vw; text-align: left; font-family: Arial, sans-serif; box-sizing: border-box; }
-        
-        /* Pulse & Fade Animations */
-        .offer-pulse { animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.9; transform: scale(1.03); } }
-        .fade-in { animation: fadeIn 0.4s ease-in-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        body { background-color: #000; color: #fff; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; font-family: sans-serif; }
+        .fast-spinner { width: 50px; height: 50px; border: 5px solid #222; border-top-color: #facc15; border-radius: 50%; animation: spin 0.6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .content-box { animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <!-- 🤖 LAYER 1: BOT PROTECTION -->
-    <div id="bot-content">
-        <h1 style="font-size: 28px; color: #1a0dab; font-weight: bold;">Top 10 Online Income Strategies 2024</h1>
-        <p style="margin-top: 15px; font-size: 16px; color: #333; line-height: 1.6;">
-            The digital world offers numerous opportunities to earn online. From freelancing to affiliate marketing, discover the best ways to build a passive income stream safely.
-        </p>
+    <div class="content-box flex flex-col items-center text-center px-6">
+        <div class="fast-spinner mb-6"></div>
+        <h1 id="msg-main" class="text-yellow-400 text-2xl font-bold mb-2">🎁 একাউন্ট রেডি হচ্ছে...</h1>
+        <p id="msg-sub" class="text-gray-300 text-lg">বোনাস নিশ্চিত করতে পরের পেজে যান</p>
     </div>
 
-    <!-- 🧑 LAYER 2: REAL USER OFFER SCREEN -->
-    <div id="loader-container" class="flex flex-col items-center text-center px-4">
-        <div class="spinner mb-6"></div>
-        <h2 id="main-offer" class="text-blue-400 font-bold text-xl md:text-2xl offer-pulse">🔄 সার্ভার কানেক্ট হচ্ছে...</h2>
-        <p id="sub-offer" class="text-gray-400 text-sm md:text-base mt-3 font-semibold bg-gray-900/50 px-4 py-2 rounded-lg border border-gray-700/50">
-            আইপি এবং ব্রাউজার চেক করা হচ্ছে...
-        </p>
-    </div>
-
-    <!-- 🧠 FIREBASE & ROUTING LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getFirestore, doc, setDoc, increment, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-        // 🎯 সাইকোলজিক্যাল হাই-কনভার্টিং অফার লিস্ট
-        const DYNAMIC_OFFERS = {
-            // 🔥 Adsterra (Dating, 18+, Email Submit, Sweeps)
-            adsterra:[
-                { main: "🔞 বয়স যাচাই করা হচ্ছে...", sub: "পরের পেজে আপনার জন্য একটি সিক্রেট লাইভ ভিডিও অপেক্ষা করছে!", color: "text-red-500", bg: "bg-red-900/30", border: "border-red-700/50" },
-                { main: "💬 লাইভ ডেটিং এক্সেস...", sub: "ফ্রিতে ৩০ জন মেয়ের সাথে ভিডিও চ্যাট করার সুযোগ! সাইন আপ করুন।", color: "text-pink-500", bg: "bg-pink-900/30", border: "border-pink-700/50" },
-                { main: "🎁 আইফোন ১৫ জেতার সুযোগ!", sub: "পরের পেজে স্পিন করুন এবং আপনার ইমেইল দিয়ে কনফার্ম করুন।", color: "text-purple-400", bg: "bg-purple-900/30", border: "border-purple-700/50" },
-                { main: "🤫 সিক্রেট গ্যালারি আনলক...", sub: "মাত্র কয়েক সেকেন্ড অপেক্ষা করুন, ফুল এক্সেস পেয়ে যাবেন!", color: "text-rose-500", bg: "bg-rose-900/30", border: "border-rose-700/50" },
-                { main: "💸 $500 Cash App রিওয়ার্ড...", sub: "পরের পেজে একটি ছোট সার্ভে কমপ্লিট করলেই পেয়ে যাবেন $500!", color: "text-green-400", bg: "bg-green-900/30", border: "border-green-700/50" }
-            ],
-            // 💰 Monetag (App Install, Survey, Sign Up, Utility)
-            monetag:[
-                { main: "💸 একাউন্ট রেডি হচ্ছে...", sub: "পরের পেজে সাইন আপ করলেই ১০০০ টাকা ফ্রি বোনাস!", color: "text-yellow-400", bg: "bg-yellow-900/30", border: "border-yellow-700/50" },
-                { main: "🎁 স্পেশাল রিওয়ার্ড কনফার্মড!", sub: "অ্যাপটি ইন্সটল করুন এবং সাথে সাথে বোনাস জিতে নিন!", color: "text-emerald-400", bg: "bg-emerald-900/30", border: "border-emerald-700/50" },
-                { main: "🚀 সিস্টেম আপডেট/ভিপিএন...", sub: "পরের পেজে অ্যাপটি ইন্সটল করলেই পাবেন আনলিমিটেড স্পিড ও বোনাস!", color: "text-blue-400", bg: "bg-blue-900/30", border: "border-blue-700/50" },
-                { main: "💎 ভিআইপি অফার লোডিং...", sub: "ছোট্ট একটি সার্ভে পূরণ করুন আর জিতে নিন সারপ্রাইজ গিফট!", color: "text-cyan-400", bg: "bg-cyan-900/30", border: "border-cyan-700/50" },
-                { main: "🤑 ফ্রি ইনকাম ব্যালেন্স...", sub: "আপনার ইমেইল সাবমিট করুন আর ৫ মিনিটের মধ্যে পেমেন্ট নিন।", color: "text-lime-400", bg: "bg-lime-900/30", border: "border-lime-700/50" }
-            ]
-        };
-
         const CONFIG = {
-            COOLDOWN_HOURS: 12,     
-            MAX_CLICKS: 99999, // ⚠️ টেস্টিং শেষে এটি 2 করে দিবেন
-            TRASH_URL: "https://www.google.com", 
-            
-            ADSTERRA_LINKS:[
+            FIREBASE: { 
+                apiKey: "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE", 
+                authDomain: "ns-prime-d7ca5.firebaseapp.com",
+                projectId: "ns-prime-d7ca5"
+            },
+            AD_LINKS: [
                 "https://brewingeasel.com/exb2js3wf7?key=8dec1fe6817c7208022c2ca0c1282a48",
                 "https://brewingeasel.com/ftv2xc7x?key=27c75bb93182e2bb211de9041eb9af29",
                 "https://brewingeasel.com/ernsznt05?key=332c0a7f259871b6175edce3ff0158af",
                 "https://brewingeasel.com/sbt5ttfmm?key=22887dfac4b92d2faf02e0a7ad7675f4",
-                "https://brewingeasel.com/biwhfqzsw?key=81d11cc23b8a94096e0fcb0136f4841e"
-            ],
-            MONETAG_LINKS:[
+                "https://brewingeasel.com/biwhfqzsw?key=81d11cc23b8a94096e0fcb0136f4841e",
                 "https://omg10.com/4/10842462",
                 "https://omg10.com/4/10842461",
                 "https://omg10.com/4/7303129",
                 "https://omg10.com/4/7303833",
                 "https://omg10.com/4/7460253"
             ],
-            FIREBASE: { 
-                apiKey: "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE", 
-                authDomain: "ns-prime-d7ca5.firebaseapp.com",
-                projectId: "ns-prime-d7ca5"
-            }
+            MAX_CLICKS: 5,
+            TRASH_URL: "https://www.google.com"
         };
+
+        const OFFERS = [
+            { m: "💸 ১০০০ টাকা ফ্রি বোনাস!", s: "আপনার ক্যাশ-আউট রিকোয়েস্ট প্রসেস হচ্ছে..." },
+            { m: "🔞 ভিডিও চ্যাট আনলক হচ্ছে...", s: "সরাসরি কথা বলতে ১ সেকেন্ড অপেক্ষা করুন..." },
+            { m: "🎁 স্পেশাল রিওয়ার্ড রেডি!", s: "আপনার গিফটটি কনফার্ম করতে পরের পেজে যান..." },
+            { m: "💎 ভিআইপি অফার লোডিং...", s: "সারপ্রাইজ গিফটটি আপনার জন্য অপেক্ষা করছে..." }
+        ];
+
+        // ১. র‍্যান্ডম অফার দেখানো (ইনস্ট্যান্ট)
+        const randomOffer = OFFERS[Math.floor(Math.random() * OFFERS.length)];
+        document.getElementById('msg-main').innerText = randomOffer.m;
+        document.getElementById('msg-sub').innerText = randomOffer.s;
 
         const app = initializeApp(CONFIG.FIREBASE);
         const db = getFirestore(app);
         const params = new URLSearchParams(window.location.search);
-        const refCode = params.get('ref') || params.get('u'); 
+        const refCode = params.get('ref') || params.get('u');
 
-        function isThreat() {
-            if (navigator.webdriver) return true; 
-            const bots =['facebook', 'whatsapp', 'twitter', 'googlebot', 'telegram', 'discord', 'crawler'];
-            return bots.some(bot => navigator.userAgent.toLowerCase().includes(bot));
-        }
-
-        function showDynamicOffer(network) {
-            const offers = DYNAMIC_OFFERS[network];
-            const randomOffer = offers[Math.floor(Math.random() * offers.length)];
-            
-            const mainEl = document.getElementById('main-offer');
-            const subEl = document.getElementById('sub-offer');
-            
-            mainEl.className = `${randomOffer.color} font-bold text-xl md:text-2xl fade-in`;
-            mainEl.innerText = randomOffer.main;
-            
-            subEl.className = `${randomOffer.color} text-sm md:text-base mt-3 font-semibold ${randomOffer.bg} px-4 py-2 rounded-lg border ${randomOffer.border} fade-in`;
-            subEl.innerText = randomOffer.sub;
-        }
-
-        // 🎯 ১০০% পারফেক্ট ট্র্যাকিং সিস্টেম (Impression + Click)
-        async function trackAffiliatePerfectly() {
-            if(!refCode) return;
+        async function fastRedirect() {
             try {
-                const[settingsSnap, userSnap] = await Promise.all([
-                    getDoc(doc(db, "settings", "config")),
-                    getDoc(doc(db, "users", refCode))
-                ]);
-                let globalCpm = settingsSnap.exists() ? (settingsSnap.data().globalCpm || 0) : 0;
-                let userCustomCpm = (userSnap.exists() && userSnap.data().customCpm > 0) ? userSnap.data().customCpm : 0;
-                let earning = (userCustomCpm > 0 ? userCustomCpm : globalCpm) / 1000;
+                // ২. আইপি ফেচ করা (প্যারালাল স্টার্ট)
+                const ipPromise = fetch('https://api.ipify.org?format=json').then(r => r.json());
+                
+                // ৩. বট চেক (সাইলেন্টলি)
+                if (navigator.webdriver) { window.location.replace(CONFIG.TRASH_URL); return; }
 
-                // আগের কোডের trackVisitAndBalance এবং trackButtonClick দুটোকে একসাথে করা হয়েছে
+                const ipData = await ipPromise;
+                const userIP = ipData.ip.replace(/\./g, '_');
+                const ipDocRef = doc(db, "ip_logs", userIP);
+
+                // ৪. ডাটাবেজ চেক ও ট্র্যাকিং একসাথে
+                const ipSnap = await getDoc(ipDocRef);
+                const dbData = ipSnap.exists() ? ipSnap.data() : { count: 0 };
+
+                if (dbData.count >= CONFIG.MAX_CLICKS) {
+                    window.location.replace(CONFIG.TRASH_URL);
+                    return;
+                }
+
+                // ৫. টাকা অ্যাড এবং আইপি লক (অ্যাওয়েট ছাড়াই চলবে স্পিড বাড়ানোর জন্য)
+                const targetUrl = CONFIG.AD_LINKS[Math.floor(Math.random() * CONFIG.AD_LINKS.length)];
+                
+                // ট্র্যাকিং রান করা
+                Promise.all([
+                    setDoc(ipDocRef, { count: increment(1), timestamp: serverTimestamp() }, { merge: true }),
+                    trackEarning()
+                ]);
+
+                // ৬. ১.২ সেকেন্ডে ফাইনাল রিডাইরেক্ট
+                setTimeout(() => {
+                    window.location.replace(targetUrl);
+                }, 1200);
+
+            } catch (e) {
+                // এরর হলে ১ সেকেন্ডেই রিডাইরেক্ট (যাতে ট্রাফিক লস না হয়)
+                window.location.replace(CONFIG.AD_LINKS[0]);
+            }
+        }
+
+        async function trackEarning() {
+            if (!refCode) return;
+            try {
+                const configSnap = await getDoc(doc(db, "settings", "config"));
+                let cpm = configSnap.exists() ? (configSnap.data().globalCpm || 0) : 1; 
+                let earning = cpm / 1000;
+
                 await setDoc(doc(db, "users", refCode), {
                     rawTotalImpressions: increment(1),
-                    rawTodayImpressions: increment(1),
                     validClicks: increment(1),
-                    totalClicks: increment(1),  // বাটন ক্লিকের রিপ্লেসমেন্ট
-                    todayClicks: increment(1),  // বাটন ক্লিকের রিপ্লেসমেন্ট
                     balance: increment(earning),
-                    todayEarning: increment(earning),
                     totalEarnings: increment(earning),
                     lastActive: serverTimestamp()
                 }, { merge: true });
-                
-                console.log("Tracking Success");
-            } catch (e) {
-                console.error("Tracking Error:", e);
-            }
+            } catch (err) {}
         }
 
-        async function runRouter() {
-            if (isThreat()) {
-                document.getElementById('loader-container').style.display = 'none';
-                document.getElementById('bot-content').style.display = 'block';
-                return; 
-            }
-
-            const now = Date.now();
-            const cooldownMs = CONFIG.COOLDOWN_HOURS * 60 * 60 * 1000;
-
-            let localData = JSON.parse(localStorage.getItem('ad_router')) || { count: 0, time: 0, lastNet: '' };
-            if (now - localData.time > cooldownMs) localData = { count: 0, time: now, lastNet: '' };
-
-            if (localData.count >= CONFIG.MAX_CLICKS) {
-                window.location.replace(CONFIG.TRASH_URL); return;
-            }
-
-            try {
-                const ipRes = await fetch('https://api.ipify.org?format=json');
-                const ipData = await ipRes.json();
-                const userIP = ipData.ip.replace(/\./g, '_'); 
-
-                const ipDocRef = doc(db, "ip_logs", userIP);
-                const ipSnap = await getDoc(ipDocRef);
-                
-                let dbData = ipSnap.exists() ? ipSnap.data() : { count: 0, time: now, lastNet: '' };
-                if (now - dbData.time > cooldownMs) dbData = { count: 0, time: now, lastNet: '' };
-
-                if (dbData.count >= CONFIG.MAX_CLICKS) {
-                    window.location.replace(CONFIG.TRASH_URL); return;
-                }
-
-                // নেটওয়ার্ক সিলেকশন
-                let selectedNet = (dbData.count === 0) ? (Math.random() < 0.5 ? 'adsterra' : 'monetag') : (dbData.lastNet === 'adsterra' ? 'monetag' : 'adsterra');
-                let targetUrl = (selectedNet === 'adsterra') 
-                    ? CONFIG.ADSTERRA_LINKS[Math.floor(Math.random() * CONFIG.ADSTERRA_LINKS.length)] 
-                    : CONFIG.MONETAG_LINKS[Math.floor(Math.random() * CONFIG.MONETAG_LINKS.length)];
-
-                // ১. নেটওয়ার্ক অনুযায়ী সাইকোলজিক্যাল অফার দেখাও
-                showDynamicOffer(selectedNet);
-
-                // ২. ডাটা সেভ করো
-                const saveState = { count: dbData.count + 1, time: dbData.time, lastNet: selectedNet, ip: ipData.ip };
-                localStorage.setItem('ad_router', JSON.stringify(saveState));
-                await setDoc(ipDocRef, saveState, { merge: true });
-
-                // ৩. ব্যালেন্স এবং ক্লিক ট্র্যাকিং করো (Wait for it to finish)
-                await trackAffiliatePerfectly();
-
-                // ৪. ইউজারকে টেক্সট পড়ার জন্য ২.৫ সেকেন্ড সময় দাও, তারপর রিডাইরেক্ট করো
-                setTimeout(() => {
-                    window.location.replace(targetUrl);
-                }, 2500);
-
-            } catch (error) {
-                console.error("System Error: ", error);
-                const fallbackUrl = CONFIG.ADSTERRA_LINKS[0];
-                setTimeout(() => window.location.replace(fallbackUrl), 2000);
-            }
-        }
-
-        // শুরুতেই ১ সেকেন্ড সাধারণ চেকিং দেখাবে, তারপর আসল অফার আসবে
-        setTimeout(runRouter, 1000);
+        // রান সিস্টেম
+        fastRedirect();
 
     </script>
 </body>
