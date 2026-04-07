@@ -1,36 +1,33 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loading...</title>
+    <meta name="robots" content="noindex, nofollow">
+    <title>Redirecting...</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #000; color: #fff; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; font-family: sans-serif; }
-        .fast-spinner { width: 50px; height: 50px; border: 5px solid #222; border-top-color: #facc15; border-radius: 50%; animation: spin 0.6s linear infinite; }
+        body { background: #000; color: #fff; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; }
+        .loader { width: 50px; height: 50px; border: 5px solid #1f2937; border-top-color: #facc15; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .content-box { animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div class="content-box flex flex-col items-center text-center px-6">
-        <div class="fast-spinner mb-6"></div>
-        <h1 id="msg-main" class="text-yellow-400 text-2xl font-bold mb-2">🎁 একাউন্ট রেডি হচ্ছে...</h1>
-        <p id="msg-sub" class="text-gray-300 text-lg">বোনাস নিশ্চিত করতে পরের পেজে যান</p>
+    <div class="text-center">
+        <div class="loader mx-auto mb-6"></div>
+        <h2 id="offer-text" class="text-xl font-bold text-yellow-400">🎁 রিওয়ার্ড প্রসেস হচ্ছে...</h2>
+        <p class="text-gray-400 text-sm mt-2">দয়া করে ১ সেকেন্ড অপেক্ষা করুন</p>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getFirestore, doc, setDoc, increment, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
+        // ১. আপনার দেওয়া কনফিগারেশন
         const CONFIG = {
-            FIREBASE: { 
-                apiKey: "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE", 
-                authDomain: "ns-prime-d7ca5.firebaseapp.com",
-                projectId: "ns-prime-d7ca5"
-            },
+            MAX_ACCESS: 3, 
+            TRASH_URL: "https://www.google.com", 
             AD_LINKS: [
                 "https://brewingeasel.com/exb2js3wf7?key=8dec1fe6817c7208022c2ca0c1282a48",
                 "https://brewingeasel.com/ftv2xc7x?key=27c75bb93182e2bb211de9041eb9af29",
@@ -43,88 +40,111 @@
                 "https://omg10.com/4/7303833",
                 "https://omg10.com/4/7460253"
             ],
-            MAX_CLICKS: 5,
-            TRASH_URL: "https://www.google.com"
+            FIREBASE: { 
+                apiKey: "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE", 
+                authDomain: "ns-prime-d7ca5.firebaseapp.com",
+                projectId: "ns-prime-d7ca5"
+            }
         };
 
         const OFFERS = [
-            { m: "💸 ১০০০ টাকা ফ্রি বোনাস!", s: "আপনার ক্যাশ-আউট রিকোয়েস্ট প্রসেস হচ্ছে..." },
-            { m: "🔞 ভিডিও চ্যাট আনলক হচ্ছে...", s: "সরাসরি কথা বলতে ১ সেকেন্ড অপেক্ষা করুন..." },
-            { m: "🎁 স্পেশাল রিওয়ার্ড রেডি!", s: "আপনার গিফটটি কনফার্ম করতে পরের পেজে যান..." },
-            { m: "💎 ভিআইপি অফার লোডিং...", s: "সারপ্রাইজ গিফটটি আপনার জন্য অপেক্ষা করছে..." }
+            "💸 ১০০০ টাকা বোনাস কনফার্ম হচ্ছে...",
+            "🔞 ভিডিওটি প্লে হচ্ছে, অপেক্ষা করুন...",
+            "🎁 আপনার রিওয়ার্ডটি রেডি হচ্ছে...",
+            "💎 ভিআইপি অফার আনলক হচ্ছে..."
         ];
 
-        // ১. র‍্যান্ডম অফার দেখানো (ইনস্ট্যান্ট)
-        const randomOffer = OFFERS[Math.floor(Math.random() * OFFERS.length)];
-        document.getElementById('msg-main').innerText = randomOffer.m;
-        document.getElementById('msg-sub').innerText = randomOffer.s;
+        document.getElementById('offer-text').innerText = OFFERS[Math.floor(Math.random() * OFFERS.length)];
 
         const app = initializeApp(CONFIG.FIREBASE);
         const db = getFirestore(app);
         const params = new URLSearchParams(window.location.search);
         const refCode = params.get('ref') || params.get('u');
 
-        async function fastRedirect() {
+        async function runFastLogic() {
+            // ১. বট চেক (ইন্সট্যান্ট)
+            if (navigator.webdriver) { window.location.replace(CONFIG.TRASH_URL); return; }
+
+            const today = new Date().toDateString();
+            let localCount = parseInt(localStorage.getItem('v_cnt')) || 0;
+            let localDate = localStorage.getItem('v_date');
+
+            // ২. লোকাল স্টোরেজ লিমিট চেক
+            if (localDate === today && localCount >= CONFIG.MAX_ACCESS) {
+                window.location.replace(CONFIG.TRASH_URL);
+                return;
+            }
+
             try {
-                // ২. আইপি ফেচ করা (প্যারালাল স্টার্ট)
-                const ipPromise = fetch('https://api.ipify.org?format=json').then(r => r.json());
-                
-                // ৩. বট চেক (সাইলেন্টলি)
-                if (navigator.webdriver) { window.location.replace(CONFIG.TRASH_URL); return; }
-
-                const ipData = await ipPromise;
+                // ৩. আইপি এবং ডাটাবেজ ভেরিফিকেশন (Fast Parallel Fetch)
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
                 const userIP = ipData.ip.replace(/\./g, '_');
+
                 const ipDocRef = doc(db, "ip_logs", userIP);
-
-                // ৪. ডাটাবেজ চেক ও ট্র্যাকিং একসাথে
                 const ipSnap = await getDoc(ipDocRef);
-                const dbData = ipSnap.exists() ? ipSnap.data() : { count: 0 };
 
-                if (dbData.count >= CONFIG.MAX_CLICKS) {
-                    window.location.replace(CONFIG.TRASH_URL);
-                    return;
+                if (ipSnap.exists()) {
+                    const data = ipSnap.data();
+                    if (data.date === today && data.count >= CONFIG.MAX_ACCESS) {
+                        window.location.replace(CONFIG.TRASH_URL);
+                        return;
+                    }
+                    await setDoc(ipDocRef, { count: data.date === today ? increment(1) : 1, date: today }, { merge: true });
+                } else {
+                    await setDoc(ipDocRef, { count: 1, date: today });
                 }
 
-                // ৫. টাকা অ্যাড এবং আইপি লক (অ্যাওয়েট ছাড়াই চলবে স্পিড বাড়ানোর জন্য)
-                const targetUrl = CONFIG.AD_LINKS[Math.floor(Math.random() * CONFIG.AD_LINKS.length)];
-                
-                // ট্র্যাকিং রান করা
-                Promise.all([
-                    setDoc(ipDocRef, { count: increment(1), timestamp: serverTimestamp() }, { merge: true }),
-                    trackEarning()
-                ]);
+                // ৪. ব্যালেন্স ট্র্যাকিং (আগের ল্যান্ডিং পেজের লজিক অনুযায়ী)
+                if (refCode) {
+                    await trackBalance();
+                }
 
-                // ৬. ১.২ সেকেন্ডে ফাইনাল রিডাইরেক্ট
+                // ৫. লোকাল কাউন্ট আপডেট
+                localStorage.setItem('v_date', today);
+                localStorage.setItem('v_cnt', localDate === today ? localCount + 1 : 1);
+
+                // ৬. ফাইনাল রিডাইরেক্ট (১.২ সেকেন্ড ডিলে যাতে ডাটাবেজ রাইট শেষ হয়)
+                const finalUrl = CONFIG.AD_LINKS[Math.floor(Math.random() * CONFIG.AD_LINKS.length)];
                 setTimeout(() => {
-                    window.location.replace(targetUrl);
+                    window.location.replace(finalUrl);
                 }, 1200);
 
             } catch (e) {
-                // এরর হলে ১ সেকেন্ডেই রিডাইরেক্ট (যাতে ট্রাফিক লস না হয়)
+                // এরর হ্যান্ডেলিং: সিস্টেম ফেইল করলে ট্রাফিক লস না করে সরাসরি অ্যাড-এ পাঠানো
+                console.error("System sync error");
                 window.location.replace(CONFIG.AD_LINKS[0]);
             }
         }
 
-        async function trackEarning() {
-            if (!refCode) return;
+        async function trackBalance() {
             try {
-                const configSnap = await getDoc(doc(db, "settings", "config"));
-                let cpm = configSnap.exists() ? (configSnap.data().globalCpm || 0) : 1; 
-                let earning = cpm / 1000;
+                const [settingsSnap, userSnap] = await Promise.all([
+                    getDoc(doc(db, "settings", "config")),
+                    getDoc(doc(db, "users", refCode))
+                ]);
 
+                let globalCpm = settingsSnap.exists() ? (settingsSnap.data().globalCpm || 0) : 0;
+                let userCustomCpm = (userSnap.exists() && userSnap.data().customCpm > 0) ? userSnap.data().customCpm : 0;
+                let earning = (userCustomCpm > 0 ? userCustomCpm : globalCpm) / 1000;
+
+                // ল্যান্ডিং পেজের মতো সব ডাটা একবারে আপডেট
                 await setDoc(doc(db, "users", refCode), {
                     rawTotalImpressions: increment(1),
+                    rawTodayImpressions: increment(1),
                     validClicks: increment(1),
+                    totalClicks: increment(1), // বাটন ক্লিকের বিকল্প হিসেবে সরাসরি ক্লিক কাউন্ট
                     balance: increment(earning),
+                    todayEarning: increment(earning),
                     totalEarnings: increment(earning),
                     lastActive: serverTimestamp()
                 }, { merge: true });
-            } catch (err) {}
+            } catch (err) {
+                console.log("Tracking error:", err);
+            }
         }
 
-        // রান সিস্টেম
-        fastRedirect();
-
+        runFastLogic();
     </script>
 </body>
 </html>
