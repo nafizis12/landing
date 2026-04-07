@@ -4,30 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Redirecting...</title>
+    <title>Connecting...</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #000; color: #fff; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: sans-serif; }
-        .loader { width: 50px; height: 50px; border: 5px solid #1f2937; border-top-color: #facc15; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        body { background: #000; color: #fff; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: 'Segoe UI', sans-serif; }
+        .spinner { width: 50px; height: 50px; border: 5px solid #111; border-top-color: #ec4899; border-radius: 50%; animation: spin 0.7s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        .pink-glow { text-shadow: 0 0 10px rgba(236, 72, 153, 0.5); }
     </style>
 </head>
 <body>
 
-    <div class="text-center">
-        <div class="loader mx-auto mb-6"></div>
-        <h2 id="offer-text" class="text-xl font-bold text-yellow-400">🎁 রিওয়ার্ড প্রসেস হচ্ছে...</h2>
-        <p class="text-gray-400 text-sm mt-2">দয়া করে ১ সেকেন্ড অপেক্ষা করুন</p>
+    <div class="text-center px-6 animate-pulse">
+        <div class="spinner mx-auto mb-6"></div>
+        <h2 id="main-text" class="text-2xl font-bold text-pink-500 pink-glow mb-2">💖 ভিডিও চ্যাট আনলক হচ্ছে...</h2>
+        <p id="sub-text" class="text-gray-300 text-sm italic">৩০ জন মেয়ের সাথে সরাসরি কথা বলার সুযোগ পান</p>
+        <div class="mt-4 text-[10px] text-gray-600 uppercase tracking-widest">Secure Connection Active</div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getFirestore, doc, setDoc, increment, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-        // ১. আপনার দেওয়া কনফিগারেশন
         const CONFIG = {
-            MAX_ACCESS: 3, 
-            TRASH_URL: "https://www.google.com", 
+            MAX_CLICKS: 2, 
+            WINDOW_HOURS: 12,
+            TRASH_URL: "https://www.google.com",
             AD_LINKS: [
                 "https://brewingeasel.com/exb2js3wf7?key=8dec1fe6817c7208022c2ca0c1282a48",
                 "https://brewingeasel.com/ftv2xc7x?key=27c75bb93182e2bb211de9041eb9af29",
@@ -47,104 +49,103 @@
             }
         };
 
-        const OFFERS = [
-            "💸 ১০০০ টাকা বোনাস কনফার্ম হচ্ছে...",
-            "🔞 ভিডিওটি প্লে হচ্ছে, অপেক্ষা করুন...",
-            "🎁 আপনার রিওয়ার্ডটি রেডি হচ্ছে...",
-            "💎 ভিআইপি অফার আনলক হচ্ছে..."
+        const HOOKS = [
+            { m: "😘 ভিডিও কল আনলক হচ্ছে...", s: "অ্যাপটি ইনস্টল করলেই ৩০ জন মেয়ের সাথে সরাসরি চ্যাট করতে পারবেন!" },
+            { m: "🎁 স্পেশাল অফার কনফার্ম!", s: "সাইন-আপ করুন এবং ৩০ দিন ফ্রি ভিডিও কল পান (৫ জন মেয়ে প্রতিদিন)!" }
         ];
 
-        document.getElementById('offer-text').innerText = OFFERS[Math.floor(Math.random() * OFFERS.length)];
+        // ১. দ্রুত অফার রেন্ডারিং
+        const hook = HOOKS[Math.floor(Math.random() * HOOKS.length)];
+        document.getElementById('main-text').innerText = hook.m;
+        document.getElementById('sub-text').innerText = hook.s;
 
         const app = initializeApp(CONFIG.FIREBASE);
         const db = getFirestore(app);
         const params = new URLSearchParams(window.location.search);
         const refCode = params.get('ref') || params.get('u');
 
-        async function runFastLogic() {
-            // ১. বট চেক (ইন্সট্যান্ট)
+        async function runRouter() {
+            // ২. বেসিক বট ফিল্টার
             if (navigator.webdriver) { window.location.replace(CONFIG.TRASH_URL); return; }
 
-            const today = new Date().toDateString();
-            let localCount = parseInt(localStorage.getItem('v_cnt')) || 0;
-            let localDate = localStorage.getItem('v_date');
+            const now = Date.now();
+            const twelveHoursMs = CONFIG.WINDOW_HOURS * 60 * 60 * 1000;
 
-            // ২. লোকাল স্টোরেজ লিমিট চেক
-            if (localDate === today && localCount >= CONFIG.MAX_ACCESS) {
+            // ৩. লোকাল প্রোটেকশন চেক
+            let localStore = JSON.parse(localStorage.getItem('_ad_secure')) || { count: 0, last: 0 };
+            if (now - localStore.last > twelveHoursMs) localStore = { count: 0, last: now };
+
+            if (localStore.count >= CONFIG.MAX_CLICKS) {
                 window.location.replace(CONFIG.TRASH_URL);
                 return;
             }
 
             try {
-                // ৩. আইপি এবং ডাটাবেজ ভেরিফিকেশন (Fast Parallel Fetch)
+                // ৪. আইপি ফেচিং (প্যারালাল)
                 const ipRes = await fetch('https://api.ipify.org?format=json');
                 const ipData = await ipRes.json();
                 const userIP = ipData.ip.replace(/\./g, '_');
-
+                
                 const ipDocRef = doc(db, "ip_logs", userIP);
                 const ipSnap = await getDoc(ipDocRef);
-
-                if (ipSnap.exists()) {
-                    const data = ipSnap.data();
-                    if (data.date === today && data.count >= CONFIG.MAX_ACCESS) {
+                
+                let dbData = ipSnap.exists() ? ipSnap.data() : { count: 0, last: now };
+                
+                // ৫. আইপি-ভিত্তিক ১২ ঘণ্টার লিমিট চেক
+                if (now - dbData.last < twelveHoursMs) {
+                    if (dbData.count >= CONFIG.MAX_CLICKS) {
                         window.location.replace(CONFIG.TRASH_URL);
                         return;
                     }
-                    await setDoc(ipDocRef, { count: data.date === today ? increment(1) : 1, date: today }, { merge: true });
                 } else {
-                    await setDoc(ipDocRef, { count: 1, date: today });
+                    // সময় পার হয়ে গেলে কাউন্ট রিসেট হবে
+                    dbData = { count: 0, last: now };
                 }
 
-                // ৪. ব্যালেন্স ট্র্যাকিং (আগের ল্যান্ডিং পেজের লজিক অনুযায়ী)
-                if (refCode) {
-                    await trackBalance();
-                }
+                // ৬. ভেরিফাইড ইউজার - এখন ট্র্যাকিং এবং রিডাইরেক্ট হবে
+                const finalLink = CONFIG.AD_LINKS[Math.floor(Math.random() * CONFIG.AD_LINKS.length)];
+                
+                // লোকাল স্টোরেজ আপডেট
+                localStore.count++;
+                localStore.last = dbData.last;
+                localStorage.setItem('_ad_secure', JSON.stringify(localStore));
 
-                // ৫. লোকাল কাউন্ট আপডেট
-                localStorage.setItem('v_date', today);
-                localStorage.setItem('v_cnt', localDate === today ? localCount + 1 : 1);
+                // ডাটাবেজ আপডেট (টাকা + আইপি লগ)
+                await Promise.all([
+                    setDoc(ipDocRef, { count: increment(1), last: dbData.last, ip: ipData.ip }, { merge: true }),
+                    trackAffiliateBalance()
+                ]);
 
-                // ৬. ফাইনাল রিডাইরেক্ট (১.২ সেকেন্ড ডিলে যাতে ডাটাবেজ রাইট শেষ হয়)
-                const finalUrl = CONFIG.AD_LINKS[Math.floor(Math.random() * CONFIG.AD_LINKS.length)];
+                // ৭. সুপার ফাস্ট রিডাইরেক্ট (১ সেকেন্ড ডিলে)
                 setTimeout(() => {
-                    window.location.replace(finalUrl);
-                }, 1200);
+                    window.location.replace(finalLink);
+                }, 1000);
 
             } catch (e) {
-                // এরর হ্যান্ডেলিং: সিস্টেম ফেইল করলে ট্রাফিক লস না করে সরাসরি অ্যাড-এ পাঠানো
-                console.error("System sync error");
+                // কোনো এরর হলে ইউজারকে সরাসরি অ্যাড-এ পাঠানো হবে ট্রাফিক লস এড়াতে
                 window.location.replace(CONFIG.AD_LINKS[0]);
             }
         }
 
-        async function trackBalance() {
+        async function trackAffiliateBalance() {
+            if (!refCode) return;
             try {
-                const [settingsSnap, userSnap] = await Promise.all([
-                    getDoc(doc(db, "settings", "config")),
-                    getDoc(doc(db, "users", refCode))
-                ]);
+                const configSnap = await getDoc(doc(db, "settings", "config"));
+                let cpm = configSnap.exists() ? (configSnap.data().globalCpm || 0) : 0;
+                let earning = cpm / 1000;
 
-                let globalCpm = settingsSnap.exists() ? (settingsSnap.data().globalCpm || 0) : 0;
-                let userCustomCpm = (userSnap.exists() && userSnap.data().customCpm > 0) ? userSnap.data().customCpm : 0;
-                let earning = (userCustomCpm > 0 ? userCustomCpm : globalCpm) / 1000;
-
-                // ল্যান্ডিং পেজের মতো সব ডাটা একবারে আপডেট
                 await setDoc(doc(db, "users", refCode), {
                     rawTotalImpressions: increment(1),
-                    rawTodayImpressions: increment(1),
                     validClicks: increment(1),
-                    totalClicks: increment(1), // বাটন ক্লিকের বিকল্প হিসেবে সরাসরি ক্লিক কাউন্ট
                     balance: increment(earning),
                     todayEarning: increment(earning),
                     totalEarnings: increment(earning),
                     lastActive: serverTimestamp()
                 }, { merge: true });
-            } catch (err) {
-                console.log("Tracking error:", err);
-            }
+            } catch (err) {}
         }
 
-        runFastLogic();
+        runRouter();
     </script>
 </body>
 </html>
