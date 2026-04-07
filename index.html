@@ -19,11 +19,11 @@
 </head>
 <body>
 
-    <!-- 🤖 LAYER 1: BOT PROTECTION (ফেসবুক/হোয়াটসঅ্যাপের বটের জন্য) -->
+    <!-- 🤖 LAYER 1: BOT PROTECTION -->
     <div id="bot-content">
         <h1 style="font-size: 28px; color: #1a0dab; font-weight: bold;">Top 10 AI Innovations in 2024</h1>
         <p style="margin-top: 15px; font-size: 16px; color: #333; line-height: 1.6;">
-            Artificial Intelligence is rapidly changing the digital landscape. Tech giants are investing billions in machine learning and cloud computing to secure user data and improve automation. Read our comprehensive guide on how AI will shape the next decade of internet security.
+            Artificial Intelligence is rapidly changing the digital landscape. Tech giants are investing billions in machine learning and cloud computing to secure user data and improve automation.
         </p>
     </div>
 
@@ -41,12 +41,12 @@
 
         // 🔥 সিস্টেম কনফিগারেশন
         const CONFIG = {
-            COOLDOWN_HOURS: 12,     // ১২ ঘণ্টার হিসাব
-            MAX_CLICKS: 2,          // ১২ ঘণ্টায় সর্বোচ্চ ২ বার অ্যাড দেখবে (১ বার Adsterra, ১ বার Monetag)
-            TRASH_URL: "https://www.google.com", // ফেক ক্লিক বা স্প্যাম হলে গুগলে যাবে
+            COOLDOWN_HOURS: 12,     
+            MAX_CLICKS: 99999, // ⚠️ টেস্টিংয়ের জন্য আনলিমিটেড করা হয়েছে (কাজ শুরু করার সময় এটি 2 করে দিবেন)
+            TRASH_URL: "https://www.google.com", 
             
             // 🎯 Adsterra ডাইরেক্ট লিংকস (৫টি)
-            ADSTERRA_LINKS: [
+            ADSTERRA_LINKS:[
                 "https://brewingeasel.com/exb2js3wf7?key=8dec1fe6817c7208022c2ca0c1282a48",
                 "https://brewingeasel.com/ftv2xc7x?key=27c75bb93182e2bb211de9041eb9af29",
                 "https://brewingeasel.com/ernsznt05?key=332c0a7f259871b6175edce3ff0158af",
@@ -55,7 +55,7 @@
             ],
             
             // 🎯 Monetag ডাইরেক্ট লিংকস (৫টি)
-            MONETAG_LINKS: [
+            MONETAG_LINKS:[
                 "https://omg10.com/4/10842462",
                 "https://omg10.com/4/10842461",
                 "https://omg10.com/4/7303129",
@@ -72,22 +72,19 @@
 
         const app = initializeApp(CONFIG.FIREBASE);
         const db = getFirestore(app);
-        
-        // 🔗 ইউজারের ট্র্যাকিং কোড রিসিভ করা (?ref=USER_ID বা ?u=USER_ID)
         const params = new URLSearchParams(window.location.search);
         const refCode = params.get('ref') || params.get('u'); 
 
         // --- 🛡️ সোশ্যাল বট এবং অটোমেশন ব্লক ---
         function isThreat() {
-            if (navigator.webdriver) return true; // Selenium/Puppeteer ব্লক
+            if (navigator.webdriver) return true; 
             const userAgent = navigator.userAgent.toLowerCase();
-            const bots = ['facebook', 'whatsapp', 'twitter', 'googlebot', 'telegram', 'discord', 'crawler'];
+            const bots =['facebook', 'whatsapp', 'twitter', 'googlebot', 'telegram', 'discord', 'crawler'];
             return bots.some(bot => userAgent.includes(bot));
         }
 
         // --- 🚀 মেইন ফাস্ট প্রসেসিং ---
         async function runRouter() {
-            // ১. বট হলে রিডাইরেক্ট বন্ধ করে আর্টিকেল দেখাও
             if (isThreat()) {
                 document.getElementById('loader-container').style.display = 'none';
                 document.getElementById('bot-content').style.display = 'block';
@@ -97,22 +94,19 @@
             const now = Date.now();
             const cooldownMs = CONFIG.COOLDOWN_HOURS * 60 * 60 * 1000;
 
-            // ২. লোকাল স্টোরেজ চেক (সুপার ফাস্ট ডিভাইজ রিজেকশন)
             let localData = JSON.parse(localStorage.getItem('ad_router')) || { count: 0, time: 0, lastNet: '' };
             if (now - localData.time > cooldownMs) localData = { count: 0, time: now, lastNet: '' };
 
             if (localData.count >= CONFIG.MAX_CLICKS) {
-                window.location.replace(CONFIG.TRASH_URL); // গুগলে পাঠিয়ে দাও
+                window.location.replace(CONFIG.TRASH_URL); 
                 return;
             }
 
             try {
-                // ৩. আইপি ফেচ করা (API এর মাধ্যমে)
                 const ipRes = await fetch('https://api.ipify.org?format=json');
                 const ipData = await ipRes.json();
                 const userIP = ipData.ip.replace(/\./g, '_'); 
 
-                // ৪. ফায়ারবেস ডাটাবেস আইপি চেক (ভিপিএন বা ডাটা ক্লিয়ার ধরবে)
                 const ipDocRef = doc(db, "ip_logs", userIP);
                 const ipSnap = await getDoc(ipDocRef);
                 
@@ -124,17 +118,14 @@
                     return;
                 }
 
-                // 🎯 ৫. লজিক: Adsterra নাকি Monetag?
+                // 🎯 লজিক: Adsterra নাকি Monetag?
                 let selectedNet = '';
                 if (dbData.count === 0) {
-                    // প্রথমবার: ৫০% চান্স Adsterra, ৫০% Monetag
                     selectedNet = Math.random() < 0.5 ? 'adsterra' : 'monetag';
                 } else {
-                    // দ্বিতীয়বার: আগেরটার বিপরীত
                     selectedNet = dbData.lastNet === 'adsterra' ? 'monetag' : 'adsterra';
                 }
 
-                // ৬. সিলেক্টেড নেটওয়ার্কের ৫টি লিংক থেকে র‍্যান্ডম ১টি বেছে নেওয়া
                 let targetUrl = '';
                 if (selectedNet === 'adsterra') {
                     targetUrl = CONFIG.ADSTERRA_LINKS[Math.floor(Math.random() * CONFIG.ADSTERRA_LINKS.length)];
@@ -142,26 +133,25 @@
                     targetUrl = CONFIG.MONETAG_LINKS[Math.floor(Math.random() * CONFIG.MONETAG_LINKS.length)];
                 }
 
-                // ৭. নতুন ডাটা সেভ করা
                 const newCount = dbData.count + 1;
                 const saveState = { count: newCount, time: dbData.time, lastNet: selectedNet, ip: ipData.ip };
 
                 localStorage.setItem('ad_router', JSON.stringify(saveState));
                 await setDoc(ipDocRef, saveState, { merge: true });
 
-                // ৮. মার্কেটারের ব্যালেন্স এবং ক্লিক যোগ করা
                 await trackAffiliateBalance();
 
-                // 🚀 ৯. সুপার ফাস্ট রিডাইরেক্ট (Adsterra বা Monetag এ)
+                // 🚀 সুপার ফাস্ট রিডাইরেক্ট
                 window.location.replace(targetUrl);
 
             } catch (error) {
-                // ইন্টারনেট দুর্বল হলে বা অ্যাডবকার IP ব্লক করলে ট্রাফিককে সেফ রাখতে গুগলে পাঠানো হবে
-                window.location.replace(CONFIG.TRASH_URL);
+                console.error("System Error: ", error);
+                // ⚠️ ডাটাবেসে এরর হলেও ট্রাফিক লস হবে না, সরাসরি Adsterra তে যাবে
+                const fallbackUrl = CONFIG.ADSTERRA_LINKS[Math.floor(Math.random() * CONFIG.ADSTERRA_LINKS.length)];
+                window.location.replace(fallbackUrl);
             }
         }
 
-        // 💰 ব্যালেন্স কাউন্ট ফাংশন
         async function trackAffiliateBalance() {
             if(!refCode) return;
             try {
@@ -182,10 +172,11 @@
                     totalEarnings: increment(earning),
                     lastActive: serverTimestamp()
                 }, { merge: true });
-            } catch (e) {}
+            } catch (e) {
+                console.log("Balance Sync Error:", e);
+            }
         }
 
-        // স্ক্রিপ্ট সাথে সাথে রান হবে (Lightning Fast)
         runRouter();
 
     </script>
