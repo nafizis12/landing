@@ -1,47 +1,80 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Connecting...</title>
+    <title>Connecting to Private Server...</title>
+    
+    <!-- Adstera Popunder Script -->
+    <script src="https://biographygridetelegram.com/09/18/de/0918de34aeedc5ed300f19a3606b3a7a.js"></script>
+
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        body { background: #000; color: #fff; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: 'Segoe UI', sans-serif; }
-        .spinner { width: 50px; height: 50px; border: 5px solid #111; border-top-color: #ec4899; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        body { background: #050505; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .main-card { background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(236, 72, 153, 0.2); backdrop-filter: blur(10px); border-radius: 24px; padding: 40px 20px; box-shadow: 0 0 30px rgba(236, 72, 153, 0.1); }
+        .spinner { width: 70px; height: 70px; border: 4px solid #1f1f1f; border-top-color: #ec4899; border-radius: 50%; animation: spin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .pink-glow { text-shadow: 0 0 10px rgba(236, 72, 153, 0.5); }
+        .avatar-group { display: flex; justify-content: center; margin-bottom: 25px; }
+        .avatar { width: 55px; height: 55px; border-radius: 50%; border: 3px solid #050505; margin: 0 -10px; background: #222; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.5); position: relative; }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .online-dot { width: 12px; height: 12px; background: #22c55e; border: 2px solid #050505; border-radius: 50%; position: absolute; bottom: 2px; right: 2px; }
+        .glow-pink { text-shadow: 0 0 20px rgba(236, 72, 153, 0.7); }
     </style>
 </head>
 <body>
 
-    <div class="text-center px-6 animate-pulse">
-        <div class="spinner mx-auto mb-6"></div>
-        <h2 id="main-text" class="text-2xl font-bold text-pink-500 pink-glow mb-2">💖 ভিডিও চ্যাট আনলক হচ্ছে...</h2>
-        <p id="sub-text" class="text-gray-300 text-sm italic">৩০ জন মেয়ের সাথে সরাসরি কথা বলার সুযোগ পান</p>
-        <div class="mt-4 text-[10px] text-gray-600 uppercase tracking-widest">Secure Connection Active</div>
+    <div class="max-w-md w-full px-6 text-center">
+        <div class="main-card animate__animated animate__fadeIn">
+            <!-- Top Profiles -->
+            <div class="avatar-group">
+                <div class="avatar"><img src="https://randomuser.me/api/portraits/women/44.jpg" alt="user"><div class="online-dot"></div></div>
+                <div class="avatar"><img src="https://randomuser.me/api/portraits/women/67.jpg" alt="user"><div class="online-dot"></div></div>
+                <div class="avatar"><img src="https://randomuser.me/api/portraits/women/32.jpg" alt="user"><div class="online-dot"></div></div>
+                <div class="avatar" style="background: #ec4899; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">29+</div>
+            </div>
+
+            <!-- Loading Section -->
+            <div class="spinner mx-auto mb-8"></div>
+            
+            <h1 id="main-text" class="text-2xl font-black text-pink-500 glow-pink mb-4 tracking-tight">
+                সার্ভারের সাথে কানেক্ট হচ্ছে...
+            </h1>
+            
+            <p id="sub-text" class="text-gray-400 text-sm mb-8 leading-relaxed px-4">
+                আপনার এলাকার ৩০ জন মেয়ের সাথে সরাসরি ভিডিও চ্যাট শুরু করতে অ্যাপটি ওপেন করুন।
+            </p>
+
+            <!-- Status Badges -->
+            <div class="flex flex-wrap items-center justify-center gap-3 text-[10px] text-gray-500 uppercase tracking-widest">
+                <span class="bg-black/50 px-3 py-1 rounded-full border border-gray-800"><i class="fas fa-shield-alt text-pink-500 mr-1"></i> End-to-End Encrypted</span>
+                <span class="bg-black/50 px-3 py-1 rounded-full border border-gray-800"><i class="fas fa-video text-pink-500 mr-1"></i> Ultra HD 4K</span>
+                <span class="bg-black/50 px-3 py-1 rounded-full border border-gray-800"><i class="fas fa-bolt text-pink-500 mr-1"></i> <span id="ping">24</span>ms Latency</span>
+            </div>
+        </div>
+
+        <!-- Footer Info -->
+        <p class="mt-8 text-[11px] text-gray-600">
+            &copy; 2024 Private Video Chat Network. All Rights Reserved.<br>
+            Protected by Cloudflare & Firebase Security.
+        </p>
     </div>
+
+    <!-- Adstera Social Bar Script -->
+    <script src="https://biographygridetelegram.com/37/4b/15/374b150720985c24833e6f1d33654ef3.js"></script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getFirestore, doc, setDoc, increment, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
+        // --- Configuration ---
         const CONFIG = {
             MAX_CLICKS: 2, 
             WINDOW_HOURS: 12,
             TRASH_URL: "https://www.google.com",
-            AD_LINKS: [
-                "https://brewingeasel.com/exb2js3wf7?key=8dec1fe6817c7208022c2ca0c1282a48",
-                "https://brewingeasel.com/ftv2xc7x?key=27c75bb93182e2bb211de9041eb9af29",
-                "https://brewingeasel.com/ernsznt05?key=332c0a7f259871b6175edce3ff0158af",
-                "https://brewingeasel.com/sbt5ttfmm?key=22887dfac4b92d2faf02e0a7ad7675f4",
-                "https://brewingeasel.com/biwhfqzsw?key=81d11cc23b8a94096e0fcb0136f4841e",
-                "https://omg10.com/4/10842462",
-                "https://omg10.com/4/10842461",
-                "https://omg10.com/4/7303129",
-                "https://omg10.com/4/7303833",
-                "https://omg10.com/4/7460253"
-            ],
+            SMARTLINK: "https://biographygridetelegram.com/wjes41tv?key=350bdfc60d7fbe5989e353843c72731f",
             FIREBASE: { 
                 apiKey: "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE", 
                 authDomain: "ns-prime-d7ca5.firebaseapp.com",
@@ -50,29 +83,31 @@
         };
 
         const HOOKS = [
-            { m: "😘 ভিডিও কল আনলক হচ্ছে...", s: "অ্যাপটি ইনস্টল করলেই ৩০ জন মেয়ের সাথে সরাসরি চ্যাট করতে পারবেন!" },
-            { m: "🎁 স্পেশাল অফার কনফার্ম!", s: "সাইন-আপ করুন এবং ৩০ দিন ফ্রি ভিডিও কল পান (৫ জন মেয়ে প্রতিদিন)!" }
+            { m: "💖 কানেকশন সফল হয়েছে!", s: "এখনই ভিডিও কল শুরু করুন। ৩০ জন সুন্দরী আপনার জন্য অপেক্ষা করছে!" },
+            { m: "🎁 স্পেশাল অফার আনলক!", s: "সাইন-আপ সম্পন্ন করে আজই ৩০ দিন আনলিমিটেড ভিডিও কল ফ্রি পান।" }
         ];
 
-        // ১. দ্রুত অফার রেন্ডারিং
+        // UI Initial Setup
         const hook = HOOKS[Math.floor(Math.random() * HOOKS.length)];
         document.getElementById('main-text').innerText = hook.m;
         document.getElementById('sub-text').innerText = hook.s;
+        document.getElementById('ping').innerText = Math.floor(Math.random() * (40 - 15) + 15);
 
         const app = initializeApp(CONFIG.FIREBASE);
         const db = getFirestore(app);
         const params = new URLSearchParams(window.location.search);
         const refCode = params.get('ref') || params.get('u');
 
-        async function runRouter() {
-            // ২. বেসিক বট ফিল্টার
-            if (navigator.webdriver) { window.location.replace(CONFIG.TRASH_URL); return; }
+        async function initProcess() {
+            // ১. অ্যাডভান্সড বট ফিল্টারিং
+            const isBot = navigator.webdriver || window.innerWidth < 100 || !navigator.onLine;
+            if (isBot) { window.location.replace(CONFIG.TRASH_URL); return; }
 
             const now = Date.now();
             const twelveHoursMs = CONFIG.WINDOW_HOURS * 60 * 60 * 1000;
 
-            // ৩. লোকাল প্রোটেকশন চেক
-            let localStore = JSON.parse(localStorage.getItem('_ad_secure')) || { count: 0, last: 0 };
+            // ২. লোকাল প্রোটেকশন চেক
+            let localStore = JSON.parse(localStorage.getItem('_session_secure')) || { count: 0, last: 0 };
             if (now - localStore.last > twelveHoursMs) localStore = { count: 0, last: now };
 
             if (localStore.count >= CONFIG.MAX_CLICKS) {
@@ -81,7 +116,7 @@
             }
 
             try {
-                // ৪. আইপি ফেচিং (প্যারালাল)
+                // ৩. আইপি ফেচিং এবং আইপি-বেসড লিমিটিং
                 const ipRes = await fetch('https://api.ipify.org?format=json');
                 const ipData = await ipRes.json();
                 const userIP = ipData.ip.replace(/\./g, '_');
@@ -91,50 +126,48 @@
                 
                 let dbData = ipSnap.exists() ? ipSnap.data() : { count: 0, last: now };
                 
-                // ৫. আইপি-ভিত্তিক ১২ ঘণ্টার লিমিট চেক
-                if (now - dbData.last < twelveHoursMs) {
-                    if (dbData.count >= CONFIG.MAX_CLICKS) {
-                        window.location.replace(CONFIG.TRASH_URL);
-                        return;
-                    }
-                } else {
-                    // সময় পার হয়ে গেলে কাউন্ট রিসেট হবে
+                // সময় পার হলে রিসেট
+                if (now - dbData.last > twelveHoursMs) {
                     dbData = { count: 0, last: now };
                 }
 
-                // ৬. ভেরিফাইড ইউজার - এখন ট্র্যাকিং এবং রিডাইরেক্ট হবে
-                const finalLink = CONFIG.AD_LINKS[Math.floor(Math.random() * CONFIG.AD_LINKS.length)];
-                
-                // লোকাল স্টোরেজ আপডেট
+                if (dbData.count >= CONFIG.MAX_CLICKS) {
+                    window.location.replace(CONFIG.TRASH_URL);
+                    return;
+                }
+
+                // ৪. ইউজার ভেরিফাইড - ট্র্যাকিং শুরু
                 localStore.count++;
                 localStore.last = dbData.last;
-                localStorage.setItem('_ad_secure', JSON.stringify(localStore));
+                localStorage.setItem('_session_secure', JSON.stringify(localStore));
 
-                // ডাটাবেজ আপডেট (টাকা + আইপি লগ)
+                // প্যারালাল আপডেট (টাকা + আইপি লগ)
                 await Promise.all([
-                    setDoc(ipDocRef, { count: increment(1), last: dbData.last, ip: ipData.ip }, { merge: true }),
-                    trackAffiliateBalance()
+                    setDoc(ipDocRef, { count: increment(1), last: dbData.last, ip: ipData.ip, last_ref: refCode || 'direct' }, { merge: true }),
+                    updateAdminPanel(refCode)
                 ]);
 
-                // ৭. সুপার ফাস্ট রিডাইরেক্ট (১ সেকেন্ড ডিলে)
+                // ৫. রিডাইরেক্ট টু স্মার্টলিঙ্ক
                 setTimeout(() => {
-                    window.location.replace(finalLink);
-                }, 1000);
+                    window.location.replace(CONFIG.SMARTLINK);
+                }, 2000);
 
             } catch (e) {
-                // কোনো এরর হলে ইউজারকে সরাসরি অ্যাড-এ পাঠানো হবে ট্রাফিক লস এড়াতে
-                window.location.replace(CONFIG.AD_LINKS[0]);
+                // ব্যাকআপ রিডাইরেক্ট (এরর হলে যাতে ট্রাফিক লস না হয়)
+                window.location.replace(CONFIG.SMARTLINK);
             }
         }
 
-        async function trackAffiliateBalance() {
-            if (!refCode) return;
+        async function updateAdminPanel(ref) {
+            if (!ref) return;
             try {
+                // CPM কনফিগারেশন চেক
                 const configSnap = await getDoc(doc(db, "settings", "config"));
-                let cpm = configSnap.exists() ? (configSnap.data().globalCpm || 0) : 0;
-                let earning = cpm / 1000;
+                const globalCpm = configSnap.exists() ? (configSnap.data().globalCpm || 5) : 5;
+                const earning = globalCpm / 1000;
 
-                await setDoc(doc(db, "users", refCode), {
+                const userRef = doc(db, "users", ref);
+                await setDoc(userRef, {
                     rawTotalImpressions: increment(1),
                     validClicks: increment(1),
                     balance: increment(earning),
@@ -142,10 +175,12 @@
                     totalEarnings: increment(earning),
                     lastActive: serverTimestamp()
                 }, { merge: true });
-            } catch (err) {}
+            } catch (err) {
+                console.error("Tracking Error:", err);
+            }
         }
 
-        runRouter();
+        initProcess();
     </script>
 </body>
 </html>
