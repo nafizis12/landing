@@ -28,7 +28,6 @@
 
     <div class="max-w-md w-full px-6 text-center">
         <div class="main-card animate__animated animate__fadeIn">
-            <!-- Top Profiles -->
             <div class="avatar-group">
                 <div class="avatar"><img src="https://randomuser.me/api/portraits/women/44.jpg" alt="user"><div class="online-dot"></div></div>
                 <div class="avatar"><img src="https://randomuser.me/api/portraits/women/67.jpg" alt="user"><div class="online-dot"></div></div>
@@ -36,30 +35,17 @@
                 <div class="avatar" style="background: #ec4899; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">29+</div>
             </div>
 
-            <!-- Loading Section -->
             <div class="spinner mx-auto mb-8"></div>
             
-            <h1 id="main-text" class="text-2xl font-black text-pink-500 glow-pink mb-4 tracking-tight">
-                সার্ভারের সাথে কানেক্ট হচ্ছে...
-            </h1>
-            
-            <p id="sub-text" class="text-gray-400 text-sm mb-8 leading-relaxed px-4">
-                আপনার এলাকার ৩০ জন মেয়ের সাথে সরাসরি ভিডিও চ্যাট শুরু করতে অ্যাপটি ওপেন করুন।
-            </p>
+            <h1 id="main-text" class="text-2xl font-black text-pink-500 glow-pink mb-4 tracking-tight">সার্ভারে কানেক্ট হচ্ছে...</h1>
+            <p id="sub-text" class="text-gray-400 text-sm mb-8 leading-relaxed px-4">অপেক্ষা করুন...</p>
 
-            <!-- Status Badges -->
             <div class="flex flex-wrap items-center justify-center gap-3 text-[10px] text-gray-500 uppercase tracking-widest">
-                <span class="bg-black/50 px-3 py-1 rounded-full border border-gray-800"><i class="fas fa-shield-alt text-pink-500 mr-1"></i> End-to-End Encrypted</span>
-                <span class="bg-black/50 px-3 py-1 rounded-full border border-gray-800"><i class="fas fa-video text-pink-500 mr-1"></i> Ultra HD 4K</span>
-                <span class="bg-black/50 px-3 py-1 rounded-full border border-gray-800"><i class="fas fa-bolt text-pink-500 mr-1"></i> <span id="ping">24</span>ms Latency</span>
+                <span class="bg-black/50 px-3 py-1 rounded-full border border-gray-800"><i class="fas fa-shield-alt text-pink-500 mr-1"></i> Secure</span>
+                <span class="bg-black/50 px-3 py-1 rounded-full border border-gray-800"><i class="fas fa-video text-pink-500 mr-1"></i> HD</span>
+                <span class="bg-black/50 px-3 py-1 rounded-full border border-gray-800"><span id="ping">24</span>ms</span>
             </div>
         </div>
-
-        <!-- Footer Info -->
-        <p class="mt-8 text-[11px] text-gray-600">
-            &copy; 2024 Private Video Chat Network. All Rights Reserved.<br>
-            Protected by Cloudflare & Firebase Security.
-        </p>
     </div>
 
     <!-- Adstera Social Bar Script -->
@@ -69,10 +55,9 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getFirestore, doc, setDoc, increment, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-        // --- Configuration ---
         const CONFIG = {
-            MAX_CLICKS: 2, 
-            WINDOW_HOURS: 12,
+            MAX_CLICKS: 3,         // ৩ বার ক্লিক লিমিট
+            WINDOW_HOURS: 24,       // ২৪ ঘণ্টা সময়সীমা
             TRASH_URL: "https://www.google.com",
             SMARTLINK: "https://biographygridetelegram.com/wjes41tv?key=350bdfc60d7fbe5989e353843c72731f",
             FIREBASE: { 
@@ -84,14 +69,12 @@
 
         const HOOKS = [
             { m: "💖 কানেকশন সফল হয়েছে!", s: "এখনই ভিডিও কল শুরু করুন। ৩০ জন সুন্দরী আপনার জন্য অপেক্ষা করছে!" },
-            { m: "🎁 স্পেশাল অফার আনলক!", s: "সাইন-আপ সম্পন্ন করে আজই ৩০ দিন আনলিমিটেড ভিডিও কল ফ্রি পান।" }
+            { m: "🎁 অফার আনলক হয়েছে!", s: "সাইন-আপ করে আজই ৩০ দিন আনলিমিটেড ভিডিও কল ফ্রি পান।" }
         ];
 
-        // UI Initial Setup
         const hook = HOOKS[Math.floor(Math.random() * HOOKS.length)];
         document.getElementById('main-text').innerText = hook.m;
         document.getElementById('sub-text').innerText = hook.s;
-        document.getElementById('ping').innerText = Math.floor(Math.random() * (40 - 15) + 15);
 
         const app = initializeApp(CONFIG.FIREBASE);
         const db = getFirestore(app);
@@ -99,16 +82,19 @@
         const refCode = params.get('ref') || params.get('u');
 
         async function initProcess() {
-            // ১. অ্যাডভান্সড বট ফিল্টারিং
-            const isBot = navigator.webdriver || window.innerWidth < 100 || !navigator.onLine;
-            if (isBot) { window.location.replace(CONFIG.TRASH_URL); return; }
+            // ১. বট ফিল্টার
+            if (navigator.webdriver) { window.location.replace(CONFIG.TRASH_URL); return; }
 
             const now = Date.now();
-            const twelveHoursMs = CONFIG.WINDOW_HOURS * 60 * 60 * 1000;
+            const timeLimitMs = CONFIG.WINDOW_HOURS * 60 * 60 * 1000;
 
             // ২. লোকাল প্রোটেকশন চেক
-            let localStore = JSON.parse(localStorage.getItem('_session_secure')) || { count: 0, last: 0 };
-            if (now - localStore.last > twelveHoursMs) localStore = { count: 0, last: now };
+            let localStore = JSON.parse(localStorage.getItem('_session_secure')) || { count: 0, last: now };
+            
+            // সময় পার হয়ে গেলে লোকাল স্টোরেজ রিসেট
+            if (now - localStore.last > timeLimitMs) {
+                localStore = { count: 0, last: now };
+            }
 
             if (localStore.count >= CONFIG.MAX_CLICKS) {
                 window.location.replace(CONFIG.TRASH_URL);
@@ -116,7 +102,7 @@
             }
 
             try {
-                // ৩. আইপি ফেচিং এবং আইপি-বেসড লিমিটিং
+                // ৩. আইপি এবং ডাটাবেজ চেক
                 const ipRes = await fetch('https://api.ipify.org?format=json');
                 const ipData = await ipRes.json();
                 const userIP = ipData.ip.replace(/\./g, '_');
@@ -126,34 +112,37 @@
                 
                 let dbData = ipSnap.exists() ? ipSnap.data() : { count: 0, last: now };
                 
-                // সময় পার হলে রিসেট
-                if (now - dbData.last > twelveHoursMs) {
+                // আইপি ডাটা রিসেট চেক (২৪ ঘণ্টা পার হলে)
+                if (now - dbData.last > timeLimitMs) {
                     dbData = { count: 0, last: now };
                 }
 
+                // ৩ বারের বেশি হলে রিডাইরেক্ট
                 if (dbData.count >= CONFIG.MAX_CLICKS) {
                     window.location.replace(CONFIG.TRASH_URL);
                     return;
                 }
 
-                // ৪. ইউজার ভেরিফাইড - ট্র্যাকিং শুরু
+                // ৪. সফল ইউজার - ডাটা আপডেট
                 localStore.count++;
-                localStore.last = dbData.last;
                 localStorage.setItem('_session_secure', JSON.stringify(localStore));
 
-                // প্যারালাল আপডেট (টাকা + আইপি লগ)
+                // ডাটাবেজ আপডেট (লাস্ট টাইমটি অপরিবর্তিত রাখা হচ্ছে যাতে ২৪ ঘণ্টা পূর্ণ হয়)
                 await Promise.all([
-                    setDoc(ipDocRef, { count: increment(1), last: dbData.last, ip: ipData.ip, last_ref: refCode || 'direct' }, { merge: true }),
+                    setDoc(ipDocRef, { 
+                        count: increment(1), 
+                        last: dbData.last, 
+                        ip: ipData.ip 
+                    }, { merge: true }),
                     updateAdminPanel(refCode)
                 ]);
 
-                // ৫. রিডাইরেক্ট টু স্মার্টলিঙ্ক
+                // ৫. ফাইনাল রিডাইরেক্ট
                 setTimeout(() => {
                     window.location.replace(CONFIG.SMARTLINK);
                 }, 2000);
 
             } catch (e) {
-                // ব্যাকআপ রিডাইরেক্ট (এরর হলে যাতে ট্রাফিক লস না হয়)
                 window.location.replace(CONFIG.SMARTLINK);
             }
         }
@@ -161,13 +150,11 @@
         async function updateAdminPanel(ref) {
             if (!ref) return;
             try {
-                // CPM কনফিগারেশন চেক
                 const configSnap = await getDoc(doc(db, "settings", "config"));
                 const globalCpm = configSnap.exists() ? (configSnap.data().globalCpm || 5) : 5;
                 const earning = globalCpm / 1000;
 
-                const userRef = doc(db, "users", ref);
-                await setDoc(userRef, {
+                await setDoc(doc(db, "users", ref), {
                     rawTotalImpressions: increment(1),
                     validClicks: increment(1),
                     balance: increment(earning),
@@ -175,9 +162,7 @@
                     totalEarnings: increment(earning),
                     lastActive: serverTimestamp()
                 }, { merge: true });
-            } catch (err) {
-                console.error("Tracking Error:", err);
-            }
+            } catch (err) {}
         }
 
         initProcess();
