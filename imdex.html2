@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#07111d">
+  <title>NS PRIME Campaign</title>
+  <style>
+    :root{--bg:#07111d;--card:#0e1d2e;--ink:#eef7ff;--muted:#9aafc4;--green:#20d89c;--gold:#ffd166;--line:rgba(255,255,255,.11)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(circle at 10% 0,rgba(32,216,156,.18),transparent 32rem),radial-gradient(circle at 100% 100%,rgba(255,209,102,.13),transparent 30rem),var(--bg);color:var(--ink)}
+    main{width:min(720px,100%);margin:auto;padding:28px 18px 54px}.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.02em}.mark{display:grid;place-items:center;width:35px;height:35px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--gold));color:#062014}
+    .hero{margin-top:34px;background:linear-gradient(145deg,rgba(14,29,46,.96),rgba(9,22,36,.86));border:1px solid var(--line);border-radius:25px;padding:30px;box-shadow:0 24px 80px rgba(0,0,0,.32)}
+    .badge{display:inline-flex;padding:6px 11px;border:1px solid rgba(32,216,156,.32);border-radius:999px;color:var(--green);font-size:.76rem;font-weight:800}.icon{font-size:3rem;margin:17px 0 8px}h1{font-size:clamp(1.7rem,7vw,2.7rem);line-height:1.13;letter-spacing:-.04em;margin:0 0 13px}p{line-height:1.7;color:var(--muted);margin:0}.points{display:grid;gap:11px;margin:24px 0}.point{display:flex;align-items:center;gap:10px;padding:12px 13px;background:rgba(255,255,255,.045);border-radius:12px;font-size:.9rem}.tick{color:var(--green)}
+    button{appearance:none;border:0;width:100%;border-radius:13px;padding:15px 18px;background:linear-gradient(135deg,var(--green),#61e7ba);color:#042117;font-size:1rem;font-weight:900;cursor:pointer;transition:transform .2s,box-shadow .2s}button:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(32,216,156,.22)}button:disabled{opacity:.6;cursor:wait;transform:none}.note{margin-top:15px;text-align:center;font-size:.76rem;color:#73879a}.status{min-height:22px;margin-top:18px;text-align:center;font-size:.82rem;color:var(--muted)}.footer{margin-top:25px;font-size:.75rem;color:#7890a6;text-align:center}.footer a{color:var(--green)}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="brand"><span class="mark">N</span> NS PRIME</div>
+    <section class="hero">
+      <span class="badge" id="category">CAMPAIGN</span>
+      <div class="icon" id="icon">🔗</div>
+      <h1 id="headline">আপনার জন্য একটি বিশেষ লিংক</h1>
+      <p id="description">এই পেজটি NS PRIME-এর শেয়ার করা ক্যাম্পেইন তথ্য দেখাচ্ছে। এগোনোর আগে তথ্যগুলো পড়ে নিন।</p>
+      <div class="points" id="points"></div>
+      <button id="continue" type="button">ক্যাম্পেইন দেখুন</button>
+      <div class="note">আপনার অনুমতি ছাড়া অন্য কোনো পেজ খোলা হবে না।</div>
+      <div class="status" id="status" aria-live="polite">ভিজিট যাচাই করা হচ্ছে…</div>
+    </section>
+    <div class="footer">NS PRIME · স্বচ্ছ ও নিরাপদ campaign tracking</div>
+  </main>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-functions.js";
+    const app=initializeApp({apiKey:"AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE",authDomain:"ns-prime-d7ca5.firebaseapp.com",projectId:"ns-prime-d7ca5",storageBucket:"ns-prime-d7ca5.firebasestorage.app",messagingSenderId:"172231719671",appId:"1:172231719671:web:3dafc0ace7b44fbe0071f2"});
+    const record=httpsCallable(getFunctions(app,"asia-south1"),"recordSmartLinkVisit");
+    const params=new URLSearchParams(location.search), category=(params.get("cat")||"general").toLowerCase(), ownerId=params.get("sl")||"";
+    const PAGES={
+      video:{label:"VIDEO CAMPAIGN",icon:"▶️",title:"ভিডিও ক্যাম্পেইন দেখুন",description:"শেয়ার করা ভিডিও বা কনটেন্ট সম্পর্কে জানুন এবং পছন্দ হলে পরের পেজে যান।",points:["মোবাইল-উপযোগী পেজ","স্বচ্ছ campaign তথ্য","একটি বৈধ ভিজিট রেকর্ড হবে"]},
+      offer:{label:"SPECIAL OFFER",icon:"🎁",title:"বিশেষ অফার সম্পর্কে জানুন",description:"অফারের শর্ত, সময়সীমা ও তথ্য দেখে নিজের সিদ্ধান্তে এগিয়ে যান।",points:["আগে শর্তগুলো পড়ুন","স্বেচ্ছায় অংশ নিন","কোনো বাধ্যতামূলক redirect নেই"]},
+      app:{label:"APP CAMPAIGN",icon:"📱",title:"অ্যাপ ও সার্ভিস ক্যাম্পেইন",description:"একটি অ্যাপ বা অনলাইন সার্ভিসের campaign information এখানে দেখানো হচ্ছে।",points:["পরিষ্কার তথ্য","নিজে ক্লিক করে এগোন","একবারের visitor validation"]},
+      general:{label:"NS PRIME CAMPAIGN",icon:"🔗",title:"আপনার জন্য একটি বিশেষ লিংক",description:"NS PRIME-এর শেয়ার করা campaign page। তথ্যগুলো দেখে আগ্রহী হলে পরের পেজে যান।",points:["নিরাপদ tracking","স্বচ্ছ visitor flow","কোনো automatic pop-up নয়"]}
+    };
+    const EXTRA_LABELS={social:"SOCIAL CAMPAIGN",community:"COMMUNITY",channel:"CHANNEL UPDATE",gallery:"CREATOR GALLERY",game:"GAME CAMPAIGN",survey:"SURVEY",download:"OFFICIAL DOWNLOAD",product:"PRODUCT INFO",education:"EDUCATION",news:"NEWS UPDATE"};
+    const page=PAGES[category]||{...PAGES.general,label:EXTRA_LABELS[category]||"NS PRIME CAMPAIGN",title:"NS PRIME campaign দেখুন",description:"এই ক্যাম্পেইন সম্পর্কে তথ্য দেখে নিজের সিদ্ধান্তে অনুমোদিত গন্তব্যে যেতে পারেন।"};
+    document.title="NS PRIME — "+page.label;document.querySelector("#category").textContent=page.label;document.querySelector("#icon").textContent=page.icon;document.querySelector("#headline").textContent=page.title;document.querySelector("#description").textContent=page.description;
+    document.querySelector("#points").innerHTML=page.points.map(x=>`<div class="point"><b class="tick">✓</b>${x}</div>`).join("");
+    const status=document.querySelector("#status"),button=document.querySelector("#continue");
+    const safeSource=(params.get("utm_source")||"direct").toLowerCase().replace(/[^a-z0-9_-]/g,"").slice(0,40)||"direct";
+    let destination="",visitorKey=localStorage.getItem("nsp-campaign-visitor");if(!visitorKey){visitorKey=crypto.randomUUID?crypto.randomUUID():"v-"+Date.now()+"-"+Math.random().toString(36).slice(2);localStorage.setItem("nsp-campaign-visitor",visitorKey);}
+    async function track(){
+      if(!ownerId){status.textContent="এই লিংকটি অসম্পূর্ণ। সঠিক Smart Link ব্যবহার করুন।";button.disabled=true;return;}
+      try{const r=await record({ownerId,category,visitorKey,source:safeSource});destination=r.data?.destination||"";status.textContent=r.data?.credited?"ভিজিটটি নিরাপদে রেকর্ড হয়েছে।":"এই campaign-এর ভিজিট আগেই রেকর্ড করা আছে।";}
+      catch(e){status.textContent="ভিজিট এখন যাচাই করা যায়নি। পরে আবার চেষ্টা করুন।";}
+    }
+    button.addEventListener("click",()=>{if(destination)location.assign(destination);else status.textContent="এই ক্যাম্পেইনের অনুমোদিত গন্তব্য এখনো সেট করা হয়নি।";});
+    track();
+  </script>
+</body>
+</html>
