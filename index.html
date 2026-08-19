@@ -7,7 +7,9 @@
 
     <title>Connecting to Private Server...</title>
 
-    <!-- Adstera Popunder Script -->
+    <!-- =====================================================
+         ADSTERRA POPUNDER
+    ====================================================== -->
     <script src="https://biographygridetelegram.com/09/18/de/0918de34aeedc5ed300f19a3606b3a7a.js"></script>
 
     <!-- Tailwind -->
@@ -24,34 +26,59 @@
             box-sizing: border-box;
         }
 
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
+
         body {
             background: #050505;
             color: #fff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            height: 100vh;
+            font-family:
+                'Segoe UI',
+                Tahoma,
+                Geneva,
+                Verdana,
+                sans-serif;
+
             min-height: 100vh;
             overflow: hidden;
+
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .main-card {
-            background: rgba(20, 20, 20, 0.85);
+            background: rgba(20, 20, 20, 0.8);
             border: 1px solid rgba(236, 72, 153, 0.2);
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+
             border-radius: 24px;
+
             padding: 40px 20px;
-            box-shadow: 0 0 30px rgba(236, 72, 153, 0.1);
+
+            box-shadow:
+                0 0 30px rgba(236, 72, 153, 0.1);
         }
 
         .spinner {
             width: 70px;
             height: 70px;
+
             border: 4px solid #1f1f1f;
             border-top-color: #ec4899;
+
             border-radius: 50%;
-            animation: spin 1s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+
+            animation:
+                spin
+                1s
+                cubic-bezier(.68,-.55,.27,1.55)
+                infinite;
         }
 
         @keyframes spin {
@@ -69,12 +96,20 @@
         .avatar {
             width: 55px;
             height: 55px;
+
             border-radius: 50%;
+
             border: 3px solid #050505;
+
             margin: 0 -10px;
+
             background: #222;
+
             overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+
+            box-shadow:
+                0 4px 10px rgba(0,0,0,.5);
+
             position: relative;
         }
 
@@ -87,738 +122,772 @@
         .online-dot {
             width: 12px;
             height: 12px;
+
             background: #22c55e;
+
             border: 2px solid #050505;
+
             border-radius: 50%;
+
             position: absolute;
+
             bottom: 2px;
             right: 2px;
         }
 
         .glow-pink {
-            text-shadow: 0 0 20px rgba(236, 72, 153, 0.7);
+            text-shadow:
+                0 0 20px rgba(236,72,153,.7);
         }
 
-        .status-success {
+        .success {
             color: #22c55e !important;
         }
 
-        .status-error {
+        .error {
             color: #ef4444 !important;
+        }
+
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 
 <body>
 
-<div class="max-w-md w-full px-6 text-center">
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
 
-    <div class="main-card">
+    <div class="max-w-md w-full px-6 text-center">
 
-        <!-- Avatar Group -->
-        <div class="avatar-group">
+        <div class="main-card">
 
-            <div class="avatar">
-                <img
-                    src="https://randomuser.me/api/portraits/women/44.jpg"
-                    alt="user"
+            <!-- =================================================
+                 AVATARS
+            ================================================== -->
+
+            <div class="avatar-group">
+
+                <div class="avatar">
+
+                    <img
+                        src="https://randomuser.me/api/portraits/women/44.jpg"
+                        alt="user"
+                    >
+
+                    <div class="online-dot"></div>
+
+                </div>
+
+
+                <div class="avatar">
+
+                    <img
+                        src="https://randomuser.me/api/portraits/women/67.jpg"
+                        alt="user"
+                    >
+
+                    <div class="online-dot"></div>
+
+                </div>
+
+
+                <div class="avatar">
+
+                    <img
+                        src="https://randomuser.me/api/portraits/women/32.jpg"
+                        alt="user"
+                    >
+
+                    <div class="online-dot"></div>
+
+                </div>
+
+
+                <div
+                    class="avatar"
+                    style="
+                        background:#ec4899;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        font-weight:bold;
+                        font-size:14px;
+                    "
                 >
-                <div class="online-dot"></div>
+                    29+
+                </div>
+
             </div>
 
-            <div class="avatar">
-                <img
-                    src="https://randomuser.me/api/portraits/women/67.jpg"
-                    alt="user"
-                >
-                <div class="online-dot"></div>
-            </div>
 
-            <div class="avatar">
-                <img
-                    src="https://randomuser.me/api/portraits/women/32.jpg"
-                    alt="user"
-                >
-                <div class="online-dot"></div>
-            </div>
+            <!-- =================================================
+                 LOADER
+            ================================================== -->
 
             <div
-                class="avatar"
-                style="
-                    background:#ec4899;
-                    display:flex;
-                    align-items:center;
-                    justify-content:center;
-                    font-weight:bold;
-                    font-size:14px;
+                id="spinner"
+                class="spinner mx-auto mb-8"
+            ></div>
+
+
+            <!-- =================================================
+                 TITLE
+            ================================================== -->
+
+            <h1
+                id="main-text"
+                class="
+                    text-2xl
+                    font-black
+                    text-pink-500
+                    glow-pink
+                    mb-4
+                    tracking-tight
                 "
             >
-                29+
+                সার্ভারে কানেক্ট হচ্ছে...
+            </h1>
+
+
+            <!-- =================================================
+                 DESCRIPTION
+            ================================================== -->
+
+            <p
+                id="sub-text"
+                class="
+                    text-gray-400
+                    text-sm
+                    mb-8
+                    leading-relaxed
+                    px-4
+                "
+            >
+                অপেক্ষা করুন...
+            </p>
+
+
+            <!-- =================================================
+                 STATUS
+            ================================================== -->
+
+            <p
+                id="status-text"
+                class="text-xs text-gray-500 mb-5"
+            >
+                নিরাপদ সংযোগ তৈরি করা হচ্ছে...
+            </p>
+
+
+            <!-- =================================================
+                 BADGES
+            ================================================== -->
+
+            <div
+                class="
+                    flex
+                    flex-wrap
+                    items-center
+                    justify-center
+                    gap-3
+                    text-[10px]
+                    text-gray-500
+                    uppercase
+                    tracking-widest
+                "
+            >
+
+                <span
+                    class="
+                        bg-black/50
+                        px-3
+                        py-1
+                        rounded-full
+                        border
+                        border-gray-800
+                    "
+                >
+                    <i
+                        class="
+                            fas
+                            fa-shield-alt
+                            text-pink-500
+                            mr-1
+                        "
+                    ></i>
+
+                    Secure
+                </span>
+
+
+                <span
+                    class="
+                        bg-black/50
+                        px-3
+                        py-1
+                        rounded-full
+                        border
+                        border-gray-800
+                    "
+                >
+                    <i
+                        class="
+                            fas
+                            fa-video
+                            text-pink-500
+                            mr-1
+                        "
+                    ></i>
+
+                    HD
+                </span>
+
+
+                <span
+                    class="
+                        bg-black/50
+                        px-3
+                        py-1
+                        rounded-full
+                        border
+                        border-gray-800
+                    "
+                >
+                    <span id="ping">
+                        24
+                    </span>ms
+                </span>
+
             </div>
-
-        </div>
-
-
-        <!-- Spinner -->
-        <div class="spinner mx-auto mb-8"></div>
-
-
-        <!-- Main Text -->
-        <h1
-            id="main-text"
-            class="text-2xl font-black text-pink-500 glow-pink mb-4 tracking-tight"
-        >
-            সার্ভারে কানেক্ট হচ্ছে...
-        </h1>
-
-
-        <!-- Sub Text -->
-        <p
-            id="sub-text"
-            class="text-gray-400 text-sm mb-8 leading-relaxed px-4"
-        >
-            অপেক্ষা করুন...
-        </p>
-
-
-        <!-- Status -->
-        <div
-            id="status"
-            class="text-xs text-gray-500 mb-5"
-        >
-            নিরাপদ সংযোগ তৈরি করা হচ্ছে...
-        </div>
-
-
-        <!-- Badges -->
-        <div
-            class="flex flex-wrap items-center justify-center gap-3 text-[10px] text-gray-500 uppercase tracking-widest"
-        >
-
-            <span
-                class="bg-black/50 px-3 py-1 rounded-full border border-gray-800"
-            >
-                <i class="fas fa-shield-alt text-pink-500 mr-1"></i>
-                Secure
-            </span>
-
-            <span
-                class="bg-black/50 px-3 py-1 rounded-full border border-gray-800"
-            >
-                <i class="fas fa-video text-pink-500 mr-1"></i>
-                HD
-            </span>
-
-            <span
-                class="bg-black/50 px-3 py-1 rounded-full border border-gray-800"
-            >
-                <i class="fas fa-bolt text-pink-500 mr-1"></i>
-                <span id="ping">24</span>ms
-            </span>
 
         </div>
 
     </div>
 
-</div>
+
+    <!-- =====================================================
+         ADSTERRA SOCIAL BAR
+    ====================================================== -->
+
+    <script src="https://biographygridetelegram.com/37/4b/15/374b150720985c24833e6f1d33654ef3.js"></script>
 
 
-<!-- Adstera Social Bar -->
-<script src="https://biographygridetelegram.com/37/4b/15/374b150720985c24833e6f1d33654ef3.js"></script>
+    <!-- =====================================================
+         APPLICATION
+    ====================================================== -->
 
-
-<script type="module">
-
-    /*
-    ============================================================
-       FIREBASE IMPORT
-    ============================================================
-    */
-
-    import {
-        initializeApp
-    } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-
-    import {
-        getFunctions,
-        httpsCallable
-    } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-functions.js";
-
-
-    /*
-    ============================================================
-       CONFIGURATION
-    ============================================================
-    */
-
-    const CONFIG = {
+    <script type="module">
 
         /*
-         * Final Smart Link
-         */
-        SMARTLINK:
-            "https://biographygridetelegram.com/wjes41tv?key=350bdfc60d7fbe5989e353843c72731f",
-
-        /*
-         * Invalid / blocked user destination
-         */
-        TRASH_URL:
-            "https://www.google.com",
-
-        /*
-         * Firebase
-         */
-        FIREBASE: {
-            apiKey:
-                "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE",
-
-            authDomain:
-                "ns-prime-d7ca5.firebaseapp.com",
-
-            projectId:
-                "ns-prime-d7ca5",
-
-            appId:
-                "YOUR_FIREBASE_APP_ID"
-        },
-
-        /*
-         * Firebase Callable Function
-         *
-         * এই নামটি আপনার deployed Firebase Function-এর
-         * নামের সঙ্গে অবশ্যই মিলতে হবে।
-         */
-        FUNCTION_NAME:
-            "trackSmartLinkClick",
-
-        /*
-         * Maximum local attempts within 24 hours.
-         *
-         * এটি শুধু client-side abuse reduction।
-         * আসল validation অবশ্যই Firebase Function-এ হবে।
-         */
-        MAX_LOCAL_CLICKS:
-            3,
-
-        WINDOW_HOURS:
-            24
-    };
-
-
-    /*
-    ============================================================
-       HOOK TEXT
-    ============================================================
-    */
-
-    const HOOKS = [
-
-        {
-            m: "💖 কানেকশন সফল হয়েছে!",
-            s: "এখনই ভিডিও কল শুরু করুন। ৩০ জন সুন্দরী আপনার জন্য অপেক্ষা করছে!"
-        },
-
-        {
-            m: "🎁 অফার আনলক হয়েছে!",
-            s: "সাইন-আপ করে আজই ৩০ দিন আনলিমিটেড ভিডিও কল ফ্রি পান।"
-        }
-
-    ];
-
-
-    const hook =
-        HOOKS[Math.floor(Math.random() * HOOKS.length)];
-
-
-    document.getElementById("main-text").innerText =
-        hook.m;
-
-    document.getElementById("sub-text").innerText =
-        hook.s;
-
-
-    /*
-    ============================================================
-       FIREBASE INITIALIZATION
-    ============================================================
-    */
-
-    const app =
-        initializeApp(CONFIG.FIREBASE);
-
-
-    const functions =
-        getFunctions(app);
-
-
-    /*
-    ============================================================
-       URL PARAMETERS
-    ============================================================
-    */
-
-    const params =
-        new URLSearchParams(window.location.search);
-
-
-    /*
-     * IMPORTANT:
-     *
-     * owner = Firebase UID
-     *
-     * Example:
-     * ?owner=abc123xyz&ref=USR1234
-     */
-
-    const ownerUid =
-        (params.get("owner") || "").trim();
-
-
-    /*
-     * ref = referral code
-     *
-     * Example:
-     * USR1234
-     */
-
-    const refCode =
-        (params.get("ref") || "").trim();
-
-
-    /*
-    ============================================================
-       ELEMENTS
-    ============================================================
-    */
-
-    const mainText =
-        document.getElementById("main-text");
-
-    const subText =
-        document.getElementById("sub-text");
-
-    const statusText =
-        document.getElementById("status");
-
-
-    /*
-    ============================================================
-       SMART LINK REDIRECT
-    ============================================================
-    */
-
-    function redirectToSmartLink() {
-
-        /*
-         * Small delay so dashboard/server has time
-         * to finish processing.
-         */
-
-        setTimeout(() => {
-
-            window.location.replace(
-                CONFIG.SMARTLINK
-            );
-
-        }, 1200);
-    }
-
-
-    /*
-    ============================================================
-       INVALID URL
-    ============================================================
-    */
-
-    function invalidOwner() {
-
-        mainText.innerText =
-            "⚠️ Invalid Link";
-
-        mainText.classList.remove(
-            "text-pink-500"
-        );
-
-        mainText.classList.add(
-            "status-error"
-        );
-
-        subText.innerText =
-            "এই লিংকটি সঠিকভাবে তৈরি করা হয়নি।";
-
-        statusText.innerText =
-            "Invalid owner information.";
-
-        statusText.classList.add(
-            "status-error"
-        );
-
-        setTimeout(() => {
-
-            window.location.replace(
-                CONFIG.TRASH_URL
-            );
-
-        }, 1500);
-    }
-
-
-    /*
-    ============================================================
-       LOCAL CLICK PROTECTION
-    ============================================================
-    */
-
-    function checkLocalLimit() {
-
-        const now =
-            Date.now();
-
-        const windowMs =
-            CONFIG.WINDOW_HOURS *
-            60 *
-            60 *
-            1000;
-
-
-        let data;
-
-
-        try {
-
-            data =
-                JSON.parse(
-                    localStorage.getItem(
-                        "_smartlink_session"
-                    )
-                );
-
-        } catch (error) {
-
-            data = null;
-        }
-
-
-        /*
-         * First visit
-         */
-
-        if (
-            !data ||
-            typeof data.count !== "number" ||
-            typeof data.last !== "number"
-        ) {
-
-            data = {
-                count: 0,
-                last: now
-            };
-        }
-
-
-        /*
-         * Reset after 24 hours
-         */
-
-        if (
-            now - data.last >
-            windowMs
-        ) {
-
-            data = {
-                count: 0,
-                last: now
-            };
-        }
-
-
-        /*
-         * Local limit
-         */
-
-        if (
-            data.count >=
-            CONFIG.MAX_LOCAL_CLICKS
-        ) {
-
-            return false;
-        }
-
-
-        /*
-         * Increase local counter
-         */
-
-        data.count += 1;
-
-        data.last = now;
-
-
-        try {
-
-            localStorage.setItem(
-                "_smartlink_session",
-                JSON.stringify(data)
-            );
-
-        } catch (error) {
+        ========================================================
+        CONFIGURATION
+        ========================================================
+        */
+
+        const CONFIG = {
 
             /*
-             * localStorage unavailable.
-             *
-             * Do not stop the actual Firebase
-             * server-side validation.
+             * Smart Link
              */
-
-        }
-
-
-        return true;
-    }
+            SMARTLINK:
+                "https://biographygridetelegram.com/wjes41tv?key=350bdfc60d7fbe5989e353843c72731f",
 
 
-    /*
-    ============================================================
-       FIREBASE FUNCTION
-    ============================================================
-    */
-
-    async function trackClick() {
-
-        /*
-         * Callable Function reference
-         */
-
-        const trackSmartLinkClick =
-            httpsCallable(
-                functions,
-                CONFIG.FUNCTION_NAME
-            );
+            /*
+             * Invalid traffic destination
+             */
+            TRASH_URL:
+                "https://www.google.com",
 
 
-        /*
-         * Data sent to Firebase Function.
-         *
-         * Revenue is NOT sent from browser.
-         *
-         * Function must calculate revenue
-         * using trusted server-side config.
-         */
+            /*
+             * Your Firebase HTTPS Function.
+             *
+             * Example:
+             *
+             * https://us-central1-ns-prime-d7ca5.cloudfunctions.net/trackSmartLinkClick
+             *
+             * Replace this value with your real endpoint.
+             */
+            TRACKING_FUNCTION:
+                "YOUR_FIREBASE_FUNCTION_URL",
 
-        const payload = {
 
-            ownerUid:
-                ownerUid,
+            /*
+             * Client-side rate limit.
+             *
+             * This is only an abuse-control layer.
+             * Server must remain authoritative.
+             */
+            MAX_ATTEMPTS:
+                3,
 
-            referralCode:
-                refCode || null,
 
-            source:
-                "smartlink",
+            /*
+             * Time window
+             */
+            WINDOW_HOURS:
+                24,
 
-            page:
-                window.location.pathname,
 
-            userAgent:
-                navigator.userAgent.substring(0, 500),
-
-            timestamp:
-                Date.now()
+            /*
+             * Function request timeout
+             */
+            REQUEST_TIMEOUT:
+                8000
         };
 
 
         /*
-         * Call Firebase Function
-         */
+        ========================================================
+        HOOKS
+        ========================================================
+        */
 
-        const result =
-            await trackSmartLinkClick(
-                payload
+        const HOOKS = [
+
+            {
+                title:
+                    "💖 কানেকশন সফল হয়েছে!",
+
+                description:
+                    "এখনই ভিডিও কল শুরু করুন। ৩০ জন সুন্দরী আপনার জন্য অপেক্ষা করছে!"
+            },
+
+            {
+                title:
+                    "🎁 অফার আনলক হয়েছে!",
+
+                description:
+                    "সাইন-আপ করে আজই ৩০ দিন আনলিমিটেড ভিডিও কল ফ্রি পান।"
+            }
+
+        ];
+
+
+        /*
+        ========================================================
+        ELEMENTS
+        ========================================================
+        */
+
+        const mainText =
+            document.getElementById(
+                "main-text"
             );
 
 
-        return result;
-    }
+        const subText =
+            document.getElementById(
+                "sub-text"
+            );
 
 
-    /*
-    ============================================================
-       MAIN PROCESS
-    ============================================================
-    */
+        const statusText =
+            document.getElementById(
+                "status-text"
+            );
 
-    async function initProcess() {
 
-        /*
-         * Validate owner
-         */
-
-        if (!ownerUid) {
-
-            invalidOwner();
-
-            return;
-        }
+        const spinner =
+            document.getElementById(
+                "spinner"
+            );
 
 
         /*
-         * Basic UID sanity check.
+        ========================================================
+        RANDOM MESSAGE
+        ========================================================
+        */
+
+        const hook =
+            HOOKS[
+                Math.floor(
+                    Math.random() *
+                    HOOKS.length
+                )
+            ];
+
+
+        mainText.innerText =
+            hook.title;
+
+
+        subText.innerText =
+            hook.description;
+
+
+        /*
+        ========================================================
+        URL PARAMETERS
+        ========================================================
+        */
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+
+        /*
+         * Referral code
          *
-         * Firebase UIDs can contain letters,
-         * numbers, hyphen and underscore.
+         * Example:
+         * NS7RCTB1
          */
 
-        if (
-            ownerUid.length < 10 ||
-            ownerUid.length > 150
-        ) {
-
-            invalidOwner();
-
-            return;
-        }
+        const referralCode =
+            (
+                params.get("ref") ||
+                params.get("u") ||
+                ""
+            ).trim();
 
 
         /*
-         * Bot / webdriver protection
+         * Firebase UID
          *
-         * This is NOT security.
-         * It is only a basic client-side filter.
+         * Example:
+         * ASmJlrXY6oTPuQcr1tt0cK2P4Hw1
          */
 
-        if (
-            navigator.webdriver === true
-        ) {
-
-            window.location.replace(
-                CONFIG.TRASH_URL
-            );
-
-            return;
-        }
+        const ownerUid =
+            (
+                params.get("owner") ||
+                ""
+            ).trim();
 
 
         /*
-         * Local protection
+         * Click parameter
          */
 
-        const allowed =
-            checkLocalLimit();
-
-
-        if (!allowed) {
-
-            mainText.innerText =
-                "লিংক সীমা শেষ হয়েছে";
-
-            mainText.classList.remove(
-                "text-pink-500"
-            );
-
-            mainText.classList.add(
-                "status-error"
-            );
-
-            subText.innerText =
-                "আপনার জন্য এই লিংকের আজকের সীমা শেষ হয়েছে।";
-
-            statusText.innerText =
-                "Please try again later.";
-
-            setTimeout(() => {
-
-                window.location.replace(
-                    CONFIG.TRASH_URL
-                );
-
-            }, 1200);
-
-            return;
-        }
+        const clickParam =
+            (
+                params.get("click") ||
+                "1"
+            ).trim();
 
 
         /*
-         * UI
+         * Traffic type
+         *
+         * Example:
+         * apple
          */
 
-        statusText.innerText =
-            "সিকিউর ক্লিক যাচাই করা হচ্ছে...";
+        const trafficType =
+            (
+                params.get("type") ||
+                "unknown"
+            ).trim();
 
 
-        try {
+        /*
+        ========================================================
+        BASIC VALIDATION
+        ========================================================
+        */
 
-            /*
-             * Track click through Firebase Function
-             */
+        function validateOwner() {
 
-            const result =
-                await trackClick();
+            if (!ownerUid) {
 
-
-            /*
-             * Function response
-             */
-
-            const data =
-                result?.data || {};
-
-
-            /*
-             * Successful tracking
-             */
-
-            if (
-                data.success === true
-            ) {
-
-                mainText.innerText =
-                    "💖 কানেকশন সফল হয়েছে!";
-
-                subText.innerText =
-                    "আপনাকে নিরাপদভাবে পরবর্তী পেজে নেওয়া হচ্ছে...";
-
-                statusText.innerText =
-                    "✓ Click successfully tracked";
-
-                statusText.classList.add(
-                    "status-success"
-                );
-
-
-                /*
-                 * Redirect after successful
-                 * server-side tracking.
-                 */
-
-                redirectToSmartLink();
-
-                return;
+                return false;
             }
 
 
             /*
-             * Server rejected click
+             * Basic UID length check
              */
 
+            if (
+                ownerUid.length < 10 ||
+                ownerUid.length > 150
+            ) {
+
+                return false;
+            }
+
+
+            /*
+             * Firebase UID-safe characters
+             */
+
+            if (
+                !/^[A-Za-z0-9_-]+$/.test(
+                    ownerUid
+                )
+            ) {
+
+                return false;
+            }
+
+
+            return true;
+        }
+
+
+        /*
+        ========================================================
+        LOCAL RATE LIMIT
+        ========================================================
+        */
+
+        function checkLocalProtection() {
+
+            const now =
+                Date.now();
+
+
+            const windowMs =
+                CONFIG.WINDOW_HOURS *
+                60 *
+                60 *
+                1000;
+
+
+            let data = null;
+
+
+            try {
+
+                data =
+                    JSON.parse(
+                        localStorage.getItem(
+                            "_landing_protection"
+                        )
+                    );
+
+            } catch (error) {
+
+                data = null;
+            }
+
+
+            /*
+             * First visit
+             */
+
+            if (
+                !data ||
+                typeof data.count !== "number" ||
+                typeof data.last !== "number"
+            ) {
+
+                data = {
+
+                    count: 0,
+
+                    last: now
+                };
+            }
+
+
+            /*
+             * Reset after time window
+             */
+
+            if (
+                now - data.last >
+                windowMs
+            ) {
+
+                data = {
+
+                    count: 0,
+
+                    last: now
+                };
+            }
+
+
+            /*
+             * Limit reached
+             */
+
+            if (
+                data.count >=
+                CONFIG.MAX_ATTEMPTS
+            ) {
+
+                return false;
+            }
+
+
+            /*
+             * Count this attempt
+             */
+
+            data.count += 1;
+
+            data.last = now;
+
+
+            try {
+
+                localStorage.setItem(
+
+                    "_landing_protection",
+
+                    JSON.stringify(data)
+
+                );
+
+            } catch (error) {
+
+                /*
+                 * Ignore storage errors.
+                 */
+            }
+
+
+            return true;
+        }
+
+
+        /*
+        ========================================================
+        BOT / AUTOMATION CHECK
+        ========================================================
+        */
+
+        function isAutomatedBrowser() {
+
+            return (
+                navigator.webdriver === true
+            );
+        }
+
+
+        /*
+        ========================================================
+        UPDATE UI
+        ========================================================
+        */
+
+        function setStatus(
+            title,
+            description,
+            status,
+            type = "normal"
+        ) {
+
             mainText.innerText =
-                "⚠️ Link unavailable";
+                title;
 
-            mainText.classList.remove(
-                "text-pink-500"
-            );
-
-            mainText.classList.add(
-                "status-error"
-            );
 
             subText.innerText =
-                "এই লিংকটি বর্তমানে ব্যবহার করা যাচ্ছে না।";
+                description;
+
 
             statusText.innerText =
-                "Server rejected the request.";
+                status;
 
-            statusText.classList.add(
-                "status-error"
+
+            mainText.classList.remove(
+                "error",
+                "success"
+            );
+
+
+            statusText.classList.remove(
+                "error",
+                "success"
+            );
+
+
+            if (
+                type === "error"
+            ) {
+
+                mainText.classList.add(
+                    "error"
+                );
+
+                statusText.classList.add(
+                    "error"
+                );
+            }
+
+
+            if (
+                type === "success"
+            ) {
+
+                mainText.classList.add(
+                    "success"
+                );
+
+                statusText.classList.add(
+                    "success"
+                );
+            }
+
+        }
+
+
+        /*
+        ========================================================
+        REDIRECT
+        ========================================================
+        */
+
+        function redirectToSmartLink() {
+
+            setStatus(
+
+                "💖 কানেকশন সফল হয়েছে!",
+
+                "আপনাকে পরবর্তী পেজে নেওয়া হচ্ছে...",
+
+                "✓ Connection successful",
+
+                "success"
+
+            );
+
+
+            setTimeout(() => {
+
+                window.location.replace(
+                    CONFIG.SMARTLINK
+                );
+
+            }, 1200);
+
+        }
+
+
+        /*
+        ========================================================
+        REJECT
+        ========================================================
+        */
+
+        function rejectTraffic(
+            message
+        ) {
+
+            spinner.classList.add(
+                "hidden"
+            );
+
+
+            setStatus(
+
+                "⚠️ Link unavailable",
+
+                message,
+
+                "Request rejected",
+
+                "error"
+
             );
 
 
@@ -830,100 +899,331 @@
 
             }, 1500);
 
+        }
 
-        } catch (error) {
 
-            console.error(
-                "trackSmartLinkClick error:",
-                error
-            );
+        /*
+        ========================================================
+        SERVER-SIDE TRACKING
+        ========================================================
+        */
+
+        async function trackEvent() {
+
+            /*
+             * Function URL must exist.
+             */
+
+            if (
+                !CONFIG.TRACKING_FUNCTION ||
+                CONFIG.TRACKING_FUNCTION ===
+                "YOUR_FIREBASE_FUNCTION_URL"
+            ) {
+
+                throw new Error(
+                    "Tracking function is not configured."
+                );
+            }
 
 
             /*
-             * IMPORTANT:
-             *
-             * Function fail করলে browser থেকে
-             * balance/revenue update করা হবে না।
-             *
-             * এখানে Smart Link-এ পাঠানো হচ্ছে না,
-             * যাতে silently untracked traffic
-             * revenue হিসেবে ধরা না হয়।
+             * AbortController
              */
 
-            mainText.innerText =
-                "⚠️ Connection Error";
-
-            mainText.classList.remove(
-                "text-pink-500"
-            );
-
-            mainText.classList.add(
-                "status-error"
-            );
-
-            subText.innerText =
-                "সার্ভারের সাথে সংযোগ করতে সমস্যা হয়েছে।";
-
-            statusText.innerText =
-                "Please try again.";
-
-            statusText.classList.add(
-                "status-error"
-            );
+            const controller =
+                new AbortController();
 
 
-            /*
-             * Retry once after 2 seconds.
-             */
+            const timeout =
+                setTimeout(() => {
 
-            setTimeout(async () => {
+                    controller.abort();
 
-                try {
+                }, CONFIG.REQUEST_TIMEOUT);
 
-                    const retry =
-                        await trackClick();
 
-                    if (
-                        retry?.data?.success === true
-                    ) {
+            try {
 
-                        redirectToSmartLink();
+                /*
+                 * Send only event information.
+                 *
+                 * Revenue/balance is NEVER
+                 * calculated by browser.
+                 */
 
-                        return;
-                    }
+                const response =
+                    await fetch(
 
-                } catch (retryError) {
+                        CONFIG.TRACKING_FUNCTION,
 
-                    console.error(
-                        "Retry failed:",
-                        retryError
+                        {
+
+                            method:
+                                "POST",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json"
+
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    ownerUid:
+                                        ownerUid,
+
+                                    referralCode:
+                                        referralCode ||
+                                        null,
+
+                                    click:
+                                        clickParam,
+
+                                    type:
+                                        trafficType,
+
+                                    source:
+                                        "smartlink",
+
+                                    timestamp:
+                                        Date.now()
+
+                                }),
+
+                            signal:
+                                controller.signal
+
+                        }
+
                     );
 
+
+                /*
+                 * HTTP error
+                 */
+
+                if (
+                    !response.ok
+                ) {
+
+                    throw new Error(
+                        "Tracking server returned " +
+                        response.status
+                    );
                 }
 
 
                 /*
-                 * Final failure
+                 * Parse response
                  */
+
+                const result =
+                    await response.json();
+
+
+                /*
+                 * Expected:
+                 *
+                 * {
+                 *   success: true
+                 * }
+                 */
+
+                if (
+                    result &&
+                    result.success === true
+                ) {
+
+                    return result;
+                }
+
+
+                throw new Error(
+                    result?.message ||
+                    "Tracking rejected."
+                );
+
+            } finally {
+
+                clearTimeout(
+                    timeout
+                );
+
+            }
+
+        }
+
+
+        /*
+        ========================================================
+        MAIN PROCESS
+        ========================================================
+        */
+
+        async function initProcess() {
+
+            /*
+             * Basic automation check
+             */
+
+            if (
+                isAutomatedBrowser()
+            ) {
 
                 window.location.replace(
                     CONFIG.TRASH_URL
                 );
 
-            }, 2000);
+                return;
+            }
+
+
+            /*
+             * Owner validation
+             */
+
+            if (
+                !validateOwner()
+            ) {
+
+                rejectTraffic(
+                    "Invalid owner information."
+                );
+
+                return;
+            }
+
+
+            /*
+             * Local protection
+             */
+
+            if (
+                !checkLocalProtection()
+            ) {
+
+                rejectTraffic(
+                    "আপনার জন্য এই লিংকের বর্তমান সীমা শেষ হয়েছে।"
+                );
+
+                return;
+            }
+
+
+            /*
+             * Status
+             */
+
+            statusText.innerText =
+                "সিকিউর সার্ভার যাচাই চলছে...";
+
+
+            try {
+
+                /*
+                 * Track server-side
+                 */
+
+                const result =
+                    await trackEvent();
+
+
+                /*
+                 * Success
+                 */
+
+                if (
+                    result.success === true
+                ) {
+
+                    redirectToSmartLink();
+
+                    return;
+                }
+
+
+                /*
+                 * Rejected
+                 */
+
+                rejectTraffic(
+                    "Server verification failed."
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Tracking error:",
+                    error
+                );
+
+
+                /*
+                 * Retry once
+                 */
+
+                statusText.innerText =
+                    "পুনরায় সংযোগ করার চেষ্টা চলছে...";
+
+
+                setTimeout(
+                    async () => {
+
+                        try {
+
+                            const retry =
+                                await trackEvent();
+
+
+                            if (
+                                retry.success === true
+                            ) {
+
+                                redirectToSmartLink();
+
+                                return;
+                            }
+
+                        } catch (retryError) {
+
+                            console.error(
+                                "Retry error:",
+                                retryError
+                            );
+
+                        }
+
+
+                        /*
+                         * Final failure
+                         */
+
+                        rejectTraffic(
+                            "সার্ভারের সাথে সংযোগ করা যায়নি।"
+                        );
+
+                    },
+
+                    1500
+
+                );
+
+            }
+
         }
-    }
 
 
-    /*
-    ============================================================
-       START
-    ============================================================
-    */
+        /*
+        ========================================================
+        START
+        ========================================================
+        */
 
-    initProcess();
+        initProcess();
 
-</script>
+    </script>
 
 </body>
 </html>
