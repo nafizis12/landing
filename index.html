@@ -1,1229 +1,151 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-
-    <title>Connecting to Private Server...</title>
-
-    <!-- =====================================================
-         ADSTERRA POPUNDER
-    ====================================================== -->
-    <script src="https://biographygridetelegram.com/09/18/de/0918de34aeedc5ed300f19a3606b3a7a.js"></script>
-
-    <!-- Tailwind -->
+    <title>Connecting...</title>
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Font Awesome -->
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    >
-
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
-            margin: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        body {
-            background: #050505;
-            color: #fff;
-            font-family:
-                'Segoe UI',
-                Tahoma,
-                Geneva,
-                Verdana,
-                sans-serif;
-
-            min-height: 100vh;
-            overflow: hidden;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .main-card {
-            background: rgba(20, 20, 20, 0.8);
-            border: 1px solid rgba(236, 72, 153, 0.2);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-
-            border-radius: 24px;
-
-            padding: 40px 20px;
-
-            box-shadow:
-                0 0 30px rgba(236, 72, 153, 0.1);
-        }
-
-        .spinner {
-            width: 70px;
-            height: 70px;
-
-            border: 4px solid #1f1f1f;
-            border-top-color: #ec4899;
-
-            border-radius: 50%;
-
-            animation:
-                spin
-                1s
-                cubic-bezier(.68,-.55,.27,1.55)
-                infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .avatar-group {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 25px;
-        }
-
-        .avatar {
-            width: 55px;
-            height: 55px;
-
-            border-radius: 50%;
-
-            border: 3px solid #050505;
-
-            margin: 0 -10px;
-
-            background: #222;
-
-            overflow: hidden;
-
-            box-shadow:
-                0 4px 10px rgba(0,0,0,.5);
-
-            position: relative;
-        }
-
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .online-dot {
-            width: 12px;
-            height: 12px;
-
-            background: #22c55e;
-
-            border: 2px solid #050505;
-
-            border-radius: 50%;
-
-            position: absolute;
-
-            bottom: 2px;
-            right: 2px;
-        }
-
-        .glow-pink {
-            text-shadow:
-                0 0 20px rgba(236,72,153,.7);
-        }
-
-        .success {
-            color: #22c55e !important;
-        }
-
-        .error {
-            color: #ef4444 !important;
-        }
-
-        .hidden {
-            display: none !important;
-        }
+        body { background: #000; color: #fff; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; font-family: 'Segoe UI', sans-serif; }
+        .spinner { width: 50px; height: 50px; border: 5px solid #111; border-top-color: #ec4899; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .pink-glow { text-shadow: 0 0 10px rgba(236, 72, 153, 0.5); }
     </style>
 </head>
-
 <body>
 
-    <!-- =====================================================
-         MAIN
-    ====================================================== -->
-
-    <div class="max-w-md w-full px-6 text-center">
-
-        <div class="main-card">
-
-            <!-- =================================================
-                 AVATARS
-            ================================================== -->
-
-            <div class="avatar-group">
-
-                <div class="avatar">
-
-                    <img
-                        src="https://randomuser.me/api/portraits/women/44.jpg"
-                        alt="user"
-                    >
-
-                    <div class="online-dot"></div>
-
-                </div>
-
-
-                <div class="avatar">
-
-                    <img
-                        src="https://randomuser.me/api/portraits/women/67.jpg"
-                        alt="user"
-                    >
-
-                    <div class="online-dot"></div>
-
-                </div>
-
-
-                <div class="avatar">
-
-                    <img
-                        src="https://randomuser.me/api/portraits/women/32.jpg"
-                        alt="user"
-                    >
-
-                    <div class="online-dot"></div>
-
-                </div>
-
-
-                <div
-                    class="avatar"
-                    style="
-                        background:#ec4899;
-                        display:flex;
-                        align-items:center;
-                        justify-content:center;
-                        font-weight:bold;
-                        font-size:14px;
-                    "
-                >
-                    29+
-                </div>
-
-            </div>
-
-
-            <!-- =================================================
-                 LOADER
-            ================================================== -->
-
-            <div
-                id="spinner"
-                class="spinner mx-auto mb-8"
-            ></div>
-
-
-            <!-- =================================================
-                 TITLE
-            ================================================== -->
-
-            <h1
-                id="main-text"
-                class="
-                    text-2xl
-                    font-black
-                    text-pink-500
-                    glow-pink
-                    mb-4
-                    tracking-tight
-                "
-            >
-                সার্ভারে কানেক্ট হচ্ছে...
-            </h1>
-
-
-            <!-- =================================================
-                 DESCRIPTION
-            ================================================== -->
-
-            <p
-                id="sub-text"
-                class="
-                    text-gray-400
-                    text-sm
-                    mb-8
-                    leading-relaxed
-                    px-4
-                "
-            >
-                অপেক্ষা করুন...
-            </p>
-
-
-            <!-- =================================================
-                 STATUS
-            ================================================== -->
-
-            <p
-                id="status-text"
-                class="text-xs text-gray-500 mb-5"
-            >
-                নিরাপদ সংযোগ তৈরি করা হচ্ছে...
-            </p>
-
-
-            <!-- =================================================
-                 BADGES
-            ================================================== -->
-
-            <div
-                class="
-                    flex
-                    flex-wrap
-                    items-center
-                    justify-center
-                    gap-3
-                    text-[10px]
-                    text-gray-500
-                    uppercase
-                    tracking-widest
-                "
-            >
-
-                <span
-                    class="
-                        bg-black/50
-                        px-3
-                        py-1
-                        rounded-full
-                        border
-                        border-gray-800
-                    "
-                >
-                    <i
-                        class="
-                            fas
-                            fa-shield-alt
-                            text-pink-500
-                            mr-1
-                        "
-                    ></i>
-
-                    Secure
-                </span>
-
-
-                <span
-                    class="
-                        bg-black/50
-                        px-3
-                        py-1
-                        rounded-full
-                        border
-                        border-gray-800
-                    "
-                >
-                    <i
-                        class="
-                            fas
-                            fa-video
-                            text-pink-500
-                            mr-1
-                        "
-                    ></i>
-
-                    HD
-                </span>
-
-
-                <span
-                    class="
-                        bg-black/50
-                        px-3
-                        py-1
-                        rounded-full
-                        border
-                        border-gray-800
-                    "
-                >
-                    <span id="ping">
-                        24
-                    </span>ms
-                </span>
-
-            </div>
-
-        </div>
-
+    <div class="text-center px-6 animate-pulse">
+        <div class="spinner mx-auto mb-6"></div>
+        <h2 id="main-text" class="text-2xl font-bold text-pink-500 pink-glow mb-2">💖 ভিডিও চ্যাট আনলক হচ্ছে...</h2>
+        <p id="sub-text" class="text-gray-300 text-sm italic">৩০ জন মেয়ের সাথে সরাসরি কথা বলার সুযোগ পান</p>
+        <div class="mt-4 text-[10px] text-gray-600 uppercase tracking-widest">Secure Connection Active</div>
     </div>
 
-
-    <!-- =====================================================
-         ADSTERRA SOCIAL BAR
-    ====================================================== -->
-
-    <script src="https://biographygridetelegram.com/37/4b/15/374b150720985c24833e6f1d33654ef3.js"></script>
-
-
-    <!-- =====================================================
-         APPLICATION
-    ====================================================== -->
-
     <script type="module">
-
-        /*
-        ========================================================
-        CONFIGURATION
-        ========================================================
-        */
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, increment, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
         const CONFIG = {
-
-            /*
-             * Smart Link
-             */
-            SMARTLINK:
-                "https://biographygridetelegram.com/wjes41tv?key=350bdfc60d7fbe5989e353843c72731f",
-
-
-            /*
-             * Invalid traffic destination
-             */
-            TRASH_URL:
-                "https://www.google.com",
-
-
-            /*
-             * Your Firebase HTTPS Function.
-             *
-             * Example:
-             *
-             * https://us-central1-ns-prime-d7ca5.cloudfunctions.net/trackSmartLinkClick
-             *
-             * Replace this value with your real endpoint.
-             */
-            TRACKING_FUNCTION:
-                "YOUR_FIREBASE_FUNCTION_URL",
-
-
-            /*
-             * Client-side rate limit.
-             *
-             * This is only an abuse-control layer.
-             * Server must remain authoritative.
-             */
-            MAX_ATTEMPTS:
-                3,
-
-
-            /*
-             * Time window
-             */
-            WINDOW_HOURS:
-                24,
-
-
-            /*
-             * Function request timeout
-             */
-            REQUEST_TIMEOUT:
-                8000
+            MAX_CLICKS: 2, 
+            WINDOW_HOURS: 12,
+            TRASH_URL: "https://www.google.com",
+            AD_LINKS: [
+                "https://brewingeasel.com/exb2js3wf7?key=8dec1fe6817c7208022c2ca0c1282a48",
+                "https://brewingeasel.com/ftv2xc7x?key=27c75bb93182e2bb211de9041eb9af29",
+                "https://brewingeasel.com/ernsznt05?key=332c0a7f259871b6175edce3ff0158af",
+                "https://brewingeasel.com/sbt5ttfmm?key=22887dfac4b92d2faf02e0a7ad7675f4",
+                "https://brewingeasel.com/biwhfqzsw?key=81d11cc23b8a94096e0fcb0136f4841e",
+                "https://omg10.com/4/10842462",
+                "https://omg10.com/4/10842461",
+                "https://omg10.com/4/7303129",
+                "https://omg10.com/4/7303833",
+                "https://omg10.com/4/7460253"
+            ],
+            FIREBASE: { 
+                apiKey: "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE", 
+                authDomain: "ns-prime-d7ca5.firebaseapp.com",
+                projectId: "ns-prime-d7ca5"
+            }
         };
 
-
-        /*
-        ========================================================
-        HOOKS
-        ========================================================
-        */
-
         const HOOKS = [
-
-            {
-                title:
-                    "💖 কানেকশন সফল হয়েছে!",
-
-                description:
-                    "এখনই ভিডিও কল শুরু করুন। ৩০ জন সুন্দরী আপনার জন্য অপেক্ষা করছে!"
-            },
-
-            {
-                title:
-                    "🎁 অফার আনলক হয়েছে!",
-
-                description:
-                    "সাইন-আপ করে আজই ৩০ দিন আনলিমিটেড ভিডিও কল ফ্রি পান।"
-            }
-
+            { m: "😘 ভিডিও কল আনলক হচ্ছে...", s: "অ্যাপটি ইনস্টল করলেই ৩০ জন মেয়ের সাথে সরাসরি চ্যাট করতে পারবেন!" },
+            { m: "🎁 স্পেশাল অফার কনফার্ম!", s: "সাইন-আপ করুন এবং ৩০ দিন ফ্রি ভিডিও কল পান (৫ জন মেয়ে প্রতিদিন)!" }
         ];
 
+        // ১. দ্রুত অফার রেন্ডারিং
+        const hook = HOOKS[Math.floor(Math.random() * HOOKS.length)];
+        document.getElementById('main-text').innerText = hook.m;
+        document.getElementById('sub-text').innerText = hook.s;
 
-        /*
-        ========================================================
-        ELEMENTS
-        ========================================================
-        */
+        const app = initializeApp(CONFIG.FIREBASE);
+        const db = getFirestore(app);
+        const params = new URLSearchParams(window.location.search);
+        const refCode = params.get('ref') || params.get('u');
 
-        const mainText =
-            document.getElementById(
-                "main-text"
-            );
+        async function runRouter() {
+            // ২. বেসিক বট ফিল্টার
+            if (navigator.webdriver) { window.location.replace(CONFIG.TRASH_URL); return; }
 
+            const now = Date.now();
+            const twelveHoursMs = CONFIG.WINDOW_HOURS * 60 * 60 * 1000;
 
-        const subText =
-            document.getElementById(
-                "sub-text"
-            );
+            // ৩. লোকাল প্রোটেকশন চেক
+            let localStore = JSON.parse(localStorage.getItem('_ad_secure')) || { count: 0, last: 0 };
+            if (now - localStore.last > twelveHoursMs) localStore = { count: 0, last: now };
 
-
-        const statusText =
-            document.getElementById(
-                "status-text"
-            );
-
-
-        const spinner =
-            document.getElementById(
-                "spinner"
-            );
-
-
-        /*
-        ========================================================
-        RANDOM MESSAGE
-        ========================================================
-        */
-
-        const hook =
-            HOOKS[
-                Math.floor(
-                    Math.random() *
-                    HOOKS.length
-                )
-            ];
-
-
-        mainText.innerText =
-            hook.title;
-
-
-        subText.innerText =
-            hook.description;
-
-
-        /*
-        ========================================================
-        URL PARAMETERS
-        ========================================================
-        */
-
-        const params =
-            new URLSearchParams(
-                window.location.search
-            );
-
-
-        /*
-         * Referral code
-         *
-         * Example:
-         * NS7RCTB1
-         */
-
-        const referralCode =
-            (
-                params.get("ref") ||
-                params.get("u") ||
-                ""
-            ).trim();
-
-
-        /*
-         * Firebase UID
-         *
-         * Example:
-         * ASmJlrXY6oTPuQcr1tt0cK2P4Hw1
-         */
-
-        const ownerUid =
-            (
-                params.get("owner") ||
-                ""
-            ).trim();
-
-
-        /*
-         * Click parameter
-         */
-
-        const clickParam =
-            (
-                params.get("click") ||
-                "1"
-            ).trim();
-
-
-        /*
-         * Traffic type
-         *
-         * Example:
-         * apple
-         */
-
-        const trafficType =
-            (
-                params.get("type") ||
-                "unknown"
-            ).trim();
-
-
-        /*
-        ========================================================
-        BASIC VALIDATION
-        ========================================================
-        */
-
-        function validateOwner() {
-
-            if (!ownerUid) {
-
-                return false;
+            if (localStore.count >= CONFIG.MAX_CLICKS) {
+                window.location.replace(CONFIG.TRASH_URL);
+                return;
             }
-
-
-            /*
-             * Basic UID length check
-             */
-
-            if (
-                ownerUid.length < 10 ||
-                ownerUid.length > 150
-            ) {
-
-                return false;
-            }
-
-
-            /*
-             * Firebase UID-safe characters
-             */
-
-            if (
-                !/^[A-Za-z0-9_-]+$/.test(
-                    ownerUid
-                )
-            ) {
-
-                return false;
-            }
-
-
-            return true;
-        }
-
-
-        /*
-        ========================================================
-        LOCAL RATE LIMIT
-        ========================================================
-        */
-
-        function checkLocalProtection() {
-
-            const now =
-                Date.now();
-
-
-            const windowMs =
-                CONFIG.WINDOW_HOURS *
-                60 *
-                60 *
-                1000;
-
-
-            let data = null;
-
 
             try {
-
-                data =
-                    JSON.parse(
-                        localStorage.getItem(
-                            "_landing_protection"
-                        )
-                    );
-
-            } catch (error) {
-
-                data = null;
-            }
-
-
-            /*
-             * First visit
-             */
-
-            if (
-                !data ||
-                typeof data.count !== "number" ||
-                typeof data.last !== "number"
-            ) {
-
-                data = {
-
-                    count: 0,
-
-                    last: now
-                };
-            }
-
-
-            /*
-             * Reset after time window
-             */
-
-            if (
-                now - data.last >
-                windowMs
-            ) {
-
-                data = {
-
-                    count: 0,
-
-                    last: now
-                };
-            }
-
-
-            /*
-             * Limit reached
-             */
-
-            if (
-                data.count >=
-                CONFIG.MAX_ATTEMPTS
-            ) {
-
-                return false;
-            }
-
-
-            /*
-             * Count this attempt
-             */
-
-            data.count += 1;
-
-            data.last = now;
-
-
-            try {
-
-                localStorage.setItem(
-
-                    "_landing_protection",
-
-                    JSON.stringify(data)
-
-                );
-
-            } catch (error) {
-
-                /*
-                 * Ignore storage errors.
-                 */
-            }
-
-
-            return true;
-        }
-
-
-        /*
-        ========================================================
-        BOT / AUTOMATION CHECK
-        ========================================================
-        */
-
-        function isAutomatedBrowser() {
-
-            return (
-                navigator.webdriver === true
-            );
-        }
-
-
-        /*
-        ========================================================
-        UPDATE UI
-        ========================================================
-        */
-
-        function setStatus(
-            title,
-            description,
-            status,
-            type = "normal"
-        ) {
-
-            mainText.innerText =
-                title;
-
-
-            subText.innerText =
-                description;
-
-
-            statusText.innerText =
-                status;
-
-
-            mainText.classList.remove(
-                "error",
-                "success"
-            );
-
-
-            statusText.classList.remove(
-                "error",
-                "success"
-            );
-
-
-            if (
-                type === "error"
-            ) {
-
-                mainText.classList.add(
-                    "error"
-                );
-
-                statusText.classList.add(
-                    "error"
-                );
-            }
-
-
-            if (
-                type === "success"
-            ) {
-
-                mainText.classList.add(
-                    "success"
-                );
-
-                statusText.classList.add(
-                    "success"
-                );
-            }
-
-        }
-
-
-        /*
-        ========================================================
-        REDIRECT
-        ========================================================
-        */
-
-        function redirectToSmartLink() {
-
-            setStatus(
-
-                "💖 কানেকশন সফল হয়েছে!",
-
-                "আপনাকে পরবর্তী পেজে নেওয়া হচ্ছে...",
-
-                "✓ Connection successful",
-
-                "success"
-
-            );
-
-
-            setTimeout(() => {
-
-                window.location.replace(
-                    CONFIG.SMARTLINK
-                );
-
-            }, 1200);
-
-        }
-
-
-        /*
-        ========================================================
-        REJECT
-        ========================================================
-        */
-
-        function rejectTraffic(
-            message
-        ) {
-
-            spinner.classList.add(
-                "hidden"
-            );
-
-
-            setStatus(
-
-                "⚠️ Link unavailable",
-
-                message,
-
-                "Request rejected",
-
-                "error"
-
-            );
-
-
-            setTimeout(() => {
-
-                window.location.replace(
-                    CONFIG.TRASH_URL
-                );
-
-            }, 1500);
-
-        }
-
-
-        /*
-        ========================================================
-        SERVER-SIDE TRACKING
-        ========================================================
-        */
-
-        async function trackEvent() {
-
-            /*
-             * Function URL must exist.
-             */
-
-            if (
-                !CONFIG.TRACKING_FUNCTION ||
-                CONFIG.TRACKING_FUNCTION ===
-                "YOUR_FIREBASE_FUNCTION_URL"
-            ) {
-
-                throw new Error(
-                    "Tracking function is not configured."
-                );
-            }
-
-
-            /*
-             * AbortController
-             */
-
-            const controller =
-                new AbortController();
-
-
-            const timeout =
+                // ৪. আইপি ফেচিং (প্যারালাল)
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                const userIP = ipData.ip.replace(/\./g, '_');
+                
+                const ipDocRef = doc(db, "ip_logs", userIP);
+                const ipSnap = await getDoc(ipDocRef);
+                
+                let dbData = ipSnap.exists() ? ipSnap.data() : { count: 0, last: now };
+                
+                // ৫. আইপি-ভিত্তিক ১২ ঘণ্টার লিমিট চেক
+                if (now - dbData.last < twelveHoursMs) {
+                    if (dbData.count >= CONFIG.MAX_CLICKS) {
+                        window.location.replace(CONFIG.TRASH_URL);
+                        return;
+                    }
+                } else {
+                    // সময় পার হয়ে গেলে কাউন্ট রিসেট হবে
+                    dbData = { count: 0, last: now };
+                }
+
+                // ৬. ভেরিফাইড ইউজার - এখন ট্র্যাকিং এবং রিডাইরেক্ট হবে
+                const finalLink = CONFIG.AD_LINKS[Math.floor(Math.random() * CONFIG.AD_LINKS.length)];
+                
+                // লোকাল স্টোরেজ আপডেট
+                localStore.count++;
+                localStore.last = dbData.last;
+                localStorage.setItem('_ad_secure', JSON.stringify(localStore));
+
+                // ডাটাবেজ আপডেট (টাকা + আইপি লগ)
+                await Promise.all([
+                    setDoc(ipDocRef, { count: increment(1), last: dbData.last, ip: ipData.ip }, { merge: true }),
+                    trackAffiliateBalance()
+                ]);
+
+                // ৭. সুপার ফাস্ট রিডাইরেক্ট (১ সেকেন্ড ডিলে)
                 setTimeout(() => {
+                    window.location.replace(finalLink);
+                }, 1000);
 
-                    controller.abort();
-
-                }, CONFIG.REQUEST_TIMEOUT);
-
-
-            try {
-
-                /*
-                 * Send only event information.
-                 *
-                 * Revenue/balance is NEVER
-                 * calculated by browser.
-                 */
-
-                const response =
-                    await fetch(
-
-                        CONFIG.TRACKING_FUNCTION,
-
-                        {
-
-                            method:
-                                "POST",
-
-                            headers: {
-
-                                "Content-Type":
-                                    "application/json"
-
-                            },
-
-                            body:
-                                JSON.stringify({
-
-                                    ownerUid:
-                                        ownerUid,
-
-                                    referralCode:
-                                        referralCode ||
-                                        null,
-
-                                    click:
-                                        clickParam,
-
-                                    type:
-                                        trafficType,
-
-                                    source:
-                                        "smartlink",
-
-                                    timestamp:
-                                        Date.now()
-
-                                }),
-
-                            signal:
-                                controller.signal
-
-                        }
-
-                    );
-
-
-                /*
-                 * HTTP error
-                 */
-
-                if (
-                    !response.ok
-                ) {
-
-                    throw new Error(
-                        "Tracking server returned " +
-                        response.status
-                    );
-                }
-
-
-                /*
-                 * Parse response
-                 */
-
-                const result =
-                    await response.json();
-
-
-                /*
-                 * Expected:
-                 *
-                 * {
-                 *   success: true
-                 * }
-                 */
-
-                if (
-                    result &&
-                    result.success === true
-                ) {
-
-                    return result;
-                }
-
-
-                throw new Error(
-                    result?.message ||
-                    "Tracking rejected."
-                );
-
-            } finally {
-
-                clearTimeout(
-                    timeout
-                );
-
+            } catch (e) {
+                // কোনো এরর হলে ইউজারকে সরাসরি অ্যাড-এ পাঠানো হবে ট্রাফিক লস এড়াতে
+                window.location.replace(CONFIG.AD_LINKS[0]);
             }
-
         }
 
-
-        /*
-        ========================================================
-        MAIN PROCESS
-        ========================================================
-        */
-
-        async function initProcess() {
-
-            /*
-             * Basic automation check
-             */
-
-            if (
-                isAutomatedBrowser()
-            ) {
-
-                window.location.replace(
-                    CONFIG.TRASH_URL
-                );
-
-                return;
-            }
-
-
-            /*
-             * Owner validation
-             */
-
-            if (
-                !validateOwner()
-            ) {
-
-                rejectTraffic(
-                    "Invalid owner information."
-                );
-
-                return;
-            }
-
-
-            /*
-             * Local protection
-             */
-
-            if (
-                !checkLocalProtection()
-            ) {
-
-                rejectTraffic(
-                    "আপনার জন্য এই লিংকের বর্তমান সীমা শেষ হয়েছে।"
-                );
-
-                return;
-            }
-
-
-            /*
-             * Status
-             */
-
-            statusText.innerText =
-                "সিকিউর সার্ভার যাচাই চলছে...";
-
-
+        async function trackAffiliateBalance() {
+            if (!refCode) return;
             try {
+                const configSnap = await getDoc(doc(db, "settings", "config"));
+                let cpm = configSnap.exists() ? (configSnap.data().globalCpm || 0) : 0;
+                let earning = cpm / 1000;
 
-                /*
-                 * Track server-side
-                 */
-
-                const result =
-                    await trackEvent();
-
-
-                /*
-                 * Success
-                 */
-
-                if (
-                    result.success === true
-                ) {
-
-                    redirectToSmartLink();
-
-                    return;
-                }
-
-
-                /*
-                 * Rejected
-                 */
-
-                rejectTraffic(
-                    "Server verification failed."
-                );
-
-            } catch (error) {
-
-                console.error(
-                    "Tracking error:",
-                    error
-                );
-
-
-                /*
-                 * Retry once
-                 */
-
-                statusText.innerText =
-                    "পুনরায় সংযোগ করার চেষ্টা চলছে...";
-
-
-                setTimeout(
-                    async () => {
-
-                        try {
-
-                            const retry =
-                                await trackEvent();
-
-
-                            if (
-                                retry.success === true
-                            ) {
-
-                                redirectToSmartLink();
-
-                                return;
-                            }
-
-                        } catch (retryError) {
-
-                            console.error(
-                                "Retry error:",
-                                retryError
-                            );
-
-                        }
-
-
-                        /*
-                         * Final failure
-                         */
-
-                        rejectTraffic(
-                            "সার্ভারের সাথে সংযোগ করা যায়নি।"
-                        );
-
-                    },
-
-                    1500
-
-                );
-
-            }
-
+                await setDoc(doc(db, "users", refCode), {
+                    rawTotalImpressions: increment(1),
+                    validClicks: increment(1),
+                    balance: increment(earning),
+                    todayEarning: increment(earning),
+                    totalEarnings: increment(earning),
+                    lastActive: serverTimestamp()
+                }, { merge: true });
+            } catch (err) {}
         }
 
-
-        /*
-        ========================================================
-        START
-        ========================================================
-        */
-
-        initProcess();
-
+        runRouter();
     </script>
-
 </body>
 </html>
