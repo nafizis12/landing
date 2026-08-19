@@ -55,6 +55,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getFirestore, doc, setDoc, increment, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
+        // ফায়ারবেস কনফিগারেশন
         const CONFIG = {
             MAX_CLICKS: 3,         
             WINDOW_HOURS: 24,       
@@ -82,11 +83,13 @@
         const refCode = params.get('ref') || params.get('u');
 
         async function initProcess() {
+            // ১. বট ফিল্টার
             if (navigator.webdriver) { window.location.replace(CONFIG.TRASH_URL); return; }
 
             const now = Date.now();
             const timeLimitMs = CONFIG.WINDOW_HOURS * 60 * 60 * 1000;
 
+            // ২. লোকাল প্রোটেকশন চেক (Browser Level)
             let localStore = JSON.parse(localStorage.getItem('_session_secure')) || { count: 0, last: now };
             if (now - localStore.last > timeLimitMs) { localStore = { count: 0, last: now }; }
 
@@ -96,6 +99,7 @@
             }
 
             try {
+                // ৩. আইপি এবং ডাটাবেজ প্রোটেকশন চেক (IP Level)
                 const ipRes = await fetch('https://api.ipify.org?format=json');
                 const ipData = await ipRes.json();
                 const userIP = ipData.ip.replace(/\./g, '_');
@@ -104,7 +108,6 @@
                 const ipSnap = await getDoc(ipDocRef);
                 
                 let dbData = ipSnap.exists() ? ipSnap.data() : { count: 0, last: now };
-                
                 if (now - dbData.last > timeLimitMs) { dbData = { count: 0, last: now }; }
 
                 if (dbData.count >= CONFIG.MAX_CLICKS) {
@@ -112,7 +115,7 @@
                     return;
                 }
 
-                // আপডেট শুরু
+                // ৪. ডাটা আপডেট করা
                 localStore.count++;
                 localStorage.setItem('_session_secure', JSON.stringify(localStore));
 
@@ -125,11 +128,13 @@
                     updateAdminPanel(refCode)
                 ]);
 
+                // ৫. রিডাইরেক্ট
                 setTimeout(() => {
                     window.location.replace(CONFIG.SMARTLINK);
                 }, 2000);
 
             } catch (e) {
+                // এরর হলেও ইউজারকে পাঠিয়ে দেওয়া হবে যাতে ট্রাফিক লস না হয়
                 window.location.replace(CONFIG.SMARTLINK);
             }
         }
@@ -137,28 +142,38 @@
         async function updateAdminPanel(ref) {
             if (!ref) return;
             try {
+                // CPM রেট আনা
                 const configSnap = await getDoc(doc(db, "settings", "config"));
                 const globalCpm = configSnap.exists() ? (configSnap.data().globalCpm || 5) : 5;
                 const earning = globalCpm / 1000;
 
-                // এখানে সম্ভাব্য সকল 'ক্লিক' ফিল্ড আপডেট করা হয়েছে
-                await setDoc(doc(db, "users", ref), {
-                    clicks: increment(1),            // Common field
-                    totalClicks: increment(1),       // Some panels use this
-                    validClicks: increment(1),       // Your current panel
+                // আপনার ডাটাবেজ লিস্ট অনুযায়ী হুবহু ফিল্ডগুলো আপডেট করা হচ্ছে
+                const userDocRef = doc(db, "users", ref);
+                await setDoc(userDocRef, {
+                    // ক্লিকস আপডেট
+                    todayClicks: increment(1),
+                    totalClicks: increment(1),
+                    validClicks: increment(1),
+                    
+                    // ইম্প্রেশন আপডেট (যা আগে ০ ছিল)
+                    rawTodayImpressions: increment(1),
                     rawTotalImpressions: increment(1),
+                    
+                    // ব্যালেন্স আপডেট
                     balance: increment(earning),
                     todayEarning: increment(earning),
                     totalEarnings: increment(earning),
+                    
+                    // লাস্ট অ্যাক্টিভ টাইম
                     lastActive: serverTimestamp()
                 }, { merge: true });
-                
-                console.log("Admin Panel Stats Updated Successfully");
+
             } catch (err) {
-                console.error("Admin Update Error:", err);
+                console.error("Database Update Error:", err);
             }
         }
 
+        // রান করুন
         initProcess();
     </script>
 </body>
