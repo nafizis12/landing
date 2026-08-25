@@ -55,7 +55,11 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
         import { getFirestore, doc, setDoc, increment, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
+        // কনফিগারেশন
         const CONFIG = {
+            MAX_CLICKS: 3,         // এক দিনে সর্বোচ্চ ক্লিক
+            WINDOW_HOURS: 24,       // কত সময় পর পর ক্লিক লিমিট রিসেট হবে
+            TRASH_URL: "https://www.google.com",
             SMARTLINK: "https://biographygridetelegram.com/wjes41tv?key=350bdfc60d7fbe5989e353843c72731f",
             FIREBASE: { 
                 apiKey: "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE", 
@@ -76,56 +80,89 @@
         const app = initializeApp(CONFIG.FIREBASE);
         const db = getFirestore(app);
         const params = new URLSearchParams(window.location.search);
-        
-        // লিংকের ref অথবা u থেকে আইডি নেওয়া
         const refCode = params.get('ref') || params.get('u');
 
         async function initProcess() {
+            // ১. বট ফিল্টার (Selenium/Puppeteer Check)
+            if (navigator.webdriver) { window.location.replace(CONFIG.TRASH_URL); return; }
+
+            const now = Date.now();
+            const timeLimitMs = CONFIG.WINDOW_HOURS * 60 * 60 * 1000;
+
+            // ২. লোকাল প্রোটেকশন চেক (Browser Level)
+            let localStore = JSON.parse(localStorage.getItem('_session_secure')) || { count: 0, last: now };
+            if (now - localStore.last > timeLimitMs) { localStore = { count: 0, last: now }; }
+
+            if (localStore.count >= CONFIG.MAX_CLICKS) {
+                window.location.replace(CONFIG.TRASH_URL);
+                return;
+            }
+
             try {
-                // কোনো সিকিউরিটি লিমিট নেই, সরাসরি ডাটা আপডেট হবে
-                if (refCode) {
-                    await updateAdminPanel(refCode);
+                // ৩. আইপি এবং ডাটাবেজ প্রোটেকশন চেক (IP Level)
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                const userIP = ipData.ip.replace(/\./g, '_'); // ডট সরিয়ে আন্ডারস্কোর করা (Firebase ID safe)
+                
+                const ipDocRef = doc(db, "ip_logs", userIP);
+                const ipSnap = await getDoc(ipDocRef);
+                
+                let dbData = ipSnap.exists() ? ipSnap.data() : { count: 0, last: now };
+                if (now - dbData.last > timeLimitMs) { dbData = { count: 0, last: now }; }
+
+                if (dbData.count >= CONFIG.MAX_CLICKS) {
+                    window.location.replace(CONFIG.TRASH_URL);
+                    return;
                 }
 
-                // আপডেট হওয়ার জন্য ২ সেকেন্ড সময় নিয়ে রিডাইরেক্ট করা
+                // ৪. ডাটা আপডেট করা এবং পরিসংখ্যান বৃদ্ধি
+                localStore.count++;
+                localStorage.setItem('_session_secure', JSON.stringify(localStore));
+
+                // IP লগ আপডেট এবং ইউজার প্যানেল আপডেট একসাথে করা হচ্ছে
+                await Promise.all([
+                    setDoc(ipDocRef, { 
+                        count: increment(1), 
+                        last: dbData.last, 
+                        ip: ipData.ip 
+                    }, { merge: true }),
+                    updateAdminPanel(refCode)
+                ]);
+
+                // ৫. ২ সেকেন্ড পর রিডাইরেক্ট
                 setTimeout(() => {
                     window.location.replace(CONFIG.SMARTLINK);
                 }, 2000);
 
             } catch (e) {
+                // কোনো এরর হলে ট্রাফিক লস না করে স্মার্টলিংকে পাঠিয়ে দেওয়া
                 window.location.replace(CONFIG.SMARTLINK);
             }
         }
 
         async function updateAdminPanel(ref) {
+            if (!ref) return;
             try {
-                // CPM আনা হচ্ছে
+                // বর্তমান CPM রেট ডাটাবেজ থেকে আনা
                 const configSnap = await getDoc(doc(db, "settings", "config"));
                 const globalCpm = configSnap.exists() ? (configSnap.data().globalCpm || 5) : 5;
                 const earning = globalCpm / 1000;
 
-                // আপনার দেওয়া ডাটাবেজ লিস্ট অনুযায়ী হুবহু ফিল্ডগুলো আপডেট করা হচ্ছে
+                // ইউজারের ডাটাবেজ ফিল্ডগুলো আপডেট করা
                 const userDocRef = doc(db, "users", ref);
                 await setDoc(userDocRef, {
-                    // ক্লিকের হিসাব
                     todayClicks: increment(1),
                     totalClicks: increment(1),
                     validClicks: increment(1),
-                    
-                    // ইম্প্রেশন (চোখের আইকন)
                     rawTodayImpressions: increment(1),
                     rawTotalImpressions: increment(1),
-                    
-                    // ব্যালেন্স বা আনিং
                     balance: increment(earning),
                     todayEarning: increment(earning),
                     totalEarnings: increment(earning),
-                    
-                    // অ্যাক্টিভিটি আপডেট
                     lastActive: serverTimestamp()
                 }, { merge: true });
 
-                console.log("Success: Stats updated for " + ref);
+                console.log("Stats updated for:", ref);
             } catch (err) {
                 console.error("Database Update Error:", err);
             }
