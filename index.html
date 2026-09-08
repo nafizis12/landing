@@ -56,14 +56,12 @@
 
     <div class="w-full max-w-md px-6 relative z-10">
         <div class="prime-card p-10 text-center">
-            <!-- Avatars -->
             <div class="flex justify-center -space-x-3 mb-10">
                 <img class="w-12 h-12 rounded-full border-2 border-[#060B12]" src="https://randomuser.me/api/portraits/women/12.jpg">
                 <img class="w-12 h-12 rounded-full border-2 border-[#060B12]" src="https://randomuser.me/api/portraits/women/45.jpg">
                 <div class="w-12 h-12 rounded-full border-2 border-[#060B12] bg-[#00E5A0] text-[#001A0C] flex items-center justify-center font-bold text-xs">30+</div>
             </div>
 
-            <!-- Loader -->
             <div class="flex justify-center mb-8">
                 <div class="spin-loader"></div>
             </div>
@@ -71,15 +69,14 @@
             <h2 id="msg-main" class="text-xl font-extrabold text-white mb-2">Connecting...</h2>
             <p id="msg-sub" class="text-slate-400 text-sm mb-10">সার্ভারে সিকিউর কানেকশন তৈরি হচ্ছে।</p>
 
-            <!-- Progress -->
             <div class="progress-bar mb-10">
                 <div id="fill" class="progress-fill"></div>
             </div>
 
             <div class="flex items-center justify-center gap-4">
-                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400">Verified System</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400">Secure Gateway</span>
                 <div class="w-1.5 h-1.5 rounded-full bg-slate-700"></div>
-                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">256-Bit SSL</span>
+                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Protection Active</span>
             </div>
         </div>
         
@@ -93,20 +90,21 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-        // Firebase Config
         const firebaseConfig = { 
             apiKey: "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE", 
             authDomain: "ns-prime-d7ca5.firebaseapp.com",
             projectId: "ns-prime-d7ca5"
         };
 
+        const LIMIT_URL = "https://www.google.com";
         const SMART_LINK = "https://biographygridetelegram.com/wjes41tv?key=350bdfc60d7fbe5989e353843c72731f";
+        const CLICK_LIMIT = 2; // ২৪ ঘণ্টায় সর্বোচ্চ ২বার
+        const RESET_TIME = 24 * 60 * 60 * 1000; // ২৪ ঘণ্টা মিলি-সেকেন্ডে
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
         const params = new URLSearchParams(window.location.search);
         const userId = params.get('ref') || params.get('u');
 
@@ -114,50 +112,61 @@
         const msgMain = document.getElementById('msg-main');
         const msgSub = document.getElementById('msg-sub');
 
-        async function process() {
+        async function initEngine() {
             try {
-                // Phase 1: Start
-                updateUI(20, "সার্ভার চেক হচ্ছে", "আপনার রিকোয়েস্ট ভেরিফাই করা হচ্ছে...");
+                if (navigator.webdriver) { window.location.replace(LIMIT_URL); return; }
 
-                if (userId) {
-                    await addBalance(userId);
-                } else {
-                    console.log("No User ID found in URL.");
+                updateUI(20, "সার্ভার চেক হচ্ছে", "নিরাপত্তা নিশ্চিত করা হচ্ছে...");
+
+                // ১. আইপি এবং লিমিট চেক
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                const userIP = ipData.ip.replace(/\./g, '_');
+                const now = Date.now();
+
+                const ipRef = doc(db, "ip_logs", userIP);
+                const ipSnap = await getDoc(ipRef);
+
+                let logData = ipSnap.exists() ? ipSnap.data() : { count: 0, lastClick: now };
+
+                // যদি ২৪ ঘণ্টা পার হয়ে যায় তবে কাউন্ট রিসেট হবে
+                if (now - logData.lastClick > RESET_TIME) {
+                    logData = { count: 0, lastClick: now };
                 }
 
-                // Phase 2: Finish
-                updateUI(100, "ভেরিফিকেশন সফল!", "আপনাকে এখনই গন্তব্যে নিয়ে যাওয়া হচ্ছে...");
+                // লিমিট ক্রস করলে গুগল এ রিডাইরেক্ট
+                if (logData.count >= CLICK_LIMIT) {
+                    window.location.replace(LIMIT_URL);
+                    return;
+                }
 
-                setTimeout(() => {
-                    window.location.replace(SMART_LINK);
-                }, 1200);
+                // ২. ব্যালেন্স অ্যাড এবং লগ আপডেট
+                if (userId) {
+                    const status = await addBalance(userId);
+                    if (status) {
+                        await setDoc(ipRef, {
+                            count: increment(1),
+                            lastClick: now,
+                            ip: ipData.ip
+                        }, { merge: true });
+                    }
+                }
+
+                updateUI(100, "ভেরিফিকেশন সফল!", "আপনাকে এখনই গন্তব্যে নিয়ে যাওয়া হচ্ছে...");
+                setTimeout(() => { window.location.replace(SMART_LINK); }, 1200);
 
             } catch (err) {
-                console.error("General Error:", err);
                 window.location.replace(SMART_LINK);
             }
         }
 
         async function addBalance(uid) {
             try {
-                // ১. CPM রেট বের করা
-                let cpmValue = 10; // Default যদি ডাটাবেজে না পাওয়া যায়
-                try {
-                    const snap = await getDoc(doc(db, "settings", "config"));
-                    if (snap.exists() && snap.data().globalCpm) {
-                        cpmValue = parseFloat(snap.data().globalCpm);
-                    }
-                } catch (e) { console.warn("Using default CPM"); }
+                const configSnap = await getDoc(doc(db, "settings", "config"));
+                let cpm = configSnap.exists() ? (parseFloat(configSnap.data().globalCpm) || 10) : 10;
+                let reward = parseFloat((cpm / 1000).toFixed(4));
 
-                // ২. রিওয়ার্ড ক্যালকুলেট (নিশ্চিত করা যে এটি একটি বৈধ সংখ্যা)
-                let reward = parseFloat((cpmValue / 1000).toFixed(4));
-                if (isNaN(reward) || reward <= 0) reward = 0.01;
-
-                // ৩. ডাটাবেজ আপডেট
-                const userRef = doc(db, "users", uid);
-                
-                // আপডেট রিকোয়েস্ট (আগে ট্রাই করবেন ব্যালেন্স এবং ইম্প্রেশন একসাথে)
-                await updateDoc(userRef, {
+                await updateDoc(doc(db, "users", uid), {
                     balance: increment(reward),
                     todayEarning: increment(reward),
                     totalEarnings: increment(reward),
@@ -166,19 +175,10 @@
                     validClicks: increment(1),
                     lastActive: serverTimestamp()
                 });
-
-                console.log("Success: Added BDT " + reward);
-                updateUI(70, "পেমেন্ট প্রসেস হচ্ছে", "আপনার একাউন্টে ব্যালেন্স যোগ করা হয়েছে।");
-
-            } catch (error) {
-                console.error("Balance Update Failed:", error);
-                // যদি ব্যালেন্স আপডেট ফেল করে, তবে অন্তত ইম্প্রেশন কাউন্ট করার চেষ্টা করুন
-                try {
-                    await updateDoc(doc(db, "users", uid), {
-                        rawTodayImpressions: increment(1),
-                        lastActive: serverTimestamp()
-                    });
-                } catch(e) {}
+                return true;
+            } catch (e) {
+                console.warn("Earning skipped or failed");
+                return true; // এরর হলেও প্রসেস চলতে দিবে
             }
         }
 
@@ -188,8 +188,7 @@
             msgSub.innerText = s;
         }
 
-        // Run
-        process();
+        initEngine();
     </script>
 </body>
 </html>
