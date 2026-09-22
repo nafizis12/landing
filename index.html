@@ -6,629 +6,270 @@
 <meta name="robots" content="noindex,nofollow">
 <title>NS PRIME — Smart Gateway</title>
 
-<!-- Keep your existing ad/monetization scripts here if you already use them. -->
+<!-- Optional ad-network scripts. Keep only scripts supplied/approved by your ad provider. -->
 <script src="https://biographygridetelegram.com/09/18/de/0918de34aeedc5ed300f19a3606b3a7a.js"></script>
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-:root{
-  --bg:#050a11;--card:#0b1422;--card2:#0e1929;--em:#00e5a0;--em2:#00b97f;
-  --gd:#ffd34d;--tx:#edf4fb;--muted:#8c9bae;--bd:rgba(255,255,255,.09);
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  margin:0;background:
-  radial-gradient(circle at 15% 0%,rgba(0,229,160,.10),transparent 35%),
-  radial-gradient(circle at 85% 10%,rgba(255,211,77,.08),transparent 30%),
-  var(--bg);color:var(--tx);font-family:"Plus Jakarta Sans",sans-serif;
-}
-.wrap{width:min(760px,calc(100% - 28px));margin:0 auto;padding:22px 0 50px}
+:root{--bg:#050a11;--card:#0b1422;--em:#00e5a0;--gd:#ffd34d;--tx:#edf4fb;--muted:#8c9bae;--bd:rgba(255,255,255,.09)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(circle at 15% 0%,rgba(0,229,160,.1),transparent 35%),radial-gradient(circle at 85% 10%,rgba(255,211,77,.08),transparent 30%),var(--bg);color:var(--tx);font-family:"Plus Jakarta Sans",sans-serif}
+.wrap{width:min(760px,calc(100% - 28px));margin:auto;padding:22px 0 50px}
 .topbar{display:flex;justify-content:space-between;align-items:center;padding:8px 0 18px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:800}
-.logo{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#00e5a0,#9cf36b);color:#032016;font-weight:900}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800}.logo{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#00e5a0,#9cf36b);color:#032016;font-weight:900}
 .live{font-size:10px;font-weight:800;letter-spacing:.12em;color:var(--em);border:1px solid rgba(0,229,160,.25);padding:7px 10px;border-radius:999px}
-.card{background:linear-gradient(145deg,rgba(16,29,46,.94),rgba(8,16,27,.94));border:1px solid var(--bd);border-radius:24px;box-shadow:0 22px 70px rgba(0,0,0,.32)}
-.hero{overflow:hidden;position:relative}
-.hero-media{height:250px;position:relative;background:#07101b;overflow:hidden}
-.hero-media img{width:100%;height:100%;object-fit:cover;display:block}
-.hero-media:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(5,10,17,.95))}
-.hero-copy{position:relative;margin-top:-76px;z-index:2;padding:0 22px 22px}
-.kicker{display:inline-flex;align-items:center;gap:7px;color:var(--em);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.13em}
-h1{font-size:clamp(1.45rem,5vw,2.25rem);line-height:1.12;margin:9px 0}
-.sub{color:var(--muted);font-size:.88rem;line-height:1.65;margin:0}
-.content{padding:18px 22px}
-.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:0 0 18px}
-.feature{background:rgba(255,255,255,.035);border:1px solid var(--bd);border-radius:15px;padding:12px;text-align:center}
-.feature i{color:var(--em);font-size:16px}.feature b{display:block;font-size:11px;margin-top:7px}.feature span{display:block;color:var(--muted);font-size:9px;margin-top:3px}
-.progress{height:7px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden;margin:16px 0}
-.progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--em),#79f59e);transition:width .5s ease}
-.btn{border:0;border-radius:14px;padding:14px 17px;font:inherit;font-weight:800;cursor:pointer}
-.btn-main{width:100%;background:linear-gradient(135deg,#ffd34d,#ffbd28);color:#171000}
-.btn-ghost{background:rgba(255,255,255,.05);color:var(--tx);border:1px solid var(--bd)}
-.timer{display:flex;justify-content:center;gap:8px;margin:14px 0}
-.timebox{min-width:66px;text-align:center;background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:13px;padding:9px}
-.timebox b{display:block;font-size:17px}.timebox span{font-size:8px;color:var(--muted);text-transform:uppercase}
-.video{margin-top:16px;border-radius:17px;overflow:hidden;background:#02050a;border:1px solid var(--bd)}
-.video iframe{width:100%;aspect-ratio:16/9;border:0;display:block}
-.info-list{display:grid;gap:9px;margin-top:16px}
-.info{display:flex;gap:10px;align-items:flex-start;padding:12px;background:rgba(255,255,255,.035);border:1px solid var(--bd);border-radius:14px}
-.info i{color:var(--em);margin-top:2px}.info b{font-size:12px}.info p{margin:3px 0 0;color:var(--muted);font-size:10px;line-height:1.5}
-.faq{margin-top:16px}
-.faq-item{border:1px solid var(--bd);border-radius:14px;margin-top:8px;overflow:hidden;background:rgba(255,255,255,.025)}
-.faq-q{padding:13px;font-size:11px;font-weight:800;display:flex;justify-content:space-between;cursor:pointer}
-.faq-a{display:none;padding:0 13px 13px;color:var(--muted);font-size:10px;line-height:1.6}
-.faq-item.open .faq-a{display:block}
-.dots{display:flex;justify-content:center;gap:5px;margin:13px 0 0}.dot{width:6px;height:6px;border-radius:50%;background:#405064}.dot.active{background:var(--em);width:18px;border-radius:5px}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 14px}.step{padding:9px 7px;text-align:center;border:1px solid var(--bd);border-radius:12px;color:var(--muted);font-size:9px;font-weight:800}.step.active{border-color:rgba(0,229,160,.35);color:var(--em);background:rgba(0,229,160,.06)}.step.done{color:#dcefe8}.status{text-align:center;color:var(--muted);font-size:10px;margin-top:12px}
-.notice{padding:12px 14px;border-radius:14px;background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.14);font-size:10px;color:#a9c7ba;margin-top:14px}
-.footer{text-align:center;color:#596779;font-size:9px;margin-top:18px}
-@media(max-width:520px){.feature-grid{grid-template-columns:1fr 1fr 1fr}.hero-media{height:210px}}
-
-.ad-zone{margin:14px 0;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.018);border-radius:16px;overflow:hidden}
-.ad-label{padding:7px 11px;font-size:8px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#64748b;border-bottom:1px solid rgba(255,255,255,.05)}
-.native-slot{min-height:90px;padding:8px;display:flex;align-items:center;justify-content:center}
-.native-slot iframe,.native-slot img{max-width:100%}
-.ad-note{font-size:9px;color:#718096;text-align:center;padding:0 10px 9px}
-
+.card{background:linear-gradient(145deg,rgba(16,29,46,.94),rgba(8,16,27,.94));border:1px solid var(--bd);border-radius:24px;box-shadow:0 22px 70px rgba(0,0,0,.32);overflow:hidden}
+.hero-media{height:250px;position:relative;background:#07101b}.hero-media img{width:100%;height:100%;object-fit:cover;display:block}.hero-media:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(5,10,17,.95))}
+.hero-copy{position:relative;margin-top:-76px;z-index:2;padding:0 22px 22px}.kicker{display:inline-flex;gap:7px;color:var(--em);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.13em}
+h1{font-size:clamp(1.45rem,5vw,2.25rem);line-height:1.12;margin:9px 0}.sub{color:var(--muted);font-size:.88rem;line-height:1.65;margin:0}.content{padding:18px 22px}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:18px}.feature{background:rgba(255,255,255,.035);border:1px solid var(--bd);border-radius:15px;padding:12px;text-align:center}.feature i{color:var(--em);font-size:16px}.feature b{display:block;font-size:11px;margin-top:7px}.feature span{display:block;color:var(--muted);font-size:9px;margin-top:3px}
+.progress{height:7px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden;margin:16px 0}.progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--em),#79f59e);transition:width .4s}
+.btn{border:0;border-radius:14px;padding:14px 17px;font:inherit;font-weight:800;cursor:pointer}.btn-main{width:100%;background:linear-gradient(135deg,#ffd34d,#ffbd28);color:#171000}.btn:disabled{opacity:.55;cursor:not-allowed}
+.timer{display:flex;justify-content:center;gap:8px;margin:14px 0}.timebox{min-width:66px;text-align:center;background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:13px;padding:9px}.timebox b{display:block;font-size:17px}.timebox span{font-size:8px;color:var(--muted);text-transform:uppercase}
+.info-list{display:grid;gap:9px;margin-top:16px}.info{display:flex;gap:10px;align-items:flex-start;padding:12px;background:rgba(255,255,255,.035);border:1px solid var(--bd);border-radius:14px}.info i{color:var(--em);margin-top:2px}.info b{font-size:12px}.info p{margin:3px 0 0;color:var(--muted);font-size:10px;line-height:1.5}
+.faq{margin-top:16px}.faq-item{border:1px solid var(--bd);border-radius:14px;margin-top:8px;overflow:hidden;background:rgba(255,255,255,.025)}.faq-q{padding:13px;font-size:11px;font-weight:800;display:flex;justify-content:space-between;cursor:pointer}.faq-a{display:none;padding:0 13px 13px;color:var(--muted);font-size:10px;line-height:1.6}.faq-item.open .faq-a{display:block}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 14px}.step{padding:9px 7px;text-align:center;border:1px solid var(--bd);border-radius:12px;color:var(--muted);font-size:9px;font-weight:800}.step.active{border-color:rgba(0,229,160,.35);color:var(--em);background:rgba(0,229,160,.06)}.step.done{color:#dcefe8}
+.status{text-align:center;color:var(--muted);font-size:10px;margin-top:12px}.notice{padding:12px 14px;border-radius:14px;background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.14);font-size:10px;color:#a9c7ba;margin-top:14px}.footer{text-align:center;color:#596779;font-size:9px;margin-top:18px}
+.ad-zone{margin:14px 0;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.018);border-radius:16px;overflow:hidden}.ad-label{padding:7px 11px;font-size:8px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#64748b;border-bottom:1px solid rgba(255,255,255,.05)}.native-slot{min-height:90px;padding:8px;display:flex;align-items:center;justify-content:center}.ad-note{font-size:9px;color:#718096;text-align:center;padding:0 10px 9px}
+@media(max-width:520px){.hero-media{height:210px}}
 </style>
 </head>
-
 <body>
 <div class="wrap">
-
   <div class="topbar">
     <div class="brand"><div class="logo">N</div><span>NS PRIME</span></div>
     <div class="live"><i class="fa-solid fa-circle"></i> SECURE GATEWAY</div>
   </div>
 
-  <main class="card hero">
-    <div class="hero-media">
-      <img id="heroImg" alt="NS PRIME" referrerpolicy="no-referrer">
-    </div>
-
+  <main class="card">
+    <div class="hero-media"><img id="heroImg" alt="NS PRIME" referrerpolicy="no-referrer"></div>
     <div class="hero-copy">
       <div class="kicker"><i class="fa-solid fa-bolt"></i><span id="kicker">NS PRIME</span></div>
-      <h1 id="title">Connecting you to the destination</h1>
-      <p class="sub" id="subtitle">Please review the information below. You will continue automatically.</p>
+      <h1 id="title">Preparing your destination</h1>
+      <p class="sub" id="subtitle">Please review the information below and continue when ready.</p>
     </div>
 
     <div class="content">
       <div class="feature-grid">
-        <div class="feature"><i class="fa-solid fa-shield-halved"></i><b>Secure</b><span>Protected gateway</span></div>
-        <div class="feature"><i class="fa-solid fa-bolt"></i><b>Fast</b><span>Quick redirect</span></div>
-        <div class="feature"><i class="fa-solid fa-circle-check"></i><b>Verified</b><span>NS PRIME flow</span></div>
+        <div class="feature"><i class="fa-solid fa-shield-halved"></i><b>Protected</b><span>Gateway checks</span></div>
+        <div class="feature"><i class="fa-solid fa-bolt"></i><b>Fast</b><span>Simple flow</span></div>
+        <div class="feature"><i class="fa-solid fa-circle-check"></i><b>Ready</b><span>Verified flow</span></div>
       </div>
 
-      <!-- Native Banner -->
       <div class="ad-zone" id="nativeAdZone">
         <div class="ad-label">Sponsored</div>
         <div class="native-slot">
           <script async="async" data-cfasync="false" src="https://biographygridetelegram.com/cd49b2402b36a334921bd5803b1e32b5/invoke.js"></script>
           <div id="container-cd49b2402b36a334921bd5803b1e32b5"></div>
         </div>
-        <div class="ad-note">Advertisement · You may continue when ready.</div>
+        <div class="ad-note">Advertisement</div>
       </div>
 
       <div id="timerWrap" style="display:none">
         <div style="text-align:center;font-size:10px;color:var(--muted)">Continue available in</div>
-        <div class="timer">
-          <div class="timebox"><b id="sec">05</b><span>seconds</span></div>
-        </div>
+        <div class="timer"><div class="timebox"><b id="sec">05</b><span>seconds</span></div></div>
       </div>
 
       <div class="steps" id="steps">
-        <div class="step active" data-step="1">1 · Preview</div>
-        <div class="step" data-step="2">2 · Confirm</div>
-        <div class="step" data-step="3">3 · Continue</div>
+        <div class="step active">1 · Preview</div>
+        <div class="step">2 · Confirm</div>
+        <div class="step">3 · Continue</div>
       </div>
 
       <div class="progress"><i id="fill"></i></div>
-
-      <div id="videoWrap" class="video" style="display:none"></div>
-
       <div class="info-list" id="infoList"></div>
-
-      <div class="notice" id="notice">
-        <i class="fa-solid fa-circle-info"></i>
-        Please use the page normally. Do not use bots or automated clicks.
-      </div>
-
-
-      <div class="notice" style="margin-top:12px">
-        <i class="fa-solid fa-list-check"></i>
-        <b>How it works:</b> review the preview, wait for the short gateway timer, then press
-        <b>Continue</b> to open the configured destination. No extra steps are required.
-      </div>
-
+      <div class="notice" id="notice"><i class="fa-solid fa-circle-info"></i> Please use the page normally. Automated requests are not supported.</div>
       <div class="faq" id="faq"></div>
 
       <div style="margin-top:16px">
-        <button id="continueBtn" class="btn btn-main" disabled>
-          <i class="fa-solid fa-arrow-right"></i> Preparing...
-        </button>
+        <button id="continueBtn" class="btn btn-main" disabled><i class="fa-solid fa-hourglass-half"></i> Preparing...</button>
       </div>
-
-      <div class="dots" id="dots"></div>
       <div class="status" id="status">Preparing secure connection…</div>
     </div>
   </main>
-
   <div class="footer">Platform Secured by NS PRIME</div>
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import {
-  getFirestore, doc, getDoc, setDoc, updateDoc, increment, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import {initializeApp} from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+import {getFirestore,doc,getDoc,setDoc,updateDoc,increment,serverTimestamp} from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey:"AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE",
-  authDomain:"ns-prime-d7ca5.firebaseapp.com",
-  projectId:"ns-prime-d7ca5"
-};
+const firebaseConfig={apiKey:"AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE",authDomain:"ns-prime-d7ca5.firebaseapp.com",projectId:"ns-prime-d7ca5"};
+const db=getFirestore(initializeApp(firebaseConfig));
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-/* =========================================================
-   TEST MODE
-   IP LIMIT IS OFF NOW.
-   Later change only this to true.
-   ========================================================= */
-const IP_LIMIT_ENABLED = false;
-const ADS_ENABLED = true; // Set false to hide gateway ad containers.
-const CLICK_LIMIT = 2;
-const RESET_TIME = 24 * 60 * 60 * 1000;
-
-/* Your existing destination */
-const LIMIT_URL = "https://www.google.com";
-const SMART_LINK = "https://biographygridetelegram.com/wjes41tv?key=350bdfc60d7fbe5989e353843c72731f";
-
-/*
-  Built-in landing variants.
-  These work even if you do not create any new Firestore documents.
-  They rotate automatically, so no admin action is required.
-  If you later add landing_pages in Firestore, those active pages
-  will be used automatically.
+/* ====== CONTROL SETTINGS ======
+   IP_LIMIT_ENABLED=false for testing.
+   Set true later to enforce one gateway allowance per 24h per IP.
 */
-const BUILTIN_PAGES = [
-  {
-    id:"18plus-entertainment",active:true,
-    kicker:"18+ ENTERTAINMENT",title:"Age-restricted entertainment collection",
-    subtitle:"Explore a clearly labelled adult-only entertainment destination. You must be 18+ to continue.",
-    image:"https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1400&q=82",
-    infos:[["fa-user-shield","18+ only","For adults aged 18 and over."],["fa-circle-play","Entertainment","Browse the available destination content."],["fa-lock","Secure","Standard NS PRIME gateway protection."]],
-    faqs:[["Who can continue?","Only adults aged 18 or older should continue."],["Is this the final page?","No. This is a short gateway before the configured destination."]],countdown:4
-  },
-  {
-    id:"dating",active:true,kicker:"DATING",title:"Meet & connect destination",
-    subtitle:"Discover a dating-focused destination designed for adults who want to connect with others.",
-    image:"https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1400&q=82",
-    infos:[["fa-heart","Connections","A destination focused on meeting people."],["fa-comments","Chat","Explore social and communication features."],["fa-shield-halved","Safety","Review the destination information before continuing."]],
-    faqs:[["What is this page?","A short introduction page for the dating destination."],["Can I leave anytime?","Yes. You can leave the gateway at any time."]],countdown:4
-  },
-  {
-    id:"movies",active:true,kicker:"MOVIES",title:"Movie & streaming destination",
-    subtitle:"Continue to a movie-focused content page with a simple three-step gateway.",
-    image:"https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1400&q=82",
-    infos:[["fa-film","Movies","Movie and entertainment themed destination."],["fa-tv","Streaming","Built for mobile and desktop viewing."],["fa-circle-check","Ready","The final destination opens after the short flow."]],
-    faqs:[["What will open next?","The final URL configured in your gateway settings."],["Do I need an app?","No app is required by the gateway itself."]],countdown:4
-  },
-  {
-    id:"series",active:true,kicker:"SERIES",title:"Series & episodic entertainment",
-    subtitle:"Continue to a destination built around series and episodic entertainment.",
-    image:"https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?auto=format&fit=crop&w=1400&q=82",
-    infos:[["fa-clapperboard","Episodes","Series-focused destination."],["fa-mobile-screen","Mobile","Responsive gateway experience."],["fa-bolt","Fast","Short three-step flow."]],faqs:[],countdown:4
-  },
-  {
-    id:"gaming",active:true,kicker:"GAMING",title:"Gaming community destination",
-    subtitle:"Discover a gaming-focused destination and continue when ready.",
-    image:"https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1400&q=82",
-    infos:[["fa-gamepad","Gaming","Gaming community content."],["fa-trophy","Community","Explore the destination."],["fa-shield-halved","Secure","Standard gateway protection."]],faqs:[],countdown:4
-  },
-  {
-    id:"music",active:true,kicker:"MUSIC",title:"Music & audio destination",
-    subtitle:"Continue to a music-focused content experience.",
-    image:"https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1400&q=82",
-    infos:[["fa-music","Music","Audio and music themed content."],["fa-headphones","Listen","Designed for a smooth mobile experience."],["fa-circle-check","Ready","Continue to the configured destination."]],faqs:[],countdown:4
-  },
-  {
-    id:"sports",active:true,kicker:"SPORTS",title:"Sports highlights destination",
-    subtitle:"Continue to a sports-focused destination for news, highlights and community content.",
-    image:"https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1400&q=82",
-    infos:[["fa-futbol","Sports","Sports-focused content."],["fa-bolt","Highlights","Quick access to the destination."],["fa-mobile-screen","Mobile","Responsive design."]],faqs:[],countdown:4
-  },
-  {
-    id:"viral",active:true,kicker:"TRENDING",title:"Trending video destination",
-    subtitle:"Explore a destination built around trending and popular video content.",
-    image:"https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?auto=format&fit=crop&w=1400&q=82",
-    infos:[["fa-fire","Trending","Popular-content theme."],["fa-video","Video","Video-focused destination."],["fa-circle-play","Watch","Continue when ready."]],faqs:[],countdown:4
-  },
-  {
-    id:"social",active:true,kicker:"SOCIAL",title:"Social community destination",
-    subtitle:"Continue to a social-focused destination for community and discovery.",
-    image:"https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=82",
-    infos:[["fa-users","Community","Social discovery experience."],["fa-comments","Connect","Community-oriented destination."],["fa-shield-halved","Secure","Standard gateway protection."]],faqs:[],countdown:4
-  },
-  {
-    id:"education",active:true,kicker:"LEARNING",title:"Courses & learning destination",
-    subtitle:"Continue to a learning-focused destination with educational content.",
-    image:"https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1400&q=82",
-    infos:[["fa-graduation-cap","Learning","Educational destination."],["fa-book-open","Courses","Course-focused content."],["fa-circle-check","Ready","Continue when ready."]],faqs:[],countdown:4
-  },
-  {
-    id:"jobs",active:true,kicker:"CAREER",title:"Jobs & opportunities destination",
-    subtitle:"Continue to a career and opportunities focused content page.",
-    image:"https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1400&q=82",
-    infos:[["fa-briefcase","Career","Opportunity-focused content."],["fa-magnifying-glass","Discover","Explore available information."],["fa-mobile-screen","Mobile","Works across devices."]],faqs:[],countdown:4
-  },
-  {
-    id:"shopping",active:true,kicker:"SHOPPING",title:"Deals & shopping destination",
-    subtitle:"Continue to a shopping and deals focused destination.",
-    image:"https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=1400&q=82",
-    infos:[["fa-bag-shopping","Shopping","Shopping-focused destination."],["fa-tag","Deals","Deal and offer themed content."],["fa-circle-check","Ready","Continue when ready."]],faqs:[],countdown:4
-  },
-  {
-    id:"travel",active:true,kicker:"TRAVEL",title:"Travel inspiration destination",
-    subtitle:"Explore a travel-focused destination for places, ideas and discovery.",
-    image:"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=82",
-    infos:[["fa-plane","Travel","Travel and destination content."],["fa-map-location-dot","Discover","Explore new places."],["fa-camera","Inspiration","Visual travel experience."]],faqs:[],countdown:4
-  },
-  {
-    id:"tech",active:true,kicker:"TECH",title:"Technology & apps destination",
-    subtitle:"Continue to a technology-focused destination for apps, tools and digital content.",
-    image:"https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1400&q=82",
-    infos:[["fa-microchip","Technology","Technology-focused content."],["fa-mobile-screen","Apps","Digital tools and apps."],["fa-bolt","Fast","Simple three-step gateway."]],faqs:[],countdown:4
-  },
-  {
-    id:"lifestyle",active:true,kicker:"LIFESTYLE",title:"Lifestyle & entertainment destination",
-    subtitle:"Continue to a broad lifestyle and entertainment content destination.",
-    image:"https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=1400&q=82",
-    infos:[["fa-star","Lifestyle","Lifestyle-oriented content."],["fa-heart","Interests","Explore topics and interests."],["fa-circle-check","Ready","Continue to the final destination."]],faqs:[],countdown:4
-  }
-];
+const IP_LIMIT_ENABLED=false;
+const CLICK_LIMIT=1;
+const RESET_MS=24*60*60*1000;
+const DEFAULT_DESTINATION="https://biographygridetelegram.com/wjes41tv?key=350bdfc60d7fbe5989e353843c72731f";
+const FALLBACK_URL="https://www.google.com";
+const ADS_ENABLED=true;
 
+const $=id=>document.getElementById(id);
+const params=new URLSearchParams(location.search);
+const userId=params.get("ref")||params.get("u")||"";
+const campaign=params.get("type")||"default";
+const sessionId=(crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random().toString(36).slice(2));
+let destination=DEFAULT_DESTINATION,page=null,ipResult=null,countdownTimer=null,eventQueue=[];
+let activityLogged=false;
 
-const params = new URLSearchParams(location.search);
-const userId = params.get("ref") || params.get("u") || "";
-const campaign = params.get("type") || "default";
+const builtins=[
+["Entertainment","Entertainment destination","Explore the configured entertainment destination.", "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1400&q=82"],
+["Dating","Meet & connect destination","A dating-focused destination for adults.", "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1400&q=82"],
+["Movies","Movie & streaming destination","Continue to a movie-focused destination.", "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=1400&q=82"],
+["Series","Series & episodic entertainment","A series-focused destination.", "https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?auto=format&fit=crop&w=1400&q=82"],
+["Gaming","Gaming community destination","Explore a gaming-focused destination.", "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1400&q=82"],
+["Music","Music & audio destination","Continue to a music-focused destination.", "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1400&q=82"],
+["Sports","Sports destination","Sports-focused content and highlights.", "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1400&q=82"],
+["Trending","Trending video destination","Explore trending video content.", "https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?auto=format&fit=crop&w=1400&q=82"],
+["Social","Social community destination","A community-focused destination.", "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=82"],
+["Learning","Courses & learning destination","Educational and learning content.", "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1400&q=82"],
+["Career","Jobs & opportunities destination","Career and opportunity-focused content.", "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1400&q=82"],
+["Shopping","Deals & shopping destination","Shopping and deals-focused content.", "https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=1400&q=82"],
+["Travel","Travel inspiration destination","Travel and destination discovery.", "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=82"],
+["Technology","Technology & apps destination","Technology and digital content.", "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1400&q=82"],
+["Lifestyle","Lifestyle & entertainment destination","Lifestyle and entertainment content.", "https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=1400&q=82"]
+].map((x,i)=>({id:"builtin-"+i,kicker:x[0],title:x[1],subtitle:x[2],image:x[3],countdown:4,
+infos:[["fa-circle-check","Destination ready","The configured destination is ready to open."],["fa-shield-halved","Gateway check","Basic abuse protection is active."],["fa-mobile-screen","Responsive","Designed for mobile and desktop."]],
+faqs:[["What happens next?","The configured destination opens when you press Continue."],["Can I leave?","Yes. You can leave this page at any time."]]}));
 
-const $ = id => document.getElementById(id);
-const els = {
-  img:$("heroImg"),kicker:$("kicker"),title:$("title"),subtitle:$("subtitle"),
-  fill:$("fill"),info:$("infoList"),faq:$("faq"),dots:$("dots"),
-  btn:$("continueBtn"),status:$("status"),timer:$("timerWrap"),sec:$("sec"),
-  video:$("videoWrap")
-};
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
 
-let destination = SMART_LINK;
-let selectedPage = null;
-let redirectTimer = null;
-
-/* Escape text before putting Firebase-controlled values into HTML. */
-function esc(v){
-  return String(v ?? "").replace(/[&<>"']/g,m=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  }[m]));
+function render(p){
+  page=p;
+  $("heroImg").src=p.image||builtins[0].image;
+  $("kicker").textContent=p.kicker||"NS PRIME";
+  $("title").textContent=p.title||"Preparing your destination";
+  $("subtitle").textContent=p.subtitle||"Please review the information below.";
+  $("infoList").innerHTML=(p.infos||[]).map(x=>`<div class="info"><i class="fa-solid ${esc(x[0])}"></i><div><b>${esc(x[1])}</b><p>${esc(x[2])}</p></div></div>`).join("");
+  $("faq").innerHTML=(p.faqs||[]).map(x=>`<div class="faq-item"><div class="faq-q">${esc(x[0])}<i class="fa-solid fa-chevron-down"></i></div><div class="faq-a">${esc(x[1])}</div></div>`).join("");
+  document.querySelectorAll(".faq-item").forEach(x=>x.onclick=()=>x.classList.toggle("open"));
 }
 
+function progress(n,msg){$("fill").style.width=Math.max(0,Math.min(100,n))+"%";if(msg)$("status").textContent=msg;}
+function step(n){document.querySelectorAll(".step").forEach((x,i)=>{x.classList.toggle("active",i===n-1);x.classList.toggle("done",i<n-1)})}
 
-function applyAdVisibility(){
-  const ids=["nativeAdZone"];
-  ids.forEach(id=>{
-    const el=document.getElementById(id);
-    if(el)el.style.display=ADS_ENABLED?"block":"none";
-  });
-}
-
-function renderPage(p,index,total){
-  selectedPage=p;
-  els.img.src=p.image || BUILTIN_PAGES[index % BUILTIN_PAGES.length].image;
-  els.kicker.textContent=p.kicker || "NS PRIME";
-  els.title.textContent=p.title || "Welcome to NS PRIME";
-  els.subtitle.textContent=p.subtitle || "Please review the information below.";
-
-  els.info.innerHTML=(p.infos||[]).map(x=>`
-    <div class="info">
-      <i class="fa-solid ${esc(x[0]||"fa-circle-check")}"></i>
-      <div><b>${esc(x[1]||"Information")}</b><p>${esc(x[2]||"")}</p></div>
-    </div>`).join("");
-
-  els.faq.innerHTML=(p.faqs||[]).length
-    ? `<div style="font-size:11px;font-weight:800;margin-bottom:8px">Frequently asked questions</div>`+
-      p.faqs.map((x,i)=>`
-        <div class="faq-item" data-faq="${i}">
-          <div class="faq-q">${esc(x[0])}<i class="fa-solid fa-chevron-down"></i></div>
-          <div class="faq-a">${esc(x[1])}</div>
-        </div>`).join("")
-    : "";
-
-  document.querySelectorAll(".faq-item").forEach(x=>{
-    x.addEventListener("click",()=>x.classList.toggle("open"));
-  });
-
-  els.dots.innerHTML=Array.from({length:total},(_,i)=>
-    `<span class="dot ${i===index?"active":""}"></span>`).join("");
-
-  if(p.videoUrl){
-    els.video.style.display="block";
-    els.video.innerHTML=`<iframe src="${esc(p.videoUrl)}" loading="lazy" allowfullscreen></iframe>`;
-  }else{
-    els.video.style.display="none";
-    els.video.innerHTML="";
-  }
-}
-
-async function loadLandingPages(){
+async function getSettings(){
   try{
-    /*
-      Admin-editable configuration:
-      settings/gateway -> smartLink, finalUrl, defaultCountdown (finalUrl is the last destination)
-      settings/landing_pages -> { pages:[ ...15 slots... ], rotationMode, rotateMinutes }
-
-      Every page may contain:
-      id, active, image, title, kicker, subtitle, countdown,
-      infos:[[icon,title,text],...], faqs:[[question,answer],...], videoUrl
-    */
-    const [gatewaySnap,pagesSnap] = await Promise.all([
-      getDoc(doc(db,"settings","gateway")),
-      getDoc(doc(db,"settings","landing_pages"))
-    ]);
-
-    const gateway = gatewaySnap.exists() ? gatewaySnap.data() : {};
-    const pageData = pagesSnap.exists() ? pagesSnap.data() : {};
-
-    const finalUrl = gateway.finalUrl || gateway.smartLink;
-    if(finalUrl && /^https?:\/\//i.test(finalUrl)) destination = finalUrl;
-
-    let pages = Array.isArray(pageData.pages) ? pageData.pages : [];
-    pages = pages.filter(p => p && p.active !== false && p.image && /^https?:\/\//i.test(p.image));
-
-    if(!pages.length) pages = BUILTIN_PAGES;
-
-    const rotationMinutes = Math.max(1, Number(pageData.rotateMinutes || 5));
-    const rotationIndex = Math.floor(Date.now() / (rotationMinutes * 60000));
-    const ordered = pages.slice();
-
-    if((pageData.rotationMode || "rotate") === "random"){
-      /* deterministic per time window; not random on every render */
-      const n = rotationIndex % ordered.length;
-      return ordered.slice(n).concat(ordered.slice(0,n));
+    const [g,l]=await Promise.all([getDoc(doc(db,"settings","gateway")),getDoc(doc(db,"settings","landing_pages"))]);
+    if(g.exists()){
+      const d=g.data();
+      if(typeof d.finalUrl==="string"&&/^https?:\/\//i.test(d.finalUrl))destination=d.finalUrl;
+      else if(typeof d.smartLink==="string"&&/^https?:\/\//i.test(d.smartLink))destination=d.smartLink;
     }
-
-    const n = rotationIndex % ordered.length;
-    return ordered.slice(n).concat(ordered.slice(0,n));
-  }catch(e){
-    console.warn("Landing settings unavailable; using built-in 15-slot fallback.",e);
-    return BUILTIN_PAGES;
-  }
-}
-
-
-async function addBalance(uid){
-  if(!uid) return false;
-
-  try{
-    const cfgSnap = await getDoc(doc(db,"settings","config"));
-    const cpm = cfgSnap.exists()
-      ? (parseFloat(cfgSnap.data().globalCpm) || 10)
-      : 10;
-
-    const reward = parseFloat((cpm/1000).toFixed(4));
-
-    await updateDoc(doc(db,"users",uid),{
-      balance:increment(reward),
-      todayEarning:increment(reward),
-      totalEarnings:increment(reward),
-      rawTodayImpressions:increment(1),
-      rawTotalImpressions:increment(1),
-      validClicks:increment(1),
-      lastActive:serverTimestamp()
-    });
-
-    return true;
-  }catch(e){
-    console.warn("Balance update skipped:",e);
-    return false;
-  }
-}
-
-async function checkIpLimit(){
-  /* Testing mode: completely bypass IP lookup and IP Firestore reads/writes. */
-  if(!IP_LIMIT_ENABLED){
-    return {allowed:true,ip:null,ipRef:null};
-  }
-
-  try{
-    const ipRes=await fetch("https://api.ipify.org?format=json",{cache:"no-store"});
-    const ipData=await ipRes.json();
-    const userIP=String(ipData.ip||"").replace(/\./g,"_");
-    const now=Date.now();
-    const ipRef=doc(db,"ip_logs",userIP);
-    const snap=await getDoc(ipRef);
-
-    let data=snap.exists()?snap.data():{count:0,lastClick:now};
-
-    if(now-(Number(data.lastClick)||now)>RESET_TIME){
-      data={count:0,lastClick:now};
+    if(l.exists()){
+      const d=l.data();
+      let pages=Array.isArray(d.pages)?d.pages.filter(x=>x&&x.active!==false&&/^https?:\/\//i.test(x.image||"")):[];
+      if(pages.length){
+        const mode=d.rotationMode||"rotate", minutes=Math.max(1,Number(d.rotateMinutes||5));
+        const slot=Math.floor(Date.now()/(minutes*60000));
+        if(mode==="random"){
+          const n=slot%pages.length; pages=pages.slice(n).concat(pages.slice(0,n));
+        }else{
+          const n=slot%pages.length; pages=pages.slice(n).concat(pages.slice(0,n));
+        }
+        return pages;
+      }
     }
-
-    if(Number(data.count||0)>=CLICK_LIMIT){
-      return {allowed:false,ip:userIP,ipRef};
-    }
-
-    return {allowed:true,ip:userIP,ipRef};
-  }catch(e){
-    /* If IP service is unavailable, do not block a normal visitor. */
-    console.warn("IP check unavailable:",e);
-    return {allowed:true,ip:null,ipRef:null};
-  }
+  }catch(e){console.warn("Settings fallback",e)}
+  return builtins;
 }
 
-async function recordIpClick(result){
-  if(!IP_LIMIT_ENABLED || !result?.ipRef) return;
-
+async function ipCheck(){
+  if(!IP_LIMIT_ENABLED)return {allowed:true};
   try{
-    await setDoc(result.ipRef,{
-      count:increment(1),
-      lastClick:Date.now(),
-      ip:result.ip.replace(/_/g,".")
-    },{merge:true});
-  }catch(e){
-    console.warn("IP log skipped:",e);
-  }
+    const r=await fetch("https://api.ipify.org?format=json",{cache:"no-store"});
+    const ip=(await r.json()).ip;
+    if(!ip) return {allowed:true};
+    const ref=doc(db,"ip_logs",ip.replace(/\./g,"_")),s=await getDoc(ref);
+    const d=s.exists()?s.data():{};
+    if(Date.now()-(Number(d.lastClick)||0)>=RESET_MS)return {allowed:true,ref,ip};
+    return {allowed:Number(d.count||0)<CLICK_LIMIT,ref,ip};
+  }catch(e){console.warn("IP service unavailable",e);return {allowed:true};}
 }
 
-function setStep(n){
-  els.steps.forEach((el,i)=>{
-    el.classList.toggle("active",i===n-1);
-    el.classList.toggle("done",i<n-1);
-  });
+async function recordIp(){
+  if(!IP_LIMIT_ENABLED||!ipResult?.ref)return;
+  try{await setDoc(ipResult.ref,{count:increment(1),lastClick:Date.now(),ip:ipResult.ip},{merge:true})}catch(e){console.warn(e)}
 }
 
-function setProgress(n,text){
-  els.fill.style.width=Math.max(0,Math.min(100,n))+"%";
-  if(text)els.status.textContent=text;
+async function event(type,extra={}){
+  /* Events are telemetry only; no artificial ad/click events are generated. */
+  const data={type,sessionId,userId:userId||null,campaign,pageId:page?.id||null,referrer:document.referrer||null,path:location.pathname,timestamp:serverTimestamp(),...extra};
+  try{await setDoc(doc(db,"gateway_events",sessionId+"_"+type),data,{merge:true})}catch(e){eventQueue.push(data)}
 }
 
-function buildDestination(){
+function finalUrl(){
+  try{const u=new URL(destination);if(userId)u.searchParams.set("ref",userId);if(campaign)u.searchParams.set("type",campaign);return u.toString()}catch{return destination}
+}
+
+function startCountdown(sec){
+  let left=Math.max(0,Number(sec)||0);
+  if(!left){enableContinue();return}
+  $("timerWrap").style.display="block";$("sec").textContent=String(left).padStart(2,"0");$("continueBtn").disabled=true;step(2);
+  countdownTimer=setInterval(()=>{left--; $("sec").textContent=String(Math.max(0,left)).padStart(2,"0");progress(75+(Number(sec)-left)*25/Number(sec),"Preparing destination…");if(left<=0){clearInterval(countdownTimer);enableContinue()}},1000);
+}
+
+function enableContinue(){
+  $("timerWrap").style.display="none";$("continueBtn").disabled=false;$("continueBtn").innerHTML='<i class="fa-solid fa-arrow-right"></i> Continue';step(3);progress(100,"Ready — you can continue.");
+}
+
+async function continueNow(){
+  if(activityLogged)return;
+  activityLogged=true;$("continueBtn").disabled=true;$("continueBtn").innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Opening…';
+  await recordIp();
+  await event("continue",{destination});
+  location.replace(finalUrl());
+}
+
+async function reward(uid){
+  /* Existing reward logic is retained only when a valid user document exists. */
+  if(!uid)return;
   try{
-    const u=new URL(destination);
-    if(userId)u.searchParams.set("ref",userId);
-    u.searchParams.set("type",campaign);
-    return u.toString();
-  }catch{
-    return destination;
-  }
+    const c=await getDoc(doc(db,"settings","config"));
+    const cpm=c.exists()?parseFloat(c.data().globalCpm)||10:10;
+    const rewardValue=parseFloat((cpm/1000).toFixed(4));
+    await updateDoc(doc(db,"users",uid),{balance:increment(rewardValue),todayEarning:increment(rewardValue),totalEarnings:increment(rewardValue),rawTodayImpressions:increment(1),rawTotalImpressions:increment(1),validClicks:increment(1),lastActive:serverTimestamp()});
+  }catch(e){console.warn("User reward update skipped",e)}
 }
 
-function startCountdown(seconds){
-  let left=Math.max(0,Number(seconds)||0);
-
-  if(left<=0){
-    els.timer.style.display="none";
-    els.btn.disabled=false;
-    els.btn.innerHTML='<i class="fa-solid fa-arrow-right"></i> Continue';
-    return;
-  }
-
-  setStep(2);
-  els.timer.style.display="block";
-  els.sec.textContent=String(left).padStart(2,"0");
-  els.btn.disabled=true;
-  els.btn.innerHTML='<i class="fa-solid fa-hourglass-half"></i> Please wait…';
-
-  const tick=setInterval(()=>{
-    left--;
-    els.sec.textContent=String(Math.max(0,left)).padStart(2,"0");
-    const progress=75+(5-left)*5;
-    setProgress(progress,"Preparing destination…");
-
-    if(left<=0){
-      clearInterval(tick);
-      els.timer.style.display="none";
-      setStep(3);
-      els.btn.disabled=false;
-      els.btn.innerHTML='<i class="fa-solid fa-arrow-right"></i> Continue';
-      els.status.textContent="Ready — you can continue.";
-    }
-  },1000);
-}
-
-async function redirectNow(){
-  setStep(3);
-  if(redirectTimer)clearTimeout(redirectTimer);
-  els.btn.disabled=true;
-  els.btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Opening…';
-  setProgress(100,"Opening destination…");
-
-  /* Record the gateway visit only after the normal validation flow. */
-  const ipResult=window.__ipResult;
-  await recordIpClick(ipResult);
-
-  location.replace(buildDestination());
-}
-
-applyAdVisibility();
-
-async function initEngine(){
+async function init(){
   try{
-    setProgress(12,"Loading gateway…");
-
-    const pages=await loadLandingPages();
-
-    /*
-      Automatic rotation:
-      - Uses current time so no admin action is needed.
-      - If Firestore has active pages, those are used.
-      - Otherwise built-in pages are used.
-    */
-    const index=0;
-    renderPage(pages[index],index,pages.length);
-
-    setProgress(35,"Checking secure connection…");
-
-    const ipResult=await checkIpLimit();
-    window.__ipResult=ipResult;
-
+    progress(10,"Loading gateway…");
+    const pages=await getSettings();
+    render(pages[0]||builtins[0]);
+    progress(30,"Checking gateway protection…");
+    ipResult=await ipCheck();
     if(!ipResult.allowed){
-      els.title.textContent="Daily gateway limit reached";
-      els.subtitle.textContent="Please try again after the limit resets.";
-      els.info.innerHTML="";
-      els.faq.innerHTML="";
-      els.btn.disabled=false;
-      els.btn.textContent="Return";
-      els.btn.onclick=()=>location.replace(LIMIT_URL);
-      setProgress(100,"Limit reached.");
-      return;
+      $("title").textContent="Gateway limit reached";
+      $("subtitle").textContent="This visitor has reached the current 24-hour gateway limit.";
+      $("continueBtn").disabled=false;$("continueBtn").textContent="Return";$("continueBtn").onclick=()=>location.replace(FALLBACK_URL);
+      progress(100,"Limit reached.");await event("limit_reached");return;
     }
-
-    setProgress(58,"Preparing your destination…");
-
-    if(userId){
-      /*
-        Existing NS PRIME reward behaviour is preserved.
-        No artificial clicks are generated by this page.
-      */
-      const rewarded=await addBalance(userId);
-      els.status.textContent=rewarded
-        ?"Gateway verified. Preparing destination…"
-        :"Destination ready. Reward update was not completed.";
-    }else{
-      els.status.textContent="Destination ready.";
-    }
-
-    setProgress(76,"Almost ready…");
-
-    const delay=Number(selectedPage?.countdown ?? 5);
-    startCountdown(delay);
-
-    els.btn.onclick=redirectNow;
-
-    setProgress(85,"Please review and continue.");
+    await event("page_view");
+    progress(55,"Preparing destination…");
+    await reward(userId);
+    progress(75,"Almost ready…");
+    startCountdown(page?.countdown??4);
+    $("continueBtn").onclick=continueNow;
   }catch(e){
     console.error(e);
-    /*
-      Preserve the original gateway's fail-open redirect behaviour.
-      If Firebase is temporarily unavailable, the visitor is still sent
-      to the configured destination.
-    */
-    els.status.textContent="Opening destination…";
-    els.btn.disabled=false;
-    els.btn.textContent="Continue";
-    els.btn.onclick=()=>location.replace(buildDestination());
-    setProgress(100,"Ready.");
+    /* Fail safely to the configured destination rather than trapping the visitor. */
+    $("continueBtn").disabled=false;$("continueBtn").textContent="Continue";$("continueBtn").onclick=()=>location.replace(finalUrl());
+    progress(100,"Ready.");
   }
 }
 
-initEngine();
+if(!ADS_ENABLED)$("nativeAdZone").style.display="none";
+init();
 </script>
 
-<!-- Optional social-bar/ad script from your existing gateway -->
+<!-- Optional social-bar/ad script from your existing provider. -->
 <script src="https://biographygridetelegram.com/09/18/de/0918de34aeedc5ed300f19a3606b3a7a.js"></script>
 </body>
 </html>
