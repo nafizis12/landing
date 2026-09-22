@@ -103,8 +103,8 @@ const db=getFirestore(initializeApp(firebaseConfig));
    IP_LIMIT_ENABLED=false for testing.
    Set true later to enforce one gateway allowance per 24h per IP.
 */
-const IP_LIMIT_ENABLED=false;
-const CLICK_LIMIT=1;
+const IP_LIMIT_ENABLED=true;
+const CLICK_LIMIT=1; // one gateway/ad exposure per 24h per IP
 const RESET_MS=24*60*60*1000;
 const DEFAULT_DESTINATION="https://biographygridetelegram.com/wjes41tv?key=350bdfc60d7fbe5989e353843c72731f";
 const FALLBACK_URL="https://www.google.com";
@@ -180,24 +180,75 @@ async function getSettings(){
   return builtins;
 }
 
+function localLimitKey(){
+  return "ns_prime_gateway_limit_v16";
+}
+
+function localLimitCheck(){
+  try{
+    const raw=localStorage.getItem(localLimitKey());
+    if(!raw)return {allowed:true};
+    const d=JSON.parse(raw);
+    if(!d || Date.now()-(Number(d.at)||0)>=RESET_MS){
+      localStorage.removeItem(localLimitKey());
+      return {allowed:true};
+    }
+    return {allowed:false,local:true,at:Number(d.at)||Date.now()};
+  }catch(e){return {allowed:true};}
+}
+
+function markLocalLimit(){
+  try{localStorage.setItem(localLimitKey(),JSON.stringify({at:Date.now()}));}catch(e){}
+}
+
 async function ipCheck(){
   if(!IP_LIMIT_ENABLED)return {allowed:true};
+
+  /* Fast client-side guard first. This prevents repeat ad exposure in the same browser. */
+  const local=localLimitCheck();
+  if(!local.allowed)return local;
+
   try{
     const r=await fetch("https://api.ipify.org?format=json",{cache:"no-store"});
-    const ip=(await r.json()).ip;
-    if(!ip) return {allowed:true};
-    const ref=doc(db,"ip_logs",ip.replace(/\./g,"_")),s=await getDoc(ref);
-    const d=s.exists()?s.data():{};
-    if(Date.now()-(Number(d.lastClick)||0)>=RESET_MS)return {allowed:true,ref,ip};
-    return {allowed:Number(d.count||0)<CLICK_LIMIT,ref,ip};
-  }catch(e){console.warn("IP service unavailable",e);return {allowed:true};}
+    if(!r.ok)throw new Error("IP service HTTP "+r.status);
+    const ip=String((await r.json()).ip||"").trim();
+    if(!ip)throw new Error("No IP returned");
+
+    const ref=doc(db,"ip_logs",ip.replace(/[^a-zA-Z0-9_-]/g,"_"));
+    const snap=await getDoc(ref);
+    const d=snap.exists()?snap.data():{};
+    const last=Number(d.lastClick)||0;
+    const count=Number(d.count)||0;
+
+    if(last && Date.now()-last<RESET_MS && count>=CLICK_LIMIT){
+      return {allowed:false,ref,ip,server:true};
+    }
+    return {allowed:true,ref,ip,server:true};
+  }catch(e){
+    /* If the IP service is unavailable, keep the local 24h protection instead of bypassing it. */
+    console.warn("IP protection fallback:",e);
+    return {allowed:true,localFallback:true};
+  }
 }
 
 async function recordIp(){
-  if(!IP_LIMIT_ENABLED||!ipResult?.ref)return;
-  try{await setDoc(ipResult.ref,{count:increment(1),lastClick:Date.now(),ip:ipResult.ip},{merge:true})}catch(e){console.warn(e)}
-}
+  if(!IP_LIMIT_ENABLED)return;
 
+  /* Mark immediately before leaving so refresh/back cannot expose the ad again. */
+  markLocalLimit();
+
+  if(!ipResult?.ref)return;
+  try{
+    await setDoc(ipResult.ref,{
+      count:increment(1),
+      lastClick:Date.now(),
+      ip:ipResult.ip||null,
+      windowMs:RESET_MS
+    },{merge:true});
+  }catch(e){
+    console.warn("IP Firestore log unavailable; local protection remains active",e);
+  }
+}
 async function event(type,extra={}){
   /* Events are telemetry only; no artificial ad/click events are generated. */
   const data={type,sessionId,userId:userId||null,campaign,pageId:page?.id||null,referrer:document.referrer||null,path:location.pathname,timestamp:serverTimestamp(),...extra};
@@ -240,8 +291,10 @@ async function reward(uid){
 
 async function init(){
   try{
-    progress(10,"Loading gateway…");
+    progress(10,"Checking gateway protection…");
     const pages=await getSettings();
+    /* Keep monetization slots hidden until the 24h protection check passes. */
+    $("nativeAdZone").style.visibility="hidden";
     render(pages[0]||builtins[0]);
     progress(30,"Checking gateway protection…");
     ipResult=await ipCheck();
@@ -249,8 +302,10 @@ async function init(){
       $("title").textContent="Gateway limit reached";
       $("subtitle").textContent="This visitor has reached the current 24-hour gateway limit.";
       $("continueBtn").disabled=false;$("continueBtn").textContent="Return";$("continueBtn").onclick=()=>location.replace(FALLBACK_URL);
+      $("nativeAdZone").style.visibility="hidden";
       progress(100,"Limit reached.");await event("limit_reached");return;
     }
+    $("nativeAdZone").style.visibility="visible";
     await event("page_view");
     progress(55,"Preparing destination…");
     await reward(userId);
