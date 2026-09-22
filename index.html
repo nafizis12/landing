@@ -62,7 +62,7 @@ h1{font-size:clamp(1.45rem,5vw,2.25rem);line-height:1.12;margin:9px 0}
 .faq-a{display:none;padding:0 13px 13px;color:var(--muted);font-size:10px;line-height:1.6}
 .faq-item.open .faq-a{display:block}
 .dots{display:flex;justify-content:center;gap:5px;margin:13px 0 0}.dot{width:6px;height:6px;border-radius:50%;background:#405064}.dot.active{background:var(--em);width:18px;border-radius:5px}
-.status{text-align:center;color:var(--muted);font-size:10px;margin-top:12px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:4px 0 14px}.step{padding:9px 7px;text-align:center;border:1px solid var(--bd);border-radius:12px;color:var(--muted);font-size:9px;font-weight:800}.step.active{border-color:rgba(0,229,160,.35);color:var(--em);background:rgba(0,229,160,.06)}.step.done{color:#dcefe8}.status{text-align:center;color:var(--muted);font-size:10px;margin-top:12px}
 .notice{padding:12px 14px;border-radius:14px;background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.14);font-size:10px;color:#a9c7ba;margin-top:14px}
 .footer{text-align:center;color:#596779;font-size:9px;margin-top:18px}
 @media(max-width:520px){.feature-grid{grid-template-columns:1fr 1fr 1fr}.hero-media{height:210px}}
@@ -100,6 +100,12 @@ h1{font-size:clamp(1.45rem,5vw,2.25rem);line-height:1.12;margin:9px 0}
         <div class="timer">
           <div class="timebox"><b id="sec">05</b><span>seconds</span></div>
         </div>
+      </div>
+
+      <div class="steps" id="steps">
+        <div class="step active" data-step="1">1 · Preview</div>
+        <div class="step" data-step="2">2 · Confirm</div>
+        <div class="step" data-step="3">3 · Continue</div>
       </div>
 
       <div class="progress"><i id="fill"></i></div>
@@ -166,54 +172,101 @@ const SMART_LINK = "https://biographygridetelegram.com/wjes41tv?key=350bdfc60d7f
 */
 const BUILTIN_PAGES = [
   {
-    title:"Welcome to NS PRIME",
-    kicker:"Welcome",
-    subtitle:"Your destination is almost ready. Take a moment to review the information and continue.",
-    image:"https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=80",
-    infos:[
-      ["fa-circle-check","Simple process","Follow the clear instructions and continue when ready."],
-      ["fa-shield-halved","Secure flow","This gateway prepares the destination before redirecting."],
-      ["fa-mobile-screen","Mobile friendly","The page is optimized for phones and desktop browsers."]
-    ],
-    faqs:[
-      ["What is this page?","It is an intermediate NS PRIME gateway page before the destination opens."],
-      ["Do I need to install anything?","No installation is required."]
-    ],
-    countdown:5
+    id:"18plus-entertainment",active:true,
+    kicker:"18+ ENTERTAINMENT",title:"Age-restricted entertainment collection",
+    subtitle:"Explore a clearly labelled adult-only entertainment destination. You must be 18+ to continue.",
+    image:"https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1400&q=82",
+    infos:[["fa-user-shield","18+ only","For adults aged 18 and over."],["fa-circle-play","Entertainment","Browse the available destination content."],["fa-lock","Secure","Standard NS PRIME gateway protection."]],
+    faqs:[["Who can continue?","Only adults aged 18 or older should continue."],["Is this the final page?","No. This is a short gateway before the configured destination."]],countdown:4
   },
   {
-    title:"Your destination is ready",
-    kicker:"Verified Gateway",
-    subtitle:"Please review the details below. The continue button will become available shortly.",
-    image:"https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1200&q=80",
-    infos:[
-      ["fa-bolt","Fast access","The destination will open after the short verification step."],
-      ["fa-circle-info","Read first","Check the information below before continuing."],
-      ["fa-lock","Protected","NS PRIME gateway protection is active."]
-    ],
-    faqs:[
-      ["How long does it take?","Only a few seconds for the normal gateway flow."],
-      ["Can I continue later?","Yes. You can close the page and open the link again."]
-    ],
-    countdown:6
+    id:"dating",active:true,kicker:"DATING",title:"Meet & connect destination",
+    subtitle:"Discover a dating-focused destination designed for adults who want to connect with others.",
+    image:"https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1400&q=82",
+    infos:[["fa-heart","Connections","A destination focused on meeting people."],["fa-comments","Chat","Explore social and communication features."],["fa-shield-halved","Safety","Review the destination information before continuing."]],
+    faqs:[["What is this page?","A short introduction page for the dating destination."],["Can I leave anytime?","Yes. You can leave the gateway at any time."]],countdown:4
   },
   {
-    title:"One more step",
-    kicker:"NS PRIME",
-    subtitle:"Everything is ready. Please use the page normally and continue when the button is enabled.",
-    image:"https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80",
-    infos:[
-      ["fa-list-check","Clear instructions","Review the available information before proceeding."],
-      ["fa-gauge-high","Quick verification","The gateway completes a short client-side check."],
-      ["fa-arrow-right","Continue","Open the destination when the button becomes active."]
-    ],
-    faqs:[
-      ["Is the gateway automatic?","Yes. The page selects a landing variant automatically."],
-      ["Can the landing variant change?","Yes. Active variants rotate automatically."]
-    ],
-    countdown:5
+    id:"movies",active:true,kicker:"MOVIES",title:"Movie & streaming destination",
+    subtitle:"Continue to a movie-focused content page with a simple three-step gateway.",
+    image:"https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1400&q=82",
+    infos:[["fa-film","Movies","Movie and entertainment themed destination."],["fa-tv","Streaming","Built for mobile and desktop viewing."],["fa-circle-check","Ready","The final destination opens after the short flow."]],
+    faqs:[["What will open next?","The final URL configured in your gateway settings."],["Do I need an app?","No app is required by the gateway itself."]],countdown:4
+  },
+  {
+    id:"series",active:true,kicker:"SERIES",title:"Series & episodic entertainment",
+    subtitle:"Continue to a destination built around series and episodic entertainment.",
+    image:"https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?auto=format&fit=crop&w=1400&q=82",
+    infos:[["fa-clapperboard","Episodes","Series-focused destination."],["fa-mobile-screen","Mobile","Responsive gateway experience."],["fa-bolt","Fast","Short three-step flow."]],faqs:[],countdown:4
+  },
+  {
+    id:"gaming",active:true,kicker:"GAMING",title:"Gaming community destination",
+    subtitle:"Discover a gaming-focused destination and continue when ready.",
+    image:"https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1400&q=82",
+    infos:[["fa-gamepad","Gaming","Gaming community content."],["fa-trophy","Community","Explore the destination."],["fa-shield-halved","Secure","Standard gateway protection."]],faqs:[],countdown:4
+  },
+  {
+    id:"music",active:true,kicker:"MUSIC",title:"Music & audio destination",
+    subtitle:"Continue to a music-focused content experience.",
+    image:"https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1400&q=82",
+    infos:[["fa-music","Music","Audio and music themed content."],["fa-headphones","Listen","Designed for a smooth mobile experience."],["fa-circle-check","Ready","Continue to the configured destination."]],faqs:[],countdown:4
+  },
+  {
+    id:"sports",active:true,kicker:"SPORTS",title:"Sports highlights destination",
+    subtitle:"Continue to a sports-focused destination for news, highlights and community content.",
+    image:"https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1400&q=82",
+    infos:[["fa-futbol","Sports","Sports-focused content."],["fa-bolt","Highlights","Quick access to the destination."],["fa-mobile-screen","Mobile","Responsive design."]],faqs:[],countdown:4
+  },
+  {
+    id:"viral",active:true,kicker:"TRENDING",title:"Trending video destination",
+    subtitle:"Explore a destination built around trending and popular video content.",
+    image:"https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?auto=format&fit=crop&w=1400&q=82",
+    infos:[["fa-fire","Trending","Popular-content theme."],["fa-video","Video","Video-focused destination."],["fa-circle-play","Watch","Continue when ready."]],faqs:[],countdown:4
+  },
+  {
+    id:"social",active:true,kicker:"SOCIAL",title:"Social community destination",
+    subtitle:"Continue to a social-focused destination for community and discovery.",
+    image:"https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1400&q=82",
+    infos:[["fa-users","Community","Social discovery experience."],["fa-comments","Connect","Community-oriented destination."],["fa-shield-halved","Secure","Standard gateway protection."]],faqs:[],countdown:4
+  },
+  {
+    id:"education",active:true,kicker:"LEARNING",title:"Courses & learning destination",
+    subtitle:"Continue to a learning-focused destination with educational content.",
+    image:"https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1400&q=82",
+    infos:[["fa-graduation-cap","Learning","Educational destination."],["fa-book-open","Courses","Course-focused content."],["fa-circle-check","Ready","Continue when ready."]],faqs:[],countdown:4
+  },
+  {
+    id:"jobs",active:true,kicker:"CAREER",title:"Jobs & opportunities destination",
+    subtitle:"Continue to a career and opportunities focused content page.",
+    image:"https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1400&q=82",
+    infos:[["fa-briefcase","Career","Opportunity-focused content."],["fa-magnifying-glass","Discover","Explore available information."],["fa-mobile-screen","Mobile","Works across devices."]],faqs:[],countdown:4
+  },
+  {
+    id:"shopping",active:true,kicker:"SHOPPING",title:"Deals & shopping destination",
+    subtitle:"Continue to a shopping and deals focused destination.",
+    image:"https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=1400&q=82",
+    infos:[["fa-bag-shopping","Shopping","Shopping-focused destination."],["fa-tag","Deals","Deal and offer themed content."],["fa-circle-check","Ready","Continue when ready."]],faqs:[],countdown:4
+  },
+  {
+    id:"travel",active:true,kicker:"TRAVEL",title:"Travel inspiration destination",
+    subtitle:"Explore a travel-focused destination for places, ideas and discovery.",
+    image:"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=82",
+    infos:[["fa-plane","Travel","Travel and destination content."],["fa-map-location-dot","Discover","Explore new places."],["fa-camera","Inspiration","Visual travel experience."]],faqs:[],countdown:4
+  },
+  {
+    id:"tech",active:true,kicker:"TECH",title:"Technology & apps destination",
+    subtitle:"Continue to a technology-focused destination for apps, tools and digital content.",
+    image:"https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1400&q=82",
+    infos:[["fa-microchip","Technology","Technology-focused content."],["fa-mobile-screen","Apps","Digital tools and apps."],["fa-bolt","Fast","Simple three-step gateway."]],faqs:[],countdown:4
+  },
+  {
+    id:"lifestyle",active:true,kicker:"LIFESTYLE",title:"Lifestyle & entertainment destination",
+    subtitle:"Continue to a broad lifestyle and entertainment content destination.",
+    image:"https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=1400&q=82",
+    infos:[["fa-star","Lifestyle","Lifestyle-oriented content."],["fa-heart","Interests","Explore topics and interests."],["fa-circle-check","Ready","Continue to the final destination."]],faqs:[],countdown:4
   }
 ];
+
 
 const params = new URLSearchParams(location.search);
 const userId = params.get("ref") || params.get("u") || "";
@@ -278,29 +331,49 @@ function renderPage(p,index,total){
 
 async function loadLandingPages(){
   try{
-    const snap = await getDoc(doc(db,"settings","gateway"));
-    const cfg = snap.exists() ? snap.data() : {};
+    /*
+      Admin-editable configuration:
+      settings/gateway -> smartLink, finalUrl, defaultCountdown
+      settings/landing_pages -> { pages:[ ...15 slots... ], rotationMode, rotateMinutes }
 
-    if(cfg.smartLink && /^https?:\/\//i.test(cfg.smartLink)){
-      destination = cfg.smartLink;
+      Every page may contain:
+      id, active, image, title, kicker, subtitle, countdown,
+      infos:[[icon,title,text],...], faqs:[[question,answer],...], videoUrl
+    */
+    const [gatewaySnap,pagesSnap] = await Promise.all([
+      getDoc(doc(db,"settings","gateway")),
+      getDoc(doc(db,"settings","landing_pages"))
+    ]);
+
+    const gateway = gatewaySnap.exists() ? gatewaySnap.data() : {};
+    const pageData = pagesSnap.exists() ? pagesSnap.data() : {};
+
+    const finalUrl = gateway.finalUrl || gateway.smartLink;
+    if(finalUrl && /^https?:\/\//i.test(finalUrl)) destination = finalUrl;
+
+    let pages = Array.isArray(pageData.pages) ? pageData.pages : [];
+    pages = pages.filter(p => p && p.active !== false && p.image && /^https?:\/\//i.test(p.image));
+
+    if(!pages.length) pages = BUILTIN_PAGES;
+
+    const rotationMinutes = Math.max(1, Number(pageData.rotateMinutes || 5));
+    const rotationIndex = Math.floor(Date.now() / (rotationMinutes * 60000));
+    const ordered = pages.slice();
+
+    if((pageData.rotationMode || "rotate") === "random"){
+      /* deterministic per time window; not random on every render */
+      const n = rotationIndex % ordered.length;
+      return ordered.slice(n).concat(ordered.slice(0,n));
     }
 
-    const pagesSnap = await getDoc(doc(db,"settings","landing_pages"));
-    if(pagesSnap.exists()){
-      const data = pagesSnap.data();
-      if(Array.isArray(data.pages)){
-        const active = data.pages.filter(x=>x && x.active!==false);
-        if(active.length){
-          return active;
-        }
-      }
-    }
+    const n = rotationIndex % ordered.length;
+    return ordered.slice(n).concat(ordered.slice(0,n));
   }catch(e){
-    console.warn("Landing settings unavailable; using built-in pages.",e);
+    console.warn("Landing settings unavailable; using built-in 15-slot fallback.",e);
+    return BUILTIN_PAGES;
   }
-
-  return BUILTIN_PAGES;
 }
+
 
 async function addBalance(uid){
   if(!uid) return false;
@@ -376,6 +449,13 @@ async function recordIpClick(result){
   }
 }
 
+function setStep(n){
+  els.steps.forEach((el,i)=>{
+    el.classList.toggle("active",i===n-1);
+    el.classList.toggle("done",i<n-1);
+  });
+}
+
 function setProgress(n,text){
   els.fill.style.width=Math.max(0,Math.min(100,n))+"%";
   if(text)els.status.textContent=text;
@@ -402,6 +482,7 @@ function startCountdown(seconds){
     return;
   }
 
+  setStep(2);
   els.timer.style.display="block";
   els.sec.textContent=String(left).padStart(2,"0");
   els.btn.disabled=true;
@@ -416,6 +497,7 @@ function startCountdown(seconds){
     if(left<=0){
       clearInterval(tick);
       els.timer.style.display="none";
+      setStep(3);
       els.btn.disabled=false;
       els.btn.innerHTML='<i class="fa-solid fa-arrow-right"></i> Continue';
       els.status.textContent="Ready — you can continue.";
@@ -424,6 +506,7 @@ function startCountdown(seconds){
 }
 
 async function redirectNow(){
+  setStep(3);
   if(redirectTimer)clearTimeout(redirectTimer);
   els.btn.disabled=true;
   els.btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Opening…';
@@ -448,7 +531,7 @@ async function initEngine(){
       - If Firestore has active pages, those are used.
       - Otherwise built-in pages are used.
     */
-    const index=Math.floor(Date.now()/60000)%pages.length;
+    const index=0;
     renderPage(pages[index],index,pages.length);
 
     setProgress(35,"Checking secure connection…");
