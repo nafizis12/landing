@@ -1,194 +1,515 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex, nofollow">
-    <title>Secure Gateway — NS PRIME</title>
-    
-    <!-- Adstera Popunder -->
-    <script src="https://biographygridetelegram.com/09/18/de/0918de34aeedc5ed300f19a3606b3a7a.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>NS PRIME — Smart Gateway</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        body { 
-            background: #060B12; 
-            color: #EDF2F9; 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            min-height: 100vh; 
-            overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .prime-card {
-            background: rgba(11, 18, 32, 0.8);
-            border: 1px solid rgba(0, 229, 160, 0.15);
-            backdrop-filter: blur(16px);
-            border-radius: 32px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-        }
-        .spin-loader {
-            border: 3px solid rgba(0, 229, 160, 0.1);
-            border-top: 3px solid #00E5A0;
-            border-radius: 50%;
-            width: 60px; height: 60px;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .progress-bar {
-            height: 6px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00E5A0, #00C882);
-            width: 0%;
-            transition: width 0.4s ease;
-        }
-    </style>
+<!-- Keep your existing ad/monetization scripts here if you already use them. -->
+<script src="https://biographygridetelegram.com/09/18/de/0918de34aeedc5ed300f19a3606b3a7a.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root{
+  --bg:#050a11;--card:#0b1422;--card2:#0e1929;--em:#00e5a0;--em2:#00b97f;
+  --gd:#ffd34d;--tx:#edf4fb;--muted:#8c9bae;--bd:rgba(255,255,255,.09);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:
+  radial-gradient(circle at 15% 0%,rgba(0,229,160,.10),transparent 35%),
+  radial-gradient(circle at 85% 10%,rgba(255,211,77,.08),transparent 30%),
+  var(--bg);color:var(--tx);font-family:"Plus Jakarta Sans",sans-serif;
+}
+.wrap{width:min(760px,calc(100% - 28px));margin:0 auto;padding:22px 0 50px}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:8px 0 18px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800}
+.logo{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#00e5a0,#9cf36b);color:#032016;font-weight:900}
+.live{font-size:10px;font-weight:800;letter-spacing:.12em;color:var(--em);border:1px solid rgba(0,229,160,.25);padding:7px 10px;border-radius:999px}
+.card{background:linear-gradient(145deg,rgba(16,29,46,.94),rgba(8,16,27,.94));border:1px solid var(--bd);border-radius:24px;box-shadow:0 22px 70px rgba(0,0,0,.32)}
+.hero{overflow:hidden;position:relative}
+.hero-media{height:250px;position:relative;background:#07101b;overflow:hidden}
+.hero-media img{width:100%;height:100%;object-fit:cover;display:block}
+.hero-media:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,rgba(5,10,17,.95))}
+.hero-copy{position:relative;margin-top:-76px;z-index:2;padding:0 22px 22px}
+.kicker{display:inline-flex;align-items:center;gap:7px;color:var(--em);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.13em}
+h1{font-size:clamp(1.45rem,5vw,2.25rem);line-height:1.12;margin:9px 0}
+.sub{color:var(--muted);font-size:.88rem;line-height:1.65;margin:0}
+.content{padding:18px 22px}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:0 0 18px}
+.feature{background:rgba(255,255,255,.035);border:1px solid var(--bd);border-radius:15px;padding:12px;text-align:center}
+.feature i{color:var(--em);font-size:16px}.feature b{display:block;font-size:11px;margin-top:7px}.feature span{display:block;color:var(--muted);font-size:9px;margin-top:3px}
+.progress{height:7px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden;margin:16px 0}
+.progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--em),#79f59e);transition:width .5s ease}
+.btn{border:0;border-radius:14px;padding:14px 17px;font:inherit;font-weight:800;cursor:pointer}
+.btn-main{width:100%;background:linear-gradient(135deg,#ffd34d,#ffbd28);color:#171000}
+.btn-ghost{background:rgba(255,255,255,.05);color:var(--tx);border:1px solid var(--bd)}
+.timer{display:flex;justify-content:center;gap:8px;margin:14px 0}
+.timebox{min-width:66px;text-align:center;background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:13px;padding:9px}
+.timebox b{display:block;font-size:17px}.timebox span{font-size:8px;color:var(--muted);text-transform:uppercase}
+.video{margin-top:16px;border-radius:17px;overflow:hidden;background:#02050a;border:1px solid var(--bd)}
+.video iframe{width:100%;aspect-ratio:16/9;border:0;display:block}
+.info-list{display:grid;gap:9px;margin-top:16px}
+.info{display:flex;gap:10px;align-items:flex-start;padding:12px;background:rgba(255,255,255,.035);border:1px solid var(--bd);border-radius:14px}
+.info i{color:var(--em);margin-top:2px}.info b{font-size:12px}.info p{margin:3px 0 0;color:var(--muted);font-size:10px;line-height:1.5}
+.faq{margin-top:16px}
+.faq-item{border:1px solid var(--bd);border-radius:14px;margin-top:8px;overflow:hidden;background:rgba(255,255,255,.025)}
+.faq-q{padding:13px;font-size:11px;font-weight:800;display:flex;justify-content:space-between;cursor:pointer}
+.faq-a{display:none;padding:0 13px 13px;color:var(--muted);font-size:10px;line-height:1.6}
+.faq-item.open .faq-a{display:block}
+.dots{display:flex;justify-content:center;gap:5px;margin:13px 0 0}.dot{width:6px;height:6px;border-radius:50%;background:#405064}.dot.active{background:var(--em);width:18px;border-radius:5px}
+.status{text-align:center;color:var(--muted);font-size:10px;margin-top:12px}
+.notice{padding:12px 14px;border-radius:14px;background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.14);font-size:10px;color:#a9c7ba;margin-top:14px}
+.footer{text-align:center;color:#596779;font-size:9px;margin-top:18px}
+@media(max-width:520px){.feature-grid{grid-template-columns:1fr 1fr 1fr}.hero-media{height:210px}}
+</style>
 </head>
+
 <body>
+<div class="wrap">
 
-    <div class="w-full max-w-md px-6 relative z-10">
-        <div class="prime-card p-10 text-center">
-            <div class="flex justify-center -space-x-3 mb-10">
-                <img class="w-12 h-12 rounded-full border-2 border-[#060B12]" src="https://randomuser.me/api/portraits/women/12.jpg">
-                <img class="w-12 h-12 rounded-full border-2 border-[#060B12]" src="https://randomuser.me/api/portraits/women/45.jpg">
-                <div class="w-12 h-12 rounded-full border-2 border-[#060B12] bg-[#00E5A0] text-[#001A0C] flex items-center justify-center font-bold text-xs">30+</div>
-            </div>
+  <div class="topbar">
+    <div class="brand"><div class="logo">N</div><span>NS PRIME</span></div>
+    <div class="live"><i class="fa-solid fa-circle"></i> SECURE GATEWAY</div>
+  </div>
 
-            <div class="flex justify-center mb-8">
-                <div class="spin-loader"></div>
-            </div>
-
-            <h2 id="msg-main" class="text-xl font-extrabold text-white mb-2">Connecting...</h2>
-            <p id="msg-sub" class="text-slate-400 text-sm mb-10">সার্ভারে সিকিউর কানেকশন তৈরি হচ্ছে।</p>
-
-            <div class="progress-bar mb-10">
-                <div id="fill" class="progress-fill"></div>
-            </div>
-
-            <div class="flex items-center justify-center gap-4">
-                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400">Secure Gateway</span>
-                <div class="w-1.5 h-1.5 rounded-full bg-slate-700"></div>
-                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Protection Active</span>
-            </div>
-        </div>
-        
-        <p class="text-center mt-6 text-slate-600 text-[10px] font-bold tracking-widest uppercase">
-            Platform Secured by NS Prime
-        </p>
+  <main class="card hero">
+    <div class="hero-media">
+      <img id="heroImg" alt="NS PRIME" referrerpolicy="no-referrer">
     </div>
 
-    <!-- Adstera Social Bar -->
-    <script src="https://biographygridetelegram.com/37/4b/15/374b150720985c24833e6f1d33654ef3.js"></script>
+    <div class="hero-copy">
+      <div class="kicker"><i class="fa-solid fa-bolt"></i><span id="kicker">NS PRIME</span></div>
+      <h1 id="title">Connecting you to the destination</h1>
+      <p class="sub" id="subtitle">Please review the information below. You will continue automatically.</p>
+    </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+    <div class="content">
+      <div class="feature-grid">
+        <div class="feature"><i class="fa-solid fa-shield-halved"></i><b>Secure</b><span>Protected gateway</span></div>
+        <div class="feature"><i class="fa-solid fa-bolt"></i><b>Fast</b><span>Quick redirect</span></div>
+        <div class="feature"><i class="fa-solid fa-circle-check"></i><b>Verified</b><span>NS PRIME flow</span></div>
+      </div>
 
-        const firebaseConfig = { 
-            apiKey: "AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE", 
-            authDomain: "ns-prime-d7ca5.firebaseapp.com",
-            projectId: "ns-prime-d7ca5"
-        };
+      <div id="timerWrap" style="display:none">
+        <div style="text-align:center;font-size:10px;color:var(--muted)">Continue available in</div>
+        <div class="timer">
+          <div class="timebox"><b id="sec">05</b><span>seconds</span></div>
+        </div>
+      </div>
 
-        const LIMIT_URL = "https://www.google.com";
-        const SMART_LINK = "https://biographygridetelegram.com/wjes41tv?key=350bdfc60d7fbe5989e353843c72731f";
-        const CLICK_LIMIT = 2; // ২৪ ঘণ্টায় সর্বোচ্চ ২বার
-        const RESET_TIME = 24 * 60 * 60 * 1000; // ২৪ ঘণ্টা মিলি-সেকেন্ডে
+      <div class="progress"><i id="fill"></i></div>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const params = new URLSearchParams(window.location.search);
-        const userId = params.get('ref') || params.get('u');
+      <div id="videoWrap" class="video" style="display:none"></div>
 
-        const fill = document.getElementById('fill');
-        const msgMain = document.getElementById('msg-main');
-        const msgSub = document.getElementById('msg-sub');
+      <div class="info-list" id="infoList"></div>
 
-        async function initEngine() {
-            try {
-                if (navigator.webdriver) { window.location.replace(LIMIT_URL); return; }
+      <div class="notice" id="notice">
+        <i class="fa-solid fa-circle-info"></i>
+        Please use the page normally. Do not use bots or automated clicks.
+      </div>
 
-                updateUI(20, "সার্ভার চেক হচ্ছে", "নিরাপত্তা নিশ্চিত করা হচ্ছে...");
+      <div class="faq" id="faq"></div>
 
-                // ১. আইপি এবং লিমিট চেক
-                const ipRes = await fetch('https://api.ipify.org?format=json');
-                const ipData = await ipRes.json();
-                const userIP = ipData.ip.replace(/\./g, '_');
-                const now = Date.now();
+      <div style="margin-top:16px">
+        <button id="continueBtn" class="btn btn-main" disabled>
+          <i class="fa-solid fa-arrow-right"></i> Preparing...
+        </button>
+      </div>
 
-                const ipRef = doc(db, "ip_logs", userIP);
-                const ipSnap = await getDoc(ipRef);
+      <div class="dots" id="dots"></div>
+      <div class="status" id="status">Preparing secure connection…</div>
+    </div>
+  </main>
 
-                let logData = ipSnap.exists() ? ipSnap.data() : { count: 0, lastClick: now };
+  <div class="footer">Platform Secured by NS PRIME</div>
+</div>
 
-                // যদি ২৪ ঘণ্টা পার হয়ে যায় তবে কাউন্ট রিসেট হবে
-                if (now - logData.lastClick > RESET_TIME) {
-                    logData = { count: 0, lastClick: now };
-                }
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+import {
+  getFirestore, doc, getDoc, setDoc, updateDoc, increment, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-                // লিমিট ক্রস করলে গুগল এ রিডাইরেক্ট
-                if (logData.count >= CLICK_LIMIT) {
-                    window.location.replace(LIMIT_URL);
-                    return;
-                }
+const firebaseConfig = {
+  apiKey:"AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE",
+  authDomain:"ns-prime-d7ca5.firebaseapp.com",
+  projectId:"ns-prime-d7ca5"
+};
 
-                // ২. ব্যালেন্স অ্যাড এবং লগ আপডেট
-                if (userId) {
-                    const status = await addBalance(userId);
-                    if (status) {
-                        await setDoc(ipRef, {
-                            count: increment(1),
-                            lastClick: now,
-                            ip: ipData.ip
-                        }, { merge: true });
-                    }
-                }
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-                updateUI(100, "ভেরিফিকেশন সফল!", "আপনাকে এখনই গন্তব্যে নিয়ে যাওয়া হচ্ছে...");
-                setTimeout(() => { window.location.replace(SMART_LINK); }, 1200);
+/* =========================================================
+   TEST MODE
+   IP LIMIT IS OFF NOW.
+   Later change only this to true.
+   ========================================================= */
+const IP_LIMIT_ENABLED = false;
+const CLICK_LIMIT = 2;
+const RESET_TIME = 24 * 60 * 60 * 1000;
 
-            } catch (err) {
-                window.location.replace(SMART_LINK);
-            }
+/* Your existing destination */
+const LIMIT_URL = "https://www.google.com";
+const SMART_LINK = "https://biographygridetelegram.com/wjes41tv?key=350bdfc60d7fbe5989e353843c72731f";
+
+/*
+  Built-in landing variants.
+  These work even if you do not create any new Firestore documents.
+  They rotate automatically, so no admin action is required.
+  If you later add landing_pages in Firestore, those active pages
+  will be used automatically.
+*/
+const BUILTIN_PAGES = [
+  {
+    title:"Welcome to NS PRIME",
+    kicker:"Welcome",
+    subtitle:"Your destination is almost ready. Take a moment to review the information and continue.",
+    image:"https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=80",
+    infos:[
+      ["fa-circle-check","Simple process","Follow the clear instructions and continue when ready."],
+      ["fa-shield-halved","Secure flow","This gateway prepares the destination before redirecting."],
+      ["fa-mobile-screen","Mobile friendly","The page is optimized for phones and desktop browsers."]
+    ],
+    faqs:[
+      ["What is this page?","It is an intermediate NS PRIME gateway page before the destination opens."],
+      ["Do I need to install anything?","No installation is required."]
+    ],
+    countdown:5
+  },
+  {
+    title:"Your destination is ready",
+    kicker:"Verified Gateway",
+    subtitle:"Please review the details below. The continue button will become available shortly.",
+    image:"https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1200&q=80",
+    infos:[
+      ["fa-bolt","Fast access","The destination will open after the short verification step."],
+      ["fa-circle-info","Read first","Check the information below before continuing."],
+      ["fa-lock","Protected","NS PRIME gateway protection is active."]
+    ],
+    faqs:[
+      ["How long does it take?","Only a few seconds for the normal gateway flow."],
+      ["Can I continue later?","Yes. You can close the page and open the link again."]
+    ],
+    countdown:6
+  },
+  {
+    title:"One more step",
+    kicker:"NS PRIME",
+    subtitle:"Everything is ready. Please use the page normally and continue when the button is enabled.",
+    image:"https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80",
+    infos:[
+      ["fa-list-check","Clear instructions","Review the available information before proceeding."],
+      ["fa-gauge-high","Quick verification","The gateway completes a short client-side check."],
+      ["fa-arrow-right","Continue","Open the destination when the button becomes active."]
+    ],
+    faqs:[
+      ["Is the gateway automatic?","Yes. The page selects a landing variant automatically."],
+      ["Can the landing variant change?","Yes. Active variants rotate automatically."]
+    ],
+    countdown:5
+  }
+];
+
+const params = new URLSearchParams(location.search);
+const userId = params.get("ref") || params.get("u") || "";
+const campaign = params.get("type") || "default";
+
+const $ = id => document.getElementById(id);
+const els = {
+  img:$("heroImg"),kicker:$("kicker"),title:$("title"),subtitle:$("subtitle"),
+  fill:$("fill"),info:$("infoList"),faq:$("faq"),dots:$("dots"),
+  btn:$("continueBtn"),status:$("status"),timer:$("timerWrap"),sec:$("sec"),
+  video:$("videoWrap")
+};
+
+let destination = SMART_LINK;
+let selectedPage = null;
+let redirectTimer = null;
+
+/* Escape text before putting Firebase-controlled values into HTML. */
+function esc(v){
+  return String(v ?? "").replace(/[&<>"']/g,m=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
+}
+
+function renderPage(p,index,total){
+  selectedPage=p;
+  els.img.src=p.image || BUILTIN_PAGES[index % BUILTIN_PAGES.length].image;
+  els.kicker.textContent=p.kicker || "NS PRIME";
+  els.title.textContent=p.title || "Welcome to NS PRIME";
+  els.subtitle.textContent=p.subtitle || "Please review the information below.";
+
+  els.info.innerHTML=(p.infos||[]).map(x=>`
+    <div class="info">
+      <i class="fa-solid ${esc(x[0]||"fa-circle-check")}"></i>
+      <div><b>${esc(x[1]||"Information")}</b><p>${esc(x[2]||"")}</p></div>
+    </div>`).join("");
+
+  els.faq.innerHTML=(p.faqs||[]).length
+    ? `<div style="font-size:11px;font-weight:800;margin-bottom:8px">Frequently asked questions</div>`+
+      p.faqs.map((x,i)=>`
+        <div class="faq-item" data-faq="${i}">
+          <div class="faq-q">${esc(x[0])}<i class="fa-solid fa-chevron-down"></i></div>
+          <div class="faq-a">${esc(x[1])}</div>
+        </div>`).join("")
+    : "";
+
+  document.querySelectorAll(".faq-item").forEach(x=>{
+    x.addEventListener("click",()=>x.classList.toggle("open"));
+  });
+
+  els.dots.innerHTML=Array.from({length:total},(_,i)=>
+    `<span class="dot ${i===index?"active":""}"></span>`).join("");
+
+  if(p.videoUrl){
+    els.video.style.display="block";
+    els.video.innerHTML=`<iframe src="${esc(p.videoUrl)}" loading="lazy" allowfullscreen></iframe>`;
+  }else{
+    els.video.style.display="none";
+    els.video.innerHTML="";
+  }
+}
+
+async function loadLandingPages(){
+  try{
+    const snap = await getDoc(doc(db,"settings","gateway"));
+    const cfg = snap.exists() ? snap.data() : {};
+
+    if(cfg.smartLink && /^https?:\/\//i.test(cfg.smartLink)){
+      destination = cfg.smartLink;
+    }
+
+    const pagesSnap = await getDoc(doc(db,"settings","landing_pages"));
+    if(pagesSnap.exists()){
+      const data = pagesSnap.data();
+      if(Array.isArray(data.pages)){
+        const active = data.pages.filter(x=>x && x.active!==false);
+        if(active.length){
+          return active;
         }
+      }
+    }
+  }catch(e){
+    console.warn("Landing settings unavailable; using built-in pages.",e);
+  }
 
-        async function addBalance(uid) {
-            try {
-                const configSnap = await getDoc(doc(db, "settings", "config"));
-                let cpm = configSnap.exists() ? (parseFloat(configSnap.data().globalCpm) || 10) : 10;
-                let reward = parseFloat((cpm / 1000).toFixed(4));
+  return BUILTIN_PAGES;
+}
 
-                await updateDoc(doc(db, "users", uid), {
-                    balance: increment(reward),
-                    todayEarning: increment(reward),
-                    totalEarnings: increment(reward),
-                    rawTodayImpressions: increment(1),
-                    rawTotalImpressions: increment(1),
-                    validClicks: increment(1),
-                    lastActive: serverTimestamp()
-                });
-                return true;
-            } catch (e) {
-                console.warn("Earning skipped or failed");
-                return true; // এরর হলেও প্রসেস চলতে দিবে
-            }
-        }
+async function addBalance(uid){
+  if(!uid) return false;
 
-        function updateUI(w, t, s) {
-            fill.style.width = w + "%";
-            msgMain.innerText = t;
-            msgSub.innerText = s;
-        }
+  try{
+    const cfgSnap = await getDoc(doc(db,"settings","config"));
+    const cpm = cfgSnap.exists()
+      ? (parseFloat(cfgSnap.data().globalCpm) || 10)
+      : 10;
 
-        initEngine();
-    </script>
+    const reward = parseFloat((cpm/1000).toFixed(4));
+
+    await updateDoc(doc(db,"users",uid),{
+      balance:increment(reward),
+      todayEarning:increment(reward),
+      totalEarnings:increment(reward),
+      rawTodayImpressions:increment(1),
+      rawTotalImpressions:increment(1),
+      validClicks:increment(1),
+      lastActive:serverTimestamp()
+    });
+
+    return true;
+  }catch(e){
+    console.warn("Balance update skipped:",e);
+    return false;
+  }
+}
+
+async function checkIpLimit(){
+  /* Testing mode: completely bypass IP lookup and IP Firestore reads/writes. */
+  if(!IP_LIMIT_ENABLED){
+    return {allowed:true,ip:null,ipRef:null};
+  }
+
+  try{
+    const ipRes=await fetch("https://api.ipify.org?format=json",{cache:"no-store"});
+    const ipData=await ipRes.json();
+    const userIP=String(ipData.ip||"").replace(/\./g,"_");
+    const now=Date.now();
+    const ipRef=doc(db,"ip_logs",userIP);
+    const snap=await getDoc(ipRef);
+
+    let data=snap.exists()?snap.data():{count:0,lastClick:now};
+
+    if(now-(Number(data.lastClick)||now)>RESET_TIME){
+      data={count:0,lastClick:now};
+    }
+
+    if(Number(data.count||0)>=CLICK_LIMIT){
+      return {allowed:false,ip:userIP,ipRef};
+    }
+
+    return {allowed:true,ip:userIP,ipRef};
+  }catch(e){
+    /* If IP service is unavailable, do not block a normal visitor. */
+    console.warn("IP check unavailable:",e);
+    return {allowed:true,ip:null,ipRef:null};
+  }
+}
+
+async function recordIpClick(result){
+  if(!IP_LIMIT_ENABLED || !result?.ipRef) return;
+
+  try{
+    await setDoc(result.ipRef,{
+      count:increment(1),
+      lastClick:Date.now(),
+      ip:result.ip.replace(/_/g,".")
+    },{merge:true});
+  }catch(e){
+    console.warn("IP log skipped:",e);
+  }
+}
+
+function setProgress(n,text){
+  els.fill.style.width=Math.max(0,Math.min(100,n))+"%";
+  if(text)els.status.textContent=text;
+}
+
+function buildDestination(){
+  try{
+    const u=new URL(destination);
+    if(userId)u.searchParams.set("ref",userId);
+    u.searchParams.set("type",campaign);
+    return u.toString();
+  }catch{
+    return destination;
+  }
+}
+
+function startCountdown(seconds){
+  let left=Math.max(0,Number(seconds)||0);
+
+  if(left<=0){
+    els.timer.style.display="none";
+    els.btn.disabled=false;
+    els.btn.innerHTML='<i class="fa-solid fa-arrow-right"></i> Continue';
+    return;
+  }
+
+  els.timer.style.display="block";
+  els.sec.textContent=String(left).padStart(2,"0");
+  els.btn.disabled=true;
+  els.btn.innerHTML='<i class="fa-solid fa-hourglass-half"></i> Please wait…';
+
+  const tick=setInterval(()=>{
+    left--;
+    els.sec.textContent=String(Math.max(0,left)).padStart(2,"0");
+    const progress=75+(5-left)*5;
+    setProgress(progress,"Preparing destination…");
+
+    if(left<=0){
+      clearInterval(tick);
+      els.timer.style.display="none";
+      els.btn.disabled=false;
+      els.btn.innerHTML='<i class="fa-solid fa-arrow-right"></i> Continue';
+      els.status.textContent="Ready — you can continue.";
+    }
+  },1000);
+}
+
+async function redirectNow(){
+  if(redirectTimer)clearTimeout(redirectTimer);
+  els.btn.disabled=true;
+  els.btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Opening…';
+  setProgress(100,"Opening destination…");
+
+  /* Record the gateway visit only after the normal validation flow. */
+  const ipResult=window.__ipResult;
+  await recordIpClick(ipResult);
+
+  location.replace(buildDestination());
+}
+
+async function initEngine(){
+  try{
+    setProgress(12,"Loading gateway…");
+
+    const pages=await loadLandingPages();
+
+    /*
+      Automatic rotation:
+      - Uses current time so no admin action is needed.
+      - If Firestore has active pages, those are used.
+      - Otherwise built-in pages are used.
+    */
+    const index=Math.floor(Date.now()/60000)%pages.length;
+    renderPage(pages[index],index,pages.length);
+
+    setProgress(35,"Checking secure connection…");
+
+    const ipResult=await checkIpLimit();
+    window.__ipResult=ipResult;
+
+    if(!ipResult.allowed){
+      els.title.textContent="Daily gateway limit reached";
+      els.subtitle.textContent="Please try again after the limit resets.";
+      els.info.innerHTML="";
+      els.faq.innerHTML="";
+      els.btn.disabled=false;
+      els.btn.textContent="Return";
+      els.btn.onclick=()=>location.replace(LIMIT_URL);
+      setProgress(100,"Limit reached.");
+      return;
+    }
+
+    setProgress(58,"Preparing your destination…");
+
+    if(userId){
+      /*
+        Existing NS PRIME reward behaviour is preserved.
+        No artificial clicks are generated by this page.
+      */
+      const rewarded=await addBalance(userId);
+      els.status.textContent=rewarded
+        ?"Gateway verified. Preparing destination…"
+        :"Destination ready. Reward update was not completed.";
+    }else{
+      els.status.textContent="Destination ready.";
+    }
+
+    setProgress(76,"Almost ready…");
+
+    const delay=Number(selectedPage?.countdown ?? 5);
+    startCountdown(delay);
+
+    els.btn.onclick=redirectNow;
+
+    setProgress(85,"Please review and continue.");
+  }catch(e){
+    console.error(e);
+    /*
+      Preserve the original gateway's fail-open redirect behaviour.
+      If Firebase is temporarily unavailable, the visitor is still sent
+      to the configured destination.
+    */
+    els.status.textContent="Opening destination…";
+    els.btn.disabled=false;
+    els.btn.textContent="Continue";
+    els.btn.onclick=()=>location.replace(buildDestination());
+    setProgress(100,"Ready.");
+  }
+}
+
+initEngine();
+</script>
+
+<!-- Optional social-bar/ad script from your existing gateway -->
+<script src="https://biographygridetelegram.com/37/4b/15/374b150720985c24833e6f1d33654ef3.js"></script>
 </body>
 </html>
