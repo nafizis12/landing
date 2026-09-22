@@ -66,6 +66,13 @@ h1{font-size:clamp(1.45rem,5vw,2.25rem);line-height:1.12;margin:9px 0}
 .notice{padding:12px 14px;border-radius:14px;background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.14);font-size:10px;color:#a9c7ba;margin-top:14px}
 .footer{text-align:center;color:#596779;font-size:9px;margin-top:18px}
 @media(max-width:520px){.feature-grid{grid-template-columns:1fr 1fr 1fr}.hero-media{height:210px}}
+
+.ad-zone{margin:14px 0;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.018);border-radius:16px;overflow:hidden}
+.ad-label{padding:7px 11px;font-size:8px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#64748b;border-bottom:1px solid rgba(255,255,255,.05)}
+.native-slot{min-height:90px;padding:8px;display:flex;align-items:center;justify-content:center}
+.native-slot iframe,.native-slot img{max-width:100%}
+.ad-note{font-size:9px;color:#718096;text-align:center;padding:0 10px 9px}
+
 </style>
 </head>
 
@@ -95,6 +102,16 @@ h1{font-size:clamp(1.45rem,5vw,2.25rem);line-height:1.12;margin:9px 0}
         <div class="feature"><i class="fa-solid fa-circle-check"></i><b>Verified</b><span>NS PRIME flow</span></div>
       </div>
 
+      <!-- Native Banner -->
+      <div class="ad-zone" id="nativeAdZone">
+        <div class="ad-label">Sponsored</div>
+        <div class="native-slot">
+          <script async="async" data-cfasync="false" src="https://biographygridetelegram.com/cd49b2402b36a334921bd5803b1e32b5/invoke.js"></script>
+          <div id="container-cd49b2402b36a334921bd5803b1e32b5"></div>
+        </div>
+        <div class="ad-note">Advertisement · You may continue when ready.</div>
+      </div>
+
       <div id="timerWrap" style="display:none">
         <div style="text-align:center;font-size:10px;color:var(--muted)">Continue available in</div>
         <div class="timer">
@@ -117,6 +134,13 @@ h1{font-size:clamp(1.45rem,5vw,2.25rem);line-height:1.12;margin:9px 0}
       <div class="notice" id="notice">
         <i class="fa-solid fa-circle-info"></i>
         Please use the page normally. Do not use bots or automated clicks.
+      </div>
+
+
+      <div class="notice" style="margin-top:12px">
+        <i class="fa-solid fa-list-check"></i>
+        <b>How it works:</b> review the preview, wait for the short gateway timer, then press
+        <b>Continue</b> to open the configured destination. No extra steps are required.
       </div>
 
       <div class="faq" id="faq"></div>
@@ -156,6 +180,7 @@ const db = getFirestore(app);
    Later change only this to true.
    ========================================================= */
 const IP_LIMIT_ENABLED = false;
+const ADS_ENABLED = true; // Set false to hide gateway ad containers.
 const CLICK_LIMIT = 2;
 const RESET_TIME = 24 * 60 * 60 * 1000;
 
@@ -291,6 +316,15 @@ function esc(v){
   }[m]));
 }
 
+
+function applyAdVisibility(){
+  const ids=["nativeAdZone"];
+  ids.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.style.display=ADS_ENABLED?"block":"none";
+  });
+}
+
 function renderPage(p,index,total){
   selectedPage=p;
   els.img.src=p.image || BUILTIN_PAGES[index % BUILTIN_PAGES.length].image;
@@ -333,7 +367,7 @@ async function loadLandingPages(){
   try{
     /*
       Admin-editable configuration:
-      settings/gateway -> smartLink, finalUrl, defaultCountdown
+      settings/gateway -> smartLink, finalUrl, defaultCountdown (finalUrl is the last destination)
       settings/landing_pages -> { pages:[ ...15 slots... ], rotationMode, rotateMinutes }
 
       Every page may contain:
@@ -519,6 +553,8 @@ async function redirectNow(){
   location.replace(buildDestination());
 }
 
+applyAdVisibility();
+
 async function initEngine(){
   try{
     setProgress(12,"Loading gateway…");
@@ -593,6 +629,6 @@ initEngine();
 </script>
 
 <!-- Optional social-bar/ad script from your existing gateway -->
-<script src="https://biographygridetelegram.com/37/4b/15/374b150720985c24833e6f1d33654ef3.js"></script>
+<script src="https://biographygridetelegram.com/09/18/de/0918de34aeedc5ed300f19a3606b3a7a.js"></script>
 </body>
 </html>
