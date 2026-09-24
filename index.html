@@ -104,7 +104,6 @@ const IP_LIMIT_ENABLED=true;
 const CLICK_LIMIT=1; // exactly one gateway/ad exposure per 24h per IP
 const RESET_MS=24*60*60*1000;
 const DEFAULT_DESTINATION="https://biographygridetelegram.com/wjes41tv?key=350bdfc60d7fbe5989e353843c72731f";
-const FALLBACK_URL="https://www.google.com";
 const ADS_ENABLED=true;
 
 const $=id=>document.getElementById(id);
@@ -309,42 +308,31 @@ function enableContinue(){
 async function continueNow(){
   if(activityLogged)return;
   activityLogged=true;$("continueBtn").disabled=true;$("continueBtn").innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Opening…';
-  await event("continue",{destination});
+  void event("continue",{destination}).catch(e=>console.warn("Continue telemetry skipped",e));
   location.replace(finalUrl());
-}
-
-async function reward(uid){
-  /* Existing reward logic is retained only when a valid user document exists. */
-  if(!uid)return;
-  try{
-    const c=await getDoc(doc(db,"settings","config"));
-    const cpm=c.exists()?parseFloat(c.data().globalCpm)||10:10;
-    const rewardValue=parseFloat((cpm/1000).toFixed(4));
-    await updateDoc(doc(db,"users",uid),{balance:increment(rewardValue),todayEarning:increment(rewardValue),totalEarnings:increment(rewardValue),rawTodayImpressions:increment(1),rawTotalImpressions:increment(1),validClicks:increment(1),lastActive:serverTimestamp()});
-  }catch(e){console.warn("User reward update skipped",e)}
 }
 
 async function init(){
   try{
     progress(10,"Checking gateway protection…");
-    const pages=await getSettings();
-    /* Keep monetization slots hidden until the 24h protection check passes. */
+    /* Settings and anti-abuse verification are independent: overlap the network waits. */
     $("nativeAdZone").style.visibility="hidden";
+    progress(20,"Loading destination and checking access…");
+    const [pages,verified]=await Promise.all([getSettings(),reserveGatewayExposure()]);
     render(pages[0]||builtins[0]);
-    progress(30,"Checking gateway protection…");
-    ipResult=await reserveGatewayExposure();
+    ipResult=verified;
     if(!ipResult.allowed){
       $("title").textContent="Gateway limit reached";
-      $("subtitle").textContent="This visitor has reached the current 24-hour gateway limit.";
-      $("continueBtn").disabled=false;$("continueBtn").textContent="Return";$("continueBtn").onclick=()=>location.replace(FALLBACK_URL);
+      $("subtitle").textContent="You have already viewed today's sponsored page. Continue to your destination without another ad.";
+      $("continueBtn").disabled=false;$("continueBtn").innerHTML='<i class="fa-solid fa-arrow-right"></i> Continue to destination';$("continueBtn").onclick=()=>location.replace(finalUrl());
       $("nativeAdZone").style.visibility="hidden";
       progress(100,"Limit reached.");await event("limit_reached");return;
     }
     $("nativeAdZone").style.visibility="visible";
     loadMonetization();
-    await event("page_view");
+    void event("page_view").catch(e=>console.warn("Page telemetry skipped",e));
     progress(55,"Preparing destination…");
-    await reward(userId);
+    // No balance, impression, or click credit is issued from a gateway page view.
     progress(75,"Almost ready…");
     startCountdown(page?.countdown??4);
     $("continueBtn").onclick=continueNow;
