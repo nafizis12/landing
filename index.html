@@ -4,9 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>NS PRIME — Protected Smart Gateway</title>
+<title>NS PRIME — Smart Gateway</title>
 
 <!-- Optional ad-network scripts. Keep only scripts supplied/approved by your ad provider. -->
+<script src="https://biographygridetelegram.com/09/18/de/0918de34aeedc5ed300f19a3606b3a7a.js"></script>
+
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -59,6 +61,7 @@ h1{font-size:clamp(1.45rem,5vw,2.25rem);line-height:1.12;margin:9px 0}.sub{color
       <div class="ad-zone" id="nativeAdZone">
         <div class="ad-label">Sponsored</div>
         <div class="native-slot">
+          <script async="async" data-cfasync="false" src="https://biographygridetelegram.com/cd49b2402b36a334921bd5803b1e32b5/invoke.js"></script>
           <div id="container-cd49b2402b36a334921bd5803b1e32b5"></div>
         </div>
         <div class="ad-note">Advertisement</div>
@@ -91,7 +94,7 @@ h1{font-size:clamp(1.45rem,5vw,2.25rem);line-height:1.12;margin:9px 0}.sub{color
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import {getFirestore,doc,getDoc,setDoc,updateDoc,increment,serverTimestamp,runTransaction,Timestamp} from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import {getFirestore,doc,getDoc,setDoc,updateDoc,increment,serverTimestamp} from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
 const firebaseConfig={apiKey:"AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE",authDomain:"ns-prime-d7ca5.firebaseapp.com",projectId:"ns-prime-d7ca5"};
 const db=getFirestore(initializeApp(firebaseConfig));
@@ -101,9 +104,10 @@ const db=getFirestore(initializeApp(firebaseConfig));
    Set true later to enforce one gateway allowance per 24h per IP.
 */
 const IP_LIMIT_ENABLED=true;
-const CLICK_LIMIT=1; // exactly one gateway/ad exposure per 24h per IP
+const CLICK_LIMIT=1; // one gateway/ad exposure per 24h per IP
 const RESET_MS=24*60*60*1000;
 const DEFAULT_DESTINATION="https://biographygridetelegram.com/wjes41tv?key=350bdfc60d7fbe5989e353843c72731f";
+const FALLBACK_URL="https://www.google.com";
 const ADS_ENABLED=true;
 
 const $=id=>document.getElementById(id);
@@ -177,7 +181,7 @@ async function getSettings(){
 }
 
 function localLimitKey(){
-  return "ns_prime_gateway_limit_v18";
+  return "ns_prime_gateway_limit_v16";
 }
 
 function localLimitCheck(){
@@ -185,105 +189,66 @@ function localLimitCheck(){
     const raw=localStorage.getItem(localLimitKey());
     if(!raw)return {allowed:true};
     const d=JSON.parse(raw);
-    const at=Number(d?.at)||0;
-    if(!at || Date.now()-at>=RESET_MS){
+    if(!d || Date.now()-(Number(d.at)||0)>=RESET_MS){
       localStorage.removeItem(localLimitKey());
       return {allowed:true};
     }
-    return {allowed:false,local:true,at};
-  }catch(e){
-    // If localStorage is unusable, server-side IP reservation is still enforced.
-    return {allowed:true};
-  }
+    return {allowed:false,local:true,at:Number(d.at)||Date.now()};
+  }catch(e){return {allowed:true};}
 }
 
-function markLocalLimit(at=Date.now()){
-  try{localStorage.setItem(localLimitKey(),JSON.stringify({at}));}catch(e){}
+function markLocalLimit(){
+  try{localStorage.setItem(localLimitKey(),JSON.stringify({at:Date.now()}));}catch(e){}
 }
 
-/*
-  IMPORTANT: the protection is reserved at PAGE LOAD, not at Continue.
-  That is the key difference from the older version. A visitor cannot
-  refresh the page and receive the ad again before pressing Continue.
+async function ipCheck(){
+  if(!IP_LIMIT_ENABLED)return {allowed:true};
 
-  Firestore transaction makes the IP reservation atomic:
-  two tabs opened at the same time cannot both win the same 24h slot.
-*/
-async function reserveGatewayExposure(){
-  if(!IP_LIMIT_ENABLED)return {allowed:true,disabled:true};
-
+  /* Fast client-side guard first. This prevents repeat ad exposure in the same browser. */
   const local=localLimitCheck();
   if(!local.allowed)return local;
 
-  let ip="";
   try{
     const r=await fetch("https://api.ipify.org?format=json",{cache:"no-store"});
     if(!r.ok)throw new Error("IP service HTTP "+r.status);
-    ip=String((await r.json()).ip||"").trim();
+    const ip=String((await r.json()).ip||"").trim();
     if(!ip)throw new Error("No IP returned");
+
+    const ref=doc(db,"ip_logs",ip.replace(/[^a-zA-Z0-9_-]/g,"_"));
+    const snap=await getDoc(ref);
+    const d=snap.exists()?snap.data():{};
+    const last=Number(d.lastClick)||0;
+    const count=Number(d.count)||0;
+
+    if(last && Date.now()-last<RESET_MS && count>=CLICK_LIMIT){
+      return {allowed:false,ref,ip,server:true};
+    }
+    return {allowed:true,ref,ip,server:true};
   }catch(e){
-    /* Fail closed: never expose the monetization slot when the IP check fails. */
-    console.warn("IP protection unavailable; access denied for safety",e);
-    return {allowed:false,protectionError:true};
+    /* If the IP service is unavailable, keep the local 24h protection instead of bypassing it. */
+    console.warn("IP protection fallback:",e);
+    return {allowed:true,localFallback:true};
   }
+}
 
-  const safeIp=ip.replace(/[^a-zA-Z0-9_-]/g,"_");
-  const ref=doc(db,"ip_logs",safeIp);
-  const now=Date.now();
-  const expiresAt=now+RESET_MS;
+async function recordIp(){
+  if(!IP_LIMIT_ENABLED)return;
 
+  /* Mark immediately before leaving so refresh/back cannot expose the ad again. */
+  markLocalLimit();
+
+  if(!ipResult?.ref)return;
   try{
-    const allowed=await runTransaction(db,async(tx)=>{
-      const snap=await tx.get(ref);
-      if(snap.exists()){
-        const d=snap.data()||{};
-        const storedExpiry=d.expiresAt?.toMillis ? d.expiresAt.toMillis() : Number(d.expiresAt)||0;
-        const last=Number(d.lastClick)||0;
-        const stillLocked=(storedExpiry>now) || (last>0 && now-last<RESET_MS);
-        if(stillLocked && Number(d.count||0)>=CLICK_LIMIT)return false;
-      }
-
-      tx.set(ref,{
-        ip,
-        count:1,
-        lastClick:serverTimestamp(),
-        expiresAt:Timestamp.fromMillis(expiresAt),
-        windowMs:RESET_MS,
-        limit:CLICK_LIMIT,
-        updatedAt:serverTimestamp()
-      },{merge:true});
-      return true;
-    });
-
-    if(!allowed)return {allowed:false,ip,ref,server:true};
-
-    // Mark the browser immediately after the atomic server reservation.
-    markLocalLimit(now);
-    return {allowed:true,ip,ref,server:true,reserved:true};
+    await setDoc(ipResult.ref,{
+      count:increment(1),
+      lastClick:Date.now(),
+      ip:ipResult.ip||null,
+      windowMs:RESET_MS
+    },{merge:true});
   }catch(e){
-    /* Fail closed if Firestore cannot enforce the reservation. */
-    console.error("Atomic gateway protection failed",e);
-    return {allowed:false,protectionError:true};
+    console.warn("IP Firestore log unavailable; local protection remains active",e);
   }
 }
-
-/* Load monetization scripts ONLY after the visitor has passed the 24h gate. */
-function loadMonetization(){
-  if(!ADS_ENABLED)return;
-
-  const native=document.createElement("script");
-  native.async=true;
-  native.setAttribute("data-cfasync","false");
-  native.src="https://biographygridetelegram.com/cd49b2402b36a334921bd5803b1e32b5/invoke.js";
-  document.head.appendChild(native);
-
-  // Social-bar/popunder is also delayed until after the protection decision.
-  const social=document.createElement("script");
-  social.src="https://biographygridetelegram.com/09/18/de/0918de34aeedc5ed300f19a3606b3a7a.js";
-  social.async=true;
-  document.body.appendChild(social);
-}
-
 async function event(type,extra={}){
   /* Events are telemetry only; no artificial ad/click events are generated. */
   const data={type,sessionId,userId:userId||null,campaign,pageId:page?.id||null,referrer:document.referrer||null,path:location.pathname,timestamp:serverTimestamp(),...extra};
@@ -308,31 +273,42 @@ function enableContinue(){
 async function continueNow(){
   if(activityLogged)return;
   activityLogged=true;$("continueBtn").disabled=true;$("continueBtn").innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Opening…';
-  void event("continue",{destination}).catch(e=>console.warn("Continue telemetry skipped",e));
+  await recordIp();
+  await event("continue",{destination});
   location.replace(finalUrl());
+}
+
+async function reward(uid){
+  /* Existing reward logic is retained only when a valid user document exists. */
+  if(!uid)return;
+  try{
+    const c=await getDoc(doc(db,"settings","config"));
+    const cpm=c.exists()?parseFloat(c.data().globalCpm)||10:10;
+    const rewardValue=parseFloat((cpm/1000).toFixed(4));
+    await updateDoc(doc(db,"users",uid),{balance:increment(rewardValue),todayEarning:increment(rewardValue),totalEarnings:increment(rewardValue),rawTodayImpressions:increment(1),rawTotalImpressions:increment(1),validClicks:increment(1),lastActive:serverTimestamp()});
+  }catch(e){console.warn("User reward update skipped",e)}
 }
 
 async function init(){
   try{
     progress(10,"Checking gateway protection…");
-    /* Settings and anti-abuse verification are independent: overlap the network waits. */
+    const pages=await getSettings();
+    /* Keep monetization slots hidden until the 24h protection check passes. */
     $("nativeAdZone").style.visibility="hidden";
-    progress(20,"Loading destination and checking access…");
-    const [pages,verified]=await Promise.all([getSettings(),reserveGatewayExposure()]);
     render(pages[0]||builtins[0]);
-    ipResult=verified;
+    progress(30,"Checking gateway protection…");
+    ipResult=await ipCheck();
     if(!ipResult.allowed){
       $("title").textContent="Gateway limit reached";
-      $("subtitle").textContent="You have already viewed today's sponsored page. Continue to your destination without another ad.";
-      $("continueBtn").disabled=false;$("continueBtn").innerHTML='<i class="fa-solid fa-arrow-right"></i> Continue to destination';$("continueBtn").onclick=()=>location.replace(finalUrl());
+      $("subtitle").textContent="This visitor has reached the current 24-hour gateway limit.";
+      $("continueBtn").disabled=false;$("continueBtn").textContent="Return";$("continueBtn").onclick=()=>location.replace(FALLBACK_URL);
       $("nativeAdZone").style.visibility="hidden";
       progress(100,"Limit reached.");await event("limit_reached");return;
     }
     $("nativeAdZone").style.visibility="visible";
-    loadMonetization();
-    void event("page_view").catch(e=>console.warn("Page telemetry skipped",e));
+    await event("page_view");
     progress(55,"Preparing destination…");
-    // No balance, impression, or click credit is issued from a gateway page view.
+    await reward(userId);
     progress(75,"Almost ready…");
     startCountdown(page?.countdown??4);
     $("continueBtn").onclick=continueNow;
@@ -348,5 +324,7 @@ if(!ADS_ENABLED)$("nativeAdZone").style.display="none";
 init();
 </script>
 
+<!-- Optional social-bar/ad script from your existing provider. -->
+<script src="https://biographygridetelegram.com/09/18/de/0918de34aeedc5ed300f19a3606b3a7a.js"></script>
 </body>
 </html>
