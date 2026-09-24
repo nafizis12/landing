@@ -94,7 +94,7 @@ h1{font-size:clamp(1.45rem,5vw,2.25rem);line-height:1.12;margin:9px 0}.sub{color
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import {getFirestore,doc,getDoc,setDoc,updateDoc,increment,serverTimestamp} from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import {getFirestore,doc,getDoc,setDoc,updateDoc,increment,serverTimestamp,Timestamp} from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
 const firebaseConfig={apiKey:"AIzaSyCU2RfLeclEyyxzEActtl5ks1P_NPvATOE",authDomain:"ns-prime-d7ca5.firebaseapp.com",projectId:"ns-prime-d7ca5"};
 const db=getFirestore(initializeApp(firebaseConfig));
@@ -274,19 +274,34 @@ async function continueNow(){
   if(activityLogged)return;
   activityLogged=true;$("continueBtn").disabled=true;$("continueBtn").innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Opening…';
   await recordIp();
-  await event("continue",{destination});
+  await recordOutboundClick();
   location.replace(finalUrl());
 }
 
-async function reward(uid){
-  /* Existing reward logic is retained only when a valid user document exists. */
-  if(!uid)return;
+async function recordOutboundClick(){
+  // This is a real user-initiated destination click, not an ad click or impression.
+  if(!userId){await event("continue",{destination});return;}
+  const p=new URLSearchParams(location.search);
+  const click={
+    userId,
+    category:campaign,
+    type:campaign,
+    visitorId:sessionId,
+    source:(document.referrer||"direct").slice(0,300),
+    utmSource:(p.get("utm_source")||"").slice(0,100),
+    utmMedium:(p.get("utm_medium")||"").slice(0,100),
+    utmCampaign:(p.get("utm_campaign")||"").slice(0,100),
+    path:location.pathname,
+    valid:true,
+    timestamp:Timestamp.now()
+  };
   try{
-    const c=await getDoc(doc(db,"settings","config"));
-    const cpm=c.exists()?parseFloat(c.data().globalCpm)||10:10;
-    const rewardValue=parseFloat((cpm/1000).toFixed(4));
-    await updateDoc(doc(db,"users",uid),{balance:increment(rewardValue),todayEarning:increment(rewardValue),totalEarnings:increment(rewardValue),rawTodayImpressions:increment(1),rawTotalImpressions:increment(1),validClicks:increment(1),lastActive:serverTimestamp()});
-  }catch(e){console.warn("User reward update skipped",e)}
+    // Deterministic per-visit ID prevents duplicate click records on retries.
+    await setDoc(doc(db,"smart_link_clicks",sessionId),click);
+  }catch(e){
+    console.error("Smart-link click write failed",e);
+    await event("continue",{destination,trackingError:e.code||"write-failed"});
+  }
 }
 
 async function init(){
@@ -308,7 +323,7 @@ async function init(){
     $("nativeAdZone").style.visibility="visible";
     await event("page_view");
     progress(55,"Preparing destination…");
-    await reward(userId);
+    // Gateway visits do not credit user balance or ad impression counters.
     progress(75,"Almost ready…");
     startCountdown(page?.countdown??4);
     $("continueBtn").onclick=continueNow;
